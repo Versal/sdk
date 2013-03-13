@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var argv = require("optimist")
+  .usage("Versal Gadget SDK. Usage: $0 (create | validate | preview | publish) [-arguments] [--options]")
+  .demand(1)
+  .argv;
+
+require("../lib/sdk").exec(argv._.shift(), argv);

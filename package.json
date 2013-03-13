@@ -1,38 +1,46 @@
 {
-  "name": "grunt-cli",
-  "description": "The grunt command line interface.",
-  "version": "0.1.6",
-  "author": "Grunt Team",
-  "homepage": "http://gruntjs.com/",
+  "name": "versal-sdk",
+  "description": "Versal Gadget SDK with command-line interface.",
+  "version": "0.1.0",
+  "author": "Versal Team",
+  "homepage": "http://versal.com/",
   "repository": {
     "type": "git",
-    "url": "git://github.com/gruntjs/grunt-cli.git"
+    "url": "git://github.com/Versal/sdk.git"
   },
   "bugs": {
-    "url": "http://github.com/gruntjs/grunt-cli/issues"
+    "url": "http://github.com/Versal/sdk/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "http://github.com/gruntjs/grunt-cli/blob/master/LICENSE-MIT"
+      "url": "http://github.com/Versal/sdk/blob/master/LICENSE"
     }
   ],
   "bin": {
-    "grunt": "bin/grunt"
+    "versal": "bin/versal"
   },
   "engines": {
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "test": "./bin/grunt test"
+    "test": "./bin/versal test"
   },
   "preferGlobal": true,
   "dependencies": {
     "nopt": "~1.0.10",
-    "findup-sync": "~0.1.0"
+    "optimist": "~0.3.5",
+    "requirejs": "~2.1.5",
+    "connect": "~2.7.3",
+    "open": "0.0.3",
+    "ncp": "~0.4.0",
+    "fs-extra": "~0.5.0",
+    "gadget-template-default": "git+ssh://git@github.com:Versal/gadget-template-default.git"
   },
   "devDependencies": {
-    "grunt": "~0.4.0rc4",
-    "grunt-contrib-jshint": "~0.1.0"
+    "grunt": "~0.4.0",
+    "grunt-contrib-jshint": "~0.1.0",
+    "mocha": "~1.8.1",
+    "chai": "~1.5.0"
   }
 }

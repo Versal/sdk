@@ -1,11 +1,10 @@
 /*
- * grunt-cli
- * http://gruntjs.com/
+ * versal-cli
+ * http://versal.com/
  *
- * Copyright (c) 2012 Tyler Kellen, contributors
- * Licensed under the MIT license.
- * https://github.com/gruntjs/grunt-init/blob/master/LICENSE-MIT
+ * Copyright (c) 2013 Versal Team
  */
+
 
 'use strict';
 
@@ -45,5 +44,4 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', ['test']);
-
 };
