@@ -3,7 +3,7 @@
 'use strict';
 
 var argv = require("optimist")
-  .usage("Versal Gadget SDK. Usage: $0 (create | validate | preview | publish) [-arguments] [--options]")
+  .usage("Versal Gadget SDK. Usage: versal (init | validate | preview | publish) [-arguments] [--options]")
   .demand(1)
   .argv;
 
