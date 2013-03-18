@@ -7,4 +7,6 @@ var argv = require("optimist")
   .demand(1)
   .argv;
 
-require("../lib/sdk").exec(argv._.shift(), argv);
+var sdk = require("../lib/sdk");
+
+sdk.exec(argv._.shift(), argv);
