@@ -1,11 +1,11 @@
 var mocha = require("mocha"),
-    chai = require("chai");
+    chai = require("chai"),
+    validator = require("./../lib/tasks/validate");
 
 chai.should();
 
-var validator = require("./../lib/tasks/validate");
-
 describe("Validation", function(){
+
   describe("Manifest", function(){
     var validManifest = {
       name: "foo-gadget",
@@ -38,5 +38,5 @@ describe("Validation", function(){
     it("should return errors for invalid files", function(){
       validator.validateFiles(invalidFiles).length.should.equal(4);
     })
-  })
+  });
 });
