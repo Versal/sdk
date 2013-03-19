@@ -1,6 +1,6 @@
 var mocha = require("mocha"),
     chai = require("chai"),
-    validator = require("./../lib/tasks/validate");
+    validator = require("./../lib/commands/validate");
 
 chai.should();
 
