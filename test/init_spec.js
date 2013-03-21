@@ -2,9 +2,23 @@ var mocha = require("mocha"),
     chai = require("chai"),
     init = require("./../lib/commands/init"),
     should = chai.should(),
-    path = require('path');
+    path = require('path'),
+    fs = require('fs'),
+    fse = require('fs-extra'),
+    ncp = require('ncp'),
+    _ = require('lodash'),
+    glob = require('glob');
 
-describe("Init", function(){
+before(function(){
+  fse.removeSync('./test/gadgets');
+  fs.mkdirSync('./test/gadgets');
+});
+
+after(function(){
+  fse.removeSync('./test/gadgets');
+})
+
+describe("Init command", function(){
   describe("Options", function(){
     it("should fail if template_path is not specified", function(){
       var options = { test: true };
@@ -34,13 +48,97 @@ describe("Init", function(){
     });
 
     it("should fail if sdk path_does not exist", function(){
-      var options = { template_path: './test/fixtures/template', sdk_path: 'invalid_path', gadget_path: '.' };
+      var options = { test: true, template_path: './test/fixtures/template', sdk_path: 'invalid_path', gadget_path: '.' };
       (function(){ init(options); }).should.Throw(/SDK not found/);
     });
 
     it("should not fail if gadget_path doesn't exists", function(){
-      var options = { template_path: './test/fixtures/template', sdk_path: './test/fixtures/sdk', gadget_path: '.' };
-      (function(){ init(options); }).should.Throw(/SDK not found/);
+      var options = { test: true, template_path: './test/fixtures/template', sdk_path: './test/fixtures/sdk', gadget_path: '.' };
+      (function(){ init(options); }).should.not.Throw();
     })
   });
+
+  describe("ncp copying", function(){
+    var target_path = path.resolve('./test/gadgets/gadget');
+    var template_path = path.resolve('./test/fixtures/template');
+    var originalFiles = glob.sync("**", { cwd: template_path });
+
+    beforeEach(function(){
+      fse.removeSync('./test/gadgets/gadget');
+    })
+
+    it("should copy files from one folder to another", function(done){
+      ncp(template_path, target_path, function(){
+        glob("**", { cwd: target_path }, function(err, files){
+          files.should.eql(originalFiles);
+          done();
+        })
+      })
+    })
+
+    it("should copy files from one folder to another", function(done){
+      ncp(template_path, target_path, function(){
+        ncp(template_path, target_path, function(){
+          glob("**", { cwd: target_path }, function(err, files){
+            files.should.eql(originalFiles);
+            done();
+          })
+        })
+      })
+    })
+
+    it("should copy files from one folder to another", function(done){
+      ncp(template_path, target_path, function() {
+        process.nextTick(function(){
+          ncp(template_path, target_path, { clobber: false }, function(){
+            glob("**", { cwd: target_path }, function(err, files){
+              files.should.eql(originalFiles);
+              done();
+            })
+          })
+        });
+      })
+    })
+  })
+
+
+  describe("Copying files", function(){
+    beforeEach(function(){
+        fse.removeSync('./test/gadgets/gadget');
+    });
+
+    var options = { template_path: path.resolve('./test/fixtures/template'), sdk_path: path.resolve('./test/fixtures/sdk'), gadget_path: path.resolve('./test/gadgets/gadget') };
+    var requiredFiles = _.map(['sdk/a','b','c/d'], function(f){ return path.join(options.gadget_path, f); });
+
+    it("should copy files from template and sdk folders into gadget folder", function(done){
+      var expected = { a: 'a', b: 'b', d: 'd' };
+      init(options, function(err){
+        _.forEach(requiredFiles, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
+        done();
+      })
+    })
+
+    it("should overwrite files both in sdk folder and in gadget folder if --overwrite=true", function(done){
+      init(options, function(err){ 
+        fs.writeFileSync(path.join(path.resolve(options.gadget_path), 'b'), 'bbb');
+        init(_.extend(options, {overwrite: true }), function(err){
+          var expected = { a: 'a', b: 'b', d: 'd' };
+          _.forEach(requiredFiles, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
+          done();
+        })
+      });
+    });
+
+    it("should not overwrite files both in sdk folder and in gadget folder if --overwrite=false", function(done){
+      init(options, function(err){ 
+        fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
+        fs.writeFileSync(path.join(options.gadget_path, 'b'), 'bbb');
+        init(_.extend(options, {overwrite: false }), function(err){
+          var expected = { a: 'a', b: 'bbb', d: 'd' };
+          _.forEach(requiredFiles, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
+          done();
+        })
+      });
+    });
+  })
 });
