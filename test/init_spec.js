@@ -103,7 +103,6 @@ describe("Init command", function(){
     })
   })
 
-
   describe("Copying files", function(){
     beforeEach(function(){
         fse.removeSync('./test/gadgets/gadget');
@@ -111,6 +110,14 @@ describe("Init command", function(){
 
     var options = { template_path: path.resolve('./test/fixtures/template'), sdk_path: path.resolve('./test/fixtures/sdk'), gadget_path: path.resolve('./test/gadgets/gadget') };
     var requiredFiles = _.map(['sdk/a','b','c/d'], function(f){ return path.join(options.gadget_path, f); });
+
+    it("should not copy ignoredFiles from template folder", function(done){
+      init(options, function(err){
+        fs.existsSync(requiredFiles[0]).should.be.true;
+        fs.existsSync(path.join(options.gadget_path, 'package.json')).should.be.false;
+        done();
+      })
+    })
 
     it("should copy files from template and sdk folders into gadget folder", function(done){
       var expected = { a: 'a', b: 'b', d: 'd' };
