@@ -1,6 +1,5 @@
 var mocha = require("mocha"),
     chai = require("chai"),
-    init = require("./../lib/commands/init"),
     should = chai.should(),
     path = require('path'),
     fs = require('fs'),
@@ -8,6 +7,9 @@ var mocha = require("mocha"),
     ncp = require('ncp'),
     _ = require('lodash'),
     glob = require('glob');
+
+var initializer = require("./../lib/commands/init"),
+    init = initializer.initialize;
 
 before(function(){
   fse.removeSync('./test/gadgets');
@@ -118,10 +120,11 @@ describe("Init command", function(){
       })
     })
 
-    it("should overwrite files both in sdk folder and in gadget folder if --overwrite=true", function(done){
+    it("should overwrite files both in sdk folder and in gadget folder if --force=true", function(done){
       init(options, function(err){ 
+        fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
         fs.writeFileSync(path.join(path.resolve(options.gadget_path), 'b'), 'bbb');
-        init(_.extend(options, {overwrite: true }), function(err){
+        init(_.extend(_.clone(options), {force: true }), function(err){
           var expected = { a: 'a', b: 'b', d: 'd' };
           _.forEach(requiredFiles, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
           done();
@@ -129,16 +132,49 @@ describe("Init command", function(){
       });
     });
 
-    it("should not overwrite files both in sdk folder and in gadget folder if --overwrite=false", function(done){
+    it("should not overwrite files both in sdk folder and in gadget folder if --force=false", function(done){
       init(options, function(err){ 
         fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
         fs.writeFileSync(path.join(options.gadget_path, 'b'), 'bbb');
-        init(_.extend(options, {overwrite: false }), function(err){
+        init(options, function(err){
           var expected = { a: 'a', b: 'bbb', d: 'd' };
           _.forEach(requiredFiles, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
           done();
         })
       });
     });
+
+    it("should overwrite old files and keep new files if --force=true", function(done){
+      init(options, function(err){ 
+        fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
+        fs.writeFileSync(path.join(path.resolve(options.gadget_path), 'b'), 'bbb');
+        fs.appendFileSync(path.join(path.resolve(options.gadget_path), 'f'), 'fff');
+
+        init(_.extend(_.clone(options), {force: true }), function(err){
+          var expected = { a: 'a', b: 'b', d: 'd', f: 'fff' };
+          var files = _.clone(requiredFiles);
+          files.push(path.join(options.gadget_path, 'f'));
+          _.forEach(files, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
+          done();
+        })
+      });
+    })
+
+
+    it("should create a clean copy if --clean==true", function(done){
+      init(options, function(err){ 
+        fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
+        fs.writeFileSync(path.join(options.gadget_path, 'b'), 'bbb');
+        fs.appendFileSync(path.join(options.gadget_path, 'f'), 'fff');
+        var opts = _.extend(_.clone(options), { clean: true });
+
+        init(opts, function(err){
+          var expected = { a: 'a', b: 'b', d: 'd' };
+          _.forEach(requiredFiles, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
+          fs.existsSync(path.join(options.gadget_path, 'f')).should.be.false;
+          done();
+        })
+      });
+    })
   })
 });

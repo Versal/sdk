@@ -50,10 +50,32 @@ Valid Versal account is required to complete this task. You will be prompted to 
 Commands
 --------------------
 
+### Init
 ```
-versal init [--template <TEMPLATE_NAME>] [--dir <DIRECTORY>]
+versal init [--template <TEMPLATE_NAME>] [--dir <DIRECTORY>] [--force] [--clean]
 ```
 
+Init command must be run inside the gadget directory. It copies SDK folder from the current version of sdk and all files from the specified template. Calling `versal init` in existing folder will only rewrite `sdk` folder and leave other files unmodified.
 
+#### Options
 
-Init command must be run inside the gadget directory. It initializes
+`force`
+Will overwrite existing files, if called inside the existing folder.
+
+`clean`
+Will clean a folder before copying `sdk` and template files.
+
+### Preview
+```
+versal preview
+```
+
+Launches `connect` web server in the gadget folder.
+
+### Validate
+
+Will validate gadget folder structure and manifest fields.
+
+### Publish
+
+Will `compile` gadget into `dist` folder, `compress` it into bundle.zip, authorize using versal account and `upload` gadget to the specified endpoint.

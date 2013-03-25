@@ -1,5 +1,3 @@
-var versal = require("./../lib/sdk");
-
 var mocha = require("mocha"),
     chai = require("chai");
 
