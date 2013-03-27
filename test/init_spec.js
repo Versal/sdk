@@ -127,6 +127,18 @@ describe("Init command", function(){
       })
     })
 
+    it("should overwrite files in sdk folder and leave files in gadget folder unmodified", function(done){
+      init(options, function(err){ 
+        fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
+        fs.writeFileSync(path.join(options.gadget_path, 'b'), 'bbb');
+        init(options, function(err){
+          var expected = { a: 'a', b: 'bbb', d: 'd' };
+          _.forEach(requiredFiles, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
+          done();
+        })
+      });
+    });
+
     it("should overwrite files both in sdk folder and in gadget folder if --force=true", function(done){
       init(options, function(err){ 
         fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
@@ -139,19 +151,7 @@ describe("Init command", function(){
       });
     });
 
-    it("should not overwrite files both in sdk folder and in gadget folder if --force=false", function(done){
-      init(options, function(err){ 
-        fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
-        fs.writeFileSync(path.join(options.gadget_path, 'b'), 'bbb');
-        init(options, function(err){
-          var expected = { a: 'a', b: 'bbb', d: 'd' };
-          _.forEach(requiredFiles, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
-          done();
-        })
-      });
-    });
-
-    it("should overwrite old files and keep new files if --force=true", function(done){
+    it("should overwrite existing files and keep new files if --force=true", function(done){
       init(options, function(err){ 
         fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
         fs.writeFileSync(path.join(path.resolve(options.gadget_path), 'b'), 'bbb');
@@ -166,7 +166,6 @@ describe("Init command", function(){
         })
       });
     })
-
 
     it("should create a clean copy if --clean==true", function(done){
       init(options, function(err){ 
