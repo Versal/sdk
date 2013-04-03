@@ -182,5 +182,12 @@ describe("Init command", function(){
         })
       });
     })
+
+    it("should copy index.html outside of sdk folder", function(done){
+      init(options, function(err){
+        fs.existsSync(path.join(options.gadget_path, 'index.html')).should.be.true;
+        done();
+      })
+    })
   })
 });
