@@ -57,4 +57,5 @@ html, body {
   width: 725px; 
   background-color: white; 
   min-height: 400px;
+  position: relative;
 }
