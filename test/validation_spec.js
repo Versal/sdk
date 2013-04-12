@@ -38,5 +38,9 @@ describe("Validation", function(){
     it("should return errors for invalid files", function(){
       validator.validateFiles(invalidFiles).length.should.equal(4);
     })
+
+    it("should contain error messages for invalid files", function(){
+      validator.validateFiles(invalidFiles)[0].match(/manifest.json/).should.not.be.null;
+    })
   });
 });
