@@ -23,6 +23,7 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
+    "preinstall": "git submodule update -i -r",
     "test": "./bin/versal test"
   },
   "preferGlobal": true,
