@@ -27,6 +27,7 @@
   },
   "preferGlobal": true,
   "dependencies": {
+    "wrench": "~1.4.4",
     "optimist": "~0.3.5",
     "requirejs": "~2.1.5",
     "connect": "~2.7.3",
