@@ -50,12 +50,12 @@ describe("Init command", function(){
     });
 
     it("should fail if sdk path_does not exist", function(){
-      var options = { test: true, template_path: './test/fixtures/template', sdk_path: 'invalid_path', gadget_path: '.' };
+      var options = { test: true, template_path: path.resolve('./test/fixtures/template'), sdk_path: 'invalid_path', gadget_path: '.' };
       (function(){ init(options); }).should.Throw(/SDK not found/);
     });
 
     it("should not fail if gadget_path doesn't exists", function(){
-      var options = { test: true, template_path: './test/fixtures/template', sdk_path: './test/fixtures/sdk', gadget_path: '.' };
+      var options = { test: true, template_path: path.resolve('./test/fixtures/template'), sdk_path: path.resolve('./test/fixtures/sdk'), gadget_path: '.' };
       (function(){ init(options); }).should.not.Throw();
     })
   });
