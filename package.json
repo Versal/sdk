@@ -34,7 +34,6 @@
     "connect": "~2.7.3",
     "open": "0.0.3",
     "fs-extra": "~0.5.0",
-    "gadget-template-default": "git+ssh://git@github.com:Versal/gadget-template-default.git",
     "colors": "~0.6.0-1",
     "prompt": "~0.2.9",
     "glob": "~3.1.21",
