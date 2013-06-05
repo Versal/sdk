@@ -80,12 +80,10 @@ Will validate gadget folder structure and manifest fields.
 
 Will `compile` gadget into `dist` folder, `compress` it into bundle.zip, authorize using versal account and `upload` gadget to the specified endpoint.
 
-Gadget Documention
-------------------
+### Gadget Documention
 
 When previewing a gadget you can view gadget documentation at [http://localhost:3000/docs](http://localhost:3000/docs)
 
-SDK Development
----------------
+### SDK Development
 
 To build up a new version of documentation run `grunt exec:build-docs`
