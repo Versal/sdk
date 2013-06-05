@@ -87,3 +87,7 @@ When previewing a gadget you can view gadget documentation at [http://localhost:
 ### SDK Development
 
 To build up a new version of documentation run `grunt exec:build-docs`
+
+### 3rd Party Developers
+
+To initiate a 3rd party gadget developer prior to public release they should be added to the `3rd-party-gadget-developer` group on GitHub. They should also, at minimum, be told about the `versal docs`.
