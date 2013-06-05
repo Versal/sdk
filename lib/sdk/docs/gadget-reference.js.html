@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Gadget Reference</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+  <style>
+    h1:after {
+      content: "";
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1>Gadget Reference</h1>
+
+          
+        
+
+      </div>
+
+      
+        
+        <p><a name="constructor" /></p>
+<h2>Constructor</h2>
+
+        
+      
+        
+        <p>The course player will initialize your gadget with three arguments:</p>
+<dl>
+<dt>
+<strong>player</strong>
+</dt>
+<dd>
+The player object for sending and receiving gadget events. For syntax purposes, it extends <a href="http://backbonejs.org/#Events">Backbone.Events</a>
+</dd>
+
+<br>
+
+<dt>
+<strong>config</strong>
+</dt>
+<dd>
+A set of configuration properties for the gadget.
+</dd>
+
+<br>
+
+<dt>
+<strong>el</strong>
+</dt>
+<dd>
+A DOM element to render gadget content inside.
+</dd>
+</dl>
+
+<p>Example:</p>
+
+        
+          <div class='highlight'><pre><span class="keyword">new</span> MyGadget(player, config, el)</pre></div>
+        
+      
+        
+        <p><a name="events" /></p>
+<h2>Events</h2>
+
+        
+      
+        
+        <dl>
+<dt>
+<strong>toggleEdit</strong> <em>(editing: boolean)</em>
+</dt>
+<dd>
+Fired by the player when an the gadget changes to and from edit mode. The <code>editing</code> parameter is a boolean value indicating if the gadget is in editing mode or not. This happens when the course author starts and ends editing a gadget.
+</dd>
+
+<br>
+
+<dt>
+<strong>configChange</strong> <em>(config: object)</em>
+</dt>
+<dd>
+Fired by the player when the course author changes the property sheet of the gadget. The <code>config</code> parameter represents the internal state of the gadget which is manipulated via the gadget&#39;s UI as defined by the developer and via the gadget&#39;s properties sheet.
+</dd>
+
+<br>
+
+<dt>
+<strong>render</strong>
+</dt>
+<dd>
+Fired by the player when it&#39;s ready to display the gadget. If the gadget is meant to be visible the method bound to this event should cause the gadget to render itself in it&#39;s <code>el</code>.
+</dd>
+
+<br>
+
+<dt>
+<strong>save</strong> <em>(config: object)</em>
+</dt>
+<dd>
+You should fire this event on the player when it&#39;s configuration is changed by the author. The player will persist the config object for the current instance of the gadget in relation to the current course.
+</dd>
+</dl>
+
+<p><a name="configuration" /></p>
+<h2>Configuration</h2>
+
+        
+      
+        
+        <p>Each gadget instance has a configuration defined by the author via the gadget&#39;s UI and/or property sheet. These can be persisted manually via a <strong>save</strong> event and/or by the player automatically when manipulated via the property sheet editor.</p>
+<p><a name="asset-replacement" /></p>
+<h2>Assets</h2>
+
+        
+      
+        
+        <p>The Versal platform provides an asset picking UI and asset storage for your gadgets. To invoke the asset picking UI in your gadget trigger an <code>asset:select</code> event on the player object:</p>
+
+        
+          <div class='highlight'><pre>player.trigger(<span class="string">'asset:select'</span>, { as: <span class="string">'myImage'</span>, type: <span class="string">'image'</span> });</pre></div>
+        
+      
+        
+        <p>The <code>asset:select</code> event expects a configuration object as an argument. <code>as</code> and <code>type</code> keys are required:</p>
+<dl>
+<dt>
+<strong>as</strong>
+</dt>
+<dd>
+The asset&#39;s metadata will be stored in your gadget&#39;s configuration. The value of <code>as</code> will be used for the key in the gadget&#39;s configuration object when the uploaded file is ready (see below).
+</dd>
+
+<br>
+
+<dt>
+<strong>type</strong>
+</dt>
+<dd>
+The type of file being uploaded.
+</dd>
+</dl>
+
+<p>When the asset picker UI has been dismissed and the file is available for upload a <code>configChanged</code> event will be fired on the player object to notify the gadget that the file is ready. Typically if your gadget allows file uploads you&#39;ll listen for <code>configChanged</code> events in the constructor:</p>
+
+        
+          <div class='highlight'><pre>player.on(<span class="string">'configChange'</span>, <span class="keyword">this</span>.onConfigChange, <span class="keyword">this</span>);</pre></div>
+        
+      
+        
+        <p>A handler for this event might look like:</p>
+
+        
+          <div class='highlight'><pre>SimpleGadget.prototype.onConfigChange = <span class="keyword">function</span>(config) {
+  <span class="keyword">if</span> (config.myImage &amp;&amp; config.myImage !== <span class="keyword">this</span>.config.myImage) {
+    <span class="keyword">this</span>.config.myImage = config.myImage;
+  }
+};</pre></div>
+        
+      
+        
+        <p><a name="requirejs-primer" /></p>
+<h2>RequireJS Primer</h2>
+
+        
+      
+        
+        <p>Module loading on the Versal platform uses <a href="http://requirejs.org/">RequireJS</a>. To simplest and most common use case is including a module in your gadget project hierarchy in your <code>gadget.js</code>. To make a module able to be loaded as a module it needs to be wrapped in a call to <code>define</code> with the body of the code living inside the body of a function that is the second argument to <code>define</code>:</p>
+
+        
+          <div class='highlight'><pre>define([], <span class="keyword">function</span>() {
+  <span class="keyword">var</span> UsefulClass = <span class="keyword">function</span>() {};
+
+  <span class="keyword">return</span> UsefulClass;
+})</pre></div>
+        
+      
+        
+        <p>Consuming the module above is easy. We&#39;ll assume it&#39;s called <code>my_script.js</code> and lives in a subdirectory of your gadget project called <code>scripts/</code>. Then from <code>gadget.js</code>, which is also defined as a module, you reference it&#39;s path in the first argument to make it available in the body of the callback:</p>
+
+        
+          <div class='highlight'><pre>define([<span class="string">'scripts/my_script'</span>], <span class="keyword">function</span>(UsefulClass) {
+  <span class="keyword">var</span> MyGadgetClass = <span class="keyword">function</span>() {
+    <span class="keyword">var</span> myThing = <span class="keyword">new</span> UsefulClass();
+  };
+  <span class="keyword">return</span> MyGadgetClass;
+})</pre></div>
+        
+      
+        
+        <p><a name="shared-libs" /></p>
+<h2>Shared libs (CDN)</h2>
+
+        
+      
+        
+        <p>TODO</p>
+
+        
+      
+    </div>
+  </div>
+</body>
+</html>
