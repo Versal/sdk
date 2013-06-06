@@ -32,13 +32,14 @@
             
             <div class="content"><div class='highlight'><pre>define([], <span class="keyword">function</span>() {
 
-  <span class="keyword">var</span> SimpleImageGadget = <span class="keyword">function</span>(player, config, $el) {
-    <span class="keyword">this</span>.player = player;
-    <span class="keyword">this</span>.config = config;
-    <span class="keyword">this</span>.$el = $el;
+  <span class="keyword">var</span> SimpleImageGadget = <span class="keyword">function</span>(options) {
+    <span class="keyword">this</span>.player = options.player;
+    <span class="keyword">this</span>.config = options.config;
+    <span class="keyword">this</span>.$el = options.$el;
+    <span class="keyword">var</span> player = options.player;
 
     player.on(<span class="string">'toggleEdit'</span>, <span class="keyword">this</span>.toggleEdit, <span class="keyword">this</span>);
-    player.on(<span class="string">'render'</span>, <span class="keyword">this</span>.render, <span class="keyword">this</span>);</pre></div></div>
+    player.on(<span class="string">'domReady'</span>, <span class="keyword">this</span>.render, <span class="keyword">this</span>);</pre></div></div>
             
         </li>
         
