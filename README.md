@@ -33,7 +33,7 @@ This will initialize a new gadget inside `my-gadget` folder.
 versal preview
 ```
 
-Run preview to see the gadget in action.
+Run preview to see the gadget in action. Note that you will see any other gadgets that you've developed in their compiled versions. (For now) You can remove these by editing the .versal file in your home directory.
 
 ```
 versal test
