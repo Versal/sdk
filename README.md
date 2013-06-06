@@ -1,3 +1,11 @@
+NOTE on this branch (offline-player): 
+
+to get this to work, create .versal with {"session":"", "gadgets":[]} 
+
+'versal init' registers gadget, 'versal preview' shows all registered gadgets in offline player. If you'd like to see a previously created gadget, run 'versal register' in that gadget's directory.
+
+Running versal preview in the gadget's directory is the difference between seeing that gadget bundled or not.
+
 Versal Gadget SDK
 ===================
 
