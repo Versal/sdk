@@ -86,7 +86,17 @@ When previewing a gadget you can view gadget documentation at [http://localhost:
 
 ### SDK Development
 
-To build up a new version of documentation run `grunt exec:build-docs`
+To build up a new version of documentation:
+
+Building docs
+-------------
+
+    rm -rf node_modules
+    npm install
+    grunt exec:build-docs
+
+*Note: unfortunately must remove node_modules to make sure the latest `gadget-docs`*
+*TODO: fix this if possible*
 
 ### 3rd Party Developers
 
