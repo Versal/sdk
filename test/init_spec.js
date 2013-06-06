@@ -109,7 +109,7 @@ describe("Init command", function(){
     });
 
     var options = { template_path: path.resolve('./test/fixtures/template'), sdk_path: path.resolve('./test/fixtures/sdk'), gadget_path: path.resolve('./test/gadgets/gadget') };
-    var requiredFiles = _.map(['sdk/a','b','c/d'], function(f){ return path.join(options.gadget_path, f); });
+    var requiredFiles = _.map(['b','c/d'], function(f){ return path.join(options.gadget_path, f); });
 
     it("should not copy ignoredFiles from template folder", function(done){
       init(options, function(err){
@@ -127,49 +127,8 @@ describe("Init command", function(){
       })
     })
 
-    it("should overwrite files in sdk folder and leave files in gadget folder unmodified", function(done){
-      init(options, function(err){ 
-        fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
-        fs.writeFileSync(path.join(options.gadget_path, 'b'), 'bbb');
-        init(options, function(err){
-          var expected = { a: 'a', b: 'bbb', d: 'd' };
-          _.forEach(requiredFiles, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
-          done();
-        })
-      });
-    });
-
-    it("should overwrite files both in sdk folder and in gadget folder if --force=true", function(done){
-      init(options, function(err){ 
-        fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
-        fs.writeFileSync(path.join(path.resolve(options.gadget_path), 'b'), 'bbb');
-        init(_.extend(_.clone(options), {force: true }), function(err){
-          var expected = { a: 'a', b: 'b', d: 'd' };
-          _.forEach(requiredFiles, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
-          done();
-        })
-      });
-    });
-
-    it("should overwrite existing files and keep new files if --force=true", function(done){
-      init(options, function(err){ 
-        fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
-        fs.writeFileSync(path.join(path.resolve(options.gadget_path), 'b'), 'bbb');
-        fs.appendFileSync(path.join(path.resolve(options.gadget_path), 'f'), 'fff');
-
-        init(_.extend(_.clone(options), {force: true }), function(err){
-          var expected = { a: 'a', b: 'b', d: 'd', f: 'fff' };
-          var files = _.clone(requiredFiles);
-          files.push(path.join(options.gadget_path, 'f'));
-          _.forEach(files, function(f){ fs.readFileSync(f, "utf8").should.equal(expected[path.basename(f)]); });
-          done();
-        })
-      });
-    })
-
     it("should create a clean copy if --clean==true", function(done){
       init(options, function(err){ 
-        fs.writeFileSync(path.join(options.gadget_path, 'sdk/a'), 'aaa');
         fs.writeFileSync(path.join(options.gadget_path, 'b'), 'bbb');
         fs.appendFileSync(path.join(options.gadget_path, 'f'), 'fff');
         var opts = _.extend(_.clone(options), { clean: true });
@@ -181,13 +140,6 @@ describe("Init command", function(){
           done();
         })
       });
-    })
-
-    it("should copy index.html outside of sdk folder", function(done){
-      init(options, function(err){
-        fs.existsSync(path.join(options.gadget_path, 'index.html')).should.be.true;
-        done();
-      })
     })
   })
 });
