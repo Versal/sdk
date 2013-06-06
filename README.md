@@ -87,3 +87,25 @@ Will validate gadget folder structure and manifest fields.
 ### Publish
 
 Will `compile` gadget into `dist` folder, `compress` it into bundle.zip, authorize using versal account and `upload` gadget to the specified endpoint.
+
+### Gadget Documention
+
+When previewing a gadget you can view gadget documentation at [http://localhost:3000/docs](http://localhost:3000/docs)
+
+### SDK Development
+
+To build up a new version of documentation:
+
+Building docs
+-------------
+
+    rm -rf node_modules
+    npm install
+    grunt exec:build-docs
+
+*Note: unfortunately must remove node_modules to make sure the latest `gadget-docs`*
+*TODO: fix this if possible*
+
+### 3rd Party Developers
+
+To initiate a 3rd party gadget developer prior to public release they should be added to the `3rd-party-gadget-developer` group on GitHub. They should also, at minimum, be told about the `versal docs`.

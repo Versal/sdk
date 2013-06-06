@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Gadget Reference</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+  <style>
+    h1:after {
+      content: "";
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1>Gadget Reference</h1>
+
+          
+        
+
+      </div>
+
+      
+        
+        <p>A gadget project&#39;s entry point is a module called <code>gadget.js</code> in the root of the project directory. All Javascript files are expected to be packaged as <a href="#requirejs-primer">RequireJS</a> modules.</p>
+<p><code>gadget.js</code> should export a constructor that the course player will initialize with an <strong>options</strong> object containing several properties:</p>
+<dl>
+
+<dt>
+<strong>player</strong>
+</dt>
+<dd>
+The player object for sending and receiving gadget events. For syntax purposes, it extends <a href="http://backbonejs.org/#Events">Backbone.Events</a>
+</dd>
+
+<br>
+
+<dt>
+<strong>config</strong>
+</dt>
+<dd>
+A set of configuration properties for the gadget. This is a <a href="http://backbonejs.org/#Model">Backbone.Model</a>, which means you can retrieve properties using <code>config.get(&#39;propertyName&#39;)</code> and store properties <code>config.set(&#39;propertyName&#39;, &quot;value&quot;)</code>.
+</dd>
+
+<br>
+
+<dt>
+<strong>userState</strong>
+</dt>
+<dd>
+A set of properties for learner data. This is a <a href="http://backbonejs.org/#Model">Backbone.Model</a>, which means you can retrieve properties using <code>userState.get(&#39;propertyName&#39;)</code> and store properties <code>userState.set(&#39;propertyName&#39;, &quot;value&quot;)</code>.
+</dd>
+
+<br>
+
+<dt>
+<strong>el</strong>
+</dt>
+<dd>
+A DOM element to render gadget content inside.
+</dd>
+
+<br>
+
+<dt>
+<strong>propertySheetSchema</strong>
+</dt>
+<dd>
+A <a href="http://backbonejs.org/#Model">Backbone.Model</a> which can be used to configure the optional property sheet. We&#39;ll discuss property sheets later.
+</dd>
+
+</dl>
+
+<p>This is how we could call your gadget:</p>
+
+        
+          <div class='highlight'><pre>options = {
+  el:                  document.getElementById(<span class="string">'gadgetId123'</span>),
+  config:              <span class="keyword">new</span> Backbone.Model(),
+  player:              <span class="keyword">new</span> Backbone.Events(),
+  propertySheetSchema: <span class="keyword">new</span> Backbone.Model()
+};
+<span class="keyword">new</span> MyGadget(options);</pre></div>
+        
+      
+        
+        <p><em>Note: You don&#39;t have to use Backbone for your gadget at all, it&#39;s just the library we use internally.</em></p>
+<p><a name="events" /></p>
+<h2>Events</h2>
+
+        
+      
+        
+        <dl>
+
+<dt>
+<strong>toggleEdit</strong> <em>(editing: boolean)</em>
+</dt>
+<dd>
+Fired by the player when an the gadget changes to and from edit mode. The <code>editing</code> parameter is a boolean value indicating if the gadget is in editing mode or not. This happens when the course author starts and ends editing a gadget.
+</dd>
+
+<br>
+
+<dt>
+<strong>domReady</strong>
+</dt>
+<dd>
+Fired by the player when it&#39;s ready to display the gadget. If the gadget is meant to be visible the method bound to this event should cause the gadget to render itself in it&#39;s <code>el</code>.
+</dd>
+
+</dl>
+
+<p><a name="configuration" /></p>
+<h2>Configuration</h2>
+
+        
+      
+        
+        <p>Each gadget instance has a configuration defined by the author via the gadget&#39;s UI and/or property sheet. These can be persisted manually via a <strong>save</strong> event and/or by the player automatically when manipulated via the property sheet editor.</p>
+<p>Each gadget instance has a configuration defined by the author via the gadget&#39;s UI and/or property sheet. The configuration object extends <a href="http://backbonejs.org/#Model">Backbone.Model</a> and can be accessed using the <code>options</code> object passed at initialization, <code>options.config</code>.</p>
+<p>To get a single property from the config use <code>options.config.get(&#39;propertyName&#39;)</code>, and to set a single property use <code>options.config.set(&#39;propertyName&#39;, &#39;value&#39;)</code>.</p>
+<p>You can also pass multiple properties using <code>options.config.set({property1: &#39;value&#39;, property2: &#39;otherValue&#39;})</code>. When setting a property it is automatically saved on the server.</p>
+<p>Besides setting properties manually they can also be changed externally, for example through a property sheet. You can listen to the <strong>change</strong> event by writing <strong>options.config.on(&quot;change&quot;, function() { /<em> do stuff </em>/ })</strong>.</p>
+<p>The change event fires every time you call <code>options.config.set</code> or when it changes by editing the property sheet. It is recommended to use this event to update your gadget, in order to make it easy to add a property sheet later.</p>
+<p><a name="user-state" /></p>
+<h2>User state</h2>
+
+        
+      
+        
+        <p>Much like a gadget&#39;s configuration gadget&#39;s also have <code>userState</code> to persist info per learner. <code>userState</code> works just like <code>config</code> and is useful storing data generated by learners.</p>
+<p><a name="editing-a-gadget" /></p>
+<h2>Editing a gadget</h2>
+
+        
+      
+        
+        <p>The player (<code>options.player</code>) fires a <strong>toggleEdit</strong> event when an author clicks on the edit button. An <strong>editing</strong> boolean is passed which says if the gadget should become editable or not.</p>
+<p>If <em>editing</em> is true, then your gadget should show interface elements that allow the author to edit the configuration of your gadget. If <em>editing</em> is false, the editing interface should be hidden again.</p>
+<p><a name="property-sheets" /></p>
+<h2>Property sheets</h2>
+
+        
+      
+        
+        <p>Whenever possible you should try to build interface elements for editing a gadget directly within the gadget. This works best if the properties that can be edited have a visual representation within the gadget. For example, width and height of elements could be edited by dragging and dropping.</p>
+<p>Sometimes a configuration property has no clear visual representation. For those cases, we provide a simple way of building a property sheet. This can be done by simply calling, for example, <code>options.propertySheetSchema.set(&#39;propertyName&#39;, &#39;Text&#39;)</code>. This adds a textbox to the property sheet form.</p>
+<p>Now every time an author edits a property, the configuration (<code>options.config</code>) fires a <strong>change</strong> event. You can listen to this event and update the gadget accordingly.</p>
+<p><a name="property-sheets-advanced" /></p>
+<h2>Property sheets (advanced)</h2>
+
+        
+      
+        
+        <p>It&#39;s also possible to configure these properties with attributes, for example by calling <code>options.propertySheetSchema.set(&#39;percentage&#39;, {type: &#39;Range&#39;, min: 0, max: 100})</code>. In this case we add a range slider. The following form elements are supported:</p>
+<ul>
+<li><strong>Text:</strong> simple textbox</li>
+<li><strong>TextArea:</strong> larger textbox</li>
+<li><strong>Checkbox:</strong> simple checkbox</li>
+<li><strong>Number:</strong> textbox for numerical values with up and down buttons</li>
+<li><strong>Range:</strong> interactive range slider <em>attributes: &#39;min&#39;, &#39;max&#39;, &#39;step&#39;*</em></li>
+<li><strong>Color:</strong> textbox for color values (such as <code>#abcdef</code>) with color picker</li>
+<li><strong>Select:</strong> drop down menu <em>attributes: &#39;options&#39;*</em></li>
+<li><strong>Radio:</strong> radio buttons <em>attributes: &#39;options&#39;*</em></li>
+<li><strong>Checkboxes:</strong> checkboxes <em>attributes: &#39;options&#39;*</em></li>
+<li><strong>Date:</strong> date <em>attributes: &#39;yearStart&#39;, &#39;yearEnd&#39;*</em></li>
+<li><strong>DateTime:</strong> date and time <em>attributes: &#39;yearStart&#39;, &#39;yearEnd&#39;, &#39;minsInterval&#39;*</em></li>
+</ul>
+<p>Besides the listed options you can always specify <strong>title</strong> for a custom title label.</p>
+<p>You can also pass in a <strong>validators</strong> array. Please see the <a href="https://github.com/powmedia/backbone-forms">Backbone.Forms</a> documentation for more details on how this works.</p>
+<p><a name="css" /></p>
+<h2>CSS</h2>
+
+        
+      
+        
+        <p>Gadget CSS is expected to be in a file called <code>gadget.css</code>.</p>
+<p><a name="asset-selection" /></p>
+<h2>Asset selection</h2>
+
+        
+      
+        
+        <p>Gadgets will often want to provide authors with the ability to upload assets (e.g. image, video, etc) to an instance of a gadget. Versal provides an asset uploading/picking interface. Assets uploaded through our system are processed (e.g. video&#39;s are transcoded to multiple formats)and stored on our CDN.</p>
+<p>To initiate asset selection:</p>
+
+        
+          <div class='highlight'><pre><span class="keyword">this</span>.player.trigger(<span class="string">'asset:select'</span>, { as: <span class="string">'myImage'</span>, type: <span class="string">'image'</span> });</pre></div>
+        
+      
+        
+        <p>After the user completes the process of uploading or picking an asset a <code>change</code> event is fired on the <code>config</code> model. Given the example above the config object will end up with a key called <code>myImage</code>, e.g.:</p>
+
+        
+          <div class='highlight'><pre>{
+  ...
+  <span class="string">"myImage"</span> : [
+    {
+      <span class="string">"id"</span> : <span class="string">"1909e155-4900-42ae-a354-34b1ff95207e"</span>,
+      <span class="string">"representations"</span> : [
+        {
+          <span class="string">"contentType"</span> : <span class="string">"image/png"</span>,
+          <span class="string">"location"</span> : <span class="string">"http://cdn.com/assets/d499474f-e102-4f86-8280-86b5fba1e200"</span>
+        }
+      ],
+      <span class="string">"tags"</span> : [
+        <span class="string">"a-tag"</span>,
+        <span class="string">"b-tag"</span>
+      ],
+      <span class="string">"title"</span> : <span class="string">"Sample Image 1"</span>
+    }
+  ...
+}</pre></div>
+        
+      
+        
+        <p><a name="gadget-project-assets" /></p>
+<h2>Gadget project assets</h2>
+
+        
+      
+        
+        <p>Gadget projects can include thier own static assets that will be served from Versal&#39;s CDN. We designate the <code>assets/</code> directory in a gadget project for this purpose and treat the files specially when the gadget is uploaded to the Versal platform:</p>
+<p>1) Each file will be uploaded to our CDN</p>
+<p>2) We replace references to each file in the gadget&#39;s source code with CDN URL</p>
+<p>This means during development you are able to refer gadget assets by their relative path and your uploaded gadgets will load the same assets from our CDN.</p>
+<p><a name="requirejs-primer" /></p>
+<h2>RequireJS Primer</h2>
+
+        
+      
+        
+        <p>For now see <a href="http://requirejs.org/"><a href="http://requirejs.org/">http://requirejs.org/</a></a></p>
+<p><a name="code generation" /></p>
+<h2>Code generation (coffeescript, stylus, etc)</h2>
+
+        
+      
+        
+        <p>Until we provide SDK level support use <a href="http://gruntjs.com/">Grunt</a></p>
+
+        
+      
+    </div>
+  </div>
+</body>
+</html>

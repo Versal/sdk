@@ -2,7 +2,7 @@
 
 'use strict';
 
-var commands = ["create", "init", "register", "validate", "preview", "publish", "upload", "compile", "compress", "whoami"];
+var commands = ["create", "init", "register", "validate", "preview", "publish", "upload", "compile", "compress", "whoami", "docs"];
 var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") + ") [-arguments] [--options] [--version]";
 
 var argv = require("optimist")
