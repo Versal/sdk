@@ -16,6 +16,7 @@ If you want to make changes to the SDK install it from source:
 ```
 git clone git@github.com:Versal/sdk
 cd sdk
+git submodule update
 npm install
 npm link
 ```
