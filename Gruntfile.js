@@ -40,6 +40,7 @@ module.exports = function(grunt) {
                  'cd ./tmp-docs && ' +
                  'npm install && ' +
                  'grunt && ' +
+                 'rm -rf ../lib/sdk/docs &&' +
                  'cp -r ./dist ../lib/sdk/docs && ' +
                  'rm -rf ../tmp-docs'
       }
