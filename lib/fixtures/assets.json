@@ -5,7 +5,7 @@
       "representations" : [
         {
           "contentType" : "image/png",
-          "location" : "assets/images/img1.png"
+          "location" : "/asset_representations/images/img1.png"
         }
       ],
       "tags" : [
@@ -21,7 +21,7 @@
       "representations" : [
         {
           "contentType" : "image/png",
-          "location" : "assets/images/img2.png"
+          "location" : "/asset_representations/images/img2.png"
         }
       ],
       "tags" : [
@@ -36,7 +36,7 @@
       "representations" : [
         {
           "contentType" : "image/png",
-          "location" : "assets/images/img3.png"
+          "location" : "/asset_representations/images/img3.png"
         }
       ],
       "tags" : [
@@ -50,7 +50,7 @@
       "representations" : [
         {
           "contentType" : "image/png",
-          "location" : "assets/images/img4.png"
+          "location" : "/asset_representations/images/img4.png"
         }
       ],
       "tags" : [
@@ -63,7 +63,7 @@
       "representations" : [
         {
           "contentType" : "image/png",
-          "location" : "assets/images/img5.png"
+          "location" : "/asset_representations/images/img5.png"
         }
       ],
       "tags" : [
@@ -78,11 +78,11 @@
       "representations" : [
         {
           "contentType" : "video/mp4",
-          "location" : "assets/videos/mp4/vid1.mp4"
+          "location" : "/asset_representations/videos/mp4/vid1.mp4"
         },
         {
           "contentType" : "video/webm",
-          "location" : "assets/videos/webm/vid1.webm"
+          "location" : "/asset_representations/videos/webm/vid1.webm"
         }
       ],
       "tags" : [
@@ -98,11 +98,11 @@
       "representations" : [
         {
           "contentType" : "video/mp4",
-          "location" : "assets/videos/mp4/vid2.mp4"
+          "location" : "/asset_representations/videos/mp4/vid2.mp4"
         },
         {
           "contentType" : "video/webm",
-          "location" : "assets/videos/webm/vid2.webm"
+          "location" : "/asset_representations/videos/webm/vid2.webm"
         }
       ],
       "tags" : [
@@ -117,11 +117,11 @@
       "representations" : [
         {
           "contentType" : "video/mp4",
-          "location" : "assets/videos/mp4/vid3.mp4"
+          "location" : "/asset_representations/videos/mp4/vid3.mp4"
         },
         {
           "contentType" : "video/webm",
-          "location" : "assets/videos/webm/vid3.webm"
+          "location" : "/asset_representations/videos/webm/vid3.webm"
         }
       ],
       "tags" : [
@@ -135,11 +135,11 @@
       "representations" : [
         {
           "contentType" : "video/mp4",
-          "location" : "assets/videos/mp4/vid4.mp4"
+          "location" : "/asset_representations/videos/mp4/vid4.mp4"
         },
         {
           "contentType" : "video/webm",
-          "location" : "assets/videos/webm/vid4.webm"
+          "location" : "/asset_representations/videos/webm/vid4.webm"
         }
       ],
       "tags" : [
@@ -152,11 +152,11 @@
       "representations" : [
         {
           "contentType" : "video/mp4",
-          "location" : "assets/videos/mp4/vid5.mp4"
+          "location" : "/asset_representations/videos/mp4/vid5.mp4"
         },
         {
           "contentType" : "video/webm",
-          "location" : "assets/videos/webm/vid5.webm"
+          "location" : "/asset_representations/videos/webm/vid5.webm"
         }
       ],
       "tags" : [
