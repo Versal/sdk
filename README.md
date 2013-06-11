@@ -6,6 +6,8 @@ to get this to work, create .versal with {"session":"", "gadgets":[]}
 
 Running versal preview in the gadget's directory is the difference between seeing that gadget bundled or not.
 
+To update the player-build, go to player repo and `grunt build` - copy dist/scripts/player-bundle.js to sdk/lib/sdk/player.js
+
 Versal Gadget SDK
 ===================
 
