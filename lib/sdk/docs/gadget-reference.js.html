@@ -229,8 +229,16 @@ Fired by the player when it&#39;s ready to display the gadget. If the gadget is 
         
         <p>Gadget projects can include thier own static assets that will be served from Versal&#39;s CDN. We designate the <code>assets/</code> directory in a gadget project for this purpose and treat the files specially when the gadget is uploaded to the Versal platform:</p>
 <p>1) Each file will be uploaded to our CDN</p>
-<p>2) We replace references to each file in the gadget&#39;s source code with CDN URL</p>
-<p>This means during development you are able to refer gadget assets by their relative path and your uploaded gadgets will load the same assets from our CDN.</p>
+<p>2) We expose a function on the player called <code>assetUrl</code> for looking up the CDN URL.</p>
+<p>In your gadget&#39;s JS you can refer use <code>options.player.assetUrl</code> to lookup the asset&#39;s location (assuming you&#39;ve set the player to a property on your gadget asset):</p>
+
+        
+          <div class='highlight'><pre><span class="keyword">var</span> template = <span class="string">'&lt;img src="'</span> + <span class="keyword">this</span>.player.assetUrl(<span class="string">'assets/myImage.png'</span>) + <span class="string">'" /&gt;'</span>;</pre></div>
+        
+      
+        
+        <p>In CSS we replace URLs for you so you are able to refer gadget assets by their relative path and your uploaded gadgets will load the same assets from our CDN.</p>
+<p>Note: In the future we will be able to do the same replacement on JS files that we do on CSS so you&#39;ll only have to use <code>assetUrl</code> for dynamically generated asset names, e.g. <code>&lt;img src=&quot;&#39; + this.player.assetUrl(&#39;assets/myImage&#39; + index + &#39;.png&#39;) + &#39;&quot; /&gt;</code></p>
 <p><a name="requirejs-primer" /></p>
 <h2>RequireJS Primer</h2>
 
