@@ -11,7 +11,7 @@ var argv = require("optimist")
     var command = argv._[0];
     if (argv.help) {
       console.log(usageMessage);
-    } else if (command == 'whoami') {
+    } else if (command == 'whoami' || command[0] == '_') {
       // whoami can be called without arguments
       return true;
     } else if (argv._.length < 1 && !argv.version) {
@@ -24,4 +24,13 @@ var argv = require("optimist")
   .argv;
 
 var sdk = require("../lib/sdk");
-sdk.exec(argv._.shift(), argv);
+var sdk2 = require('../lib/sdk2');
+
+var command = argv._.shift();
+if(command[0] == '_')
+{
+  command = command.replace('_','');
+  sdk.exec(command, argv);
+} else {
+  sdk2.exec(command, argv._, argv.options);
+}
