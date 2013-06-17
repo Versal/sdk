@@ -3,6 +3,7 @@ async = require 'async'
 
 module.exports = sdk =
   create: -> sdk.execCommand('create').apply null, arguments
+  docs: -> sdk.execCommand('docs').apply null, arguments
   compile: -> sdk.execCommand('compile').apply null, arguments
   compress: -> sdk.execCommand('compress').apply null, arguments
   upload: -> sdk.execCommand('upload').apply null, arguments
