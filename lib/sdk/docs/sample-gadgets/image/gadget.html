@@ -55,14 +55,14 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p><code>configChange</code> is called by the asset picker when an uploaded image is ready.</p>
+              <p>Listen to change events on <code>image</code> which is updated by the asset picker after an image is selected.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    player.on(<span class="string">'configChange'</span>, <span class="keyword">this</span>.configChange, <span class="keyword">this</span>);
+            <div class="content"><div class='highlight'><pre>    config.on(<span class="string">'change:image'</span>, <span class="keyword">this</span>.onImageChange, <span class="keyword">this</span>);
   };
 
-  SimpleImageGadget.prototype.configChange = <span class="keyword">function</span>(config) {</pre></div></div>
+  SimpleImageGadget.prototype.onImageChange = <span class="keyword">function</span>() {</pre></div></div>
             
         </li>
         
@@ -73,28 +73,12 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>When an image is uploaded the asset picker will trigger a configuration change with the metadata of the newly uploaded image. Here we add it to the config and save it.</p>
+              <p>Save and re-render the gadget with the newly uploaded image.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> (config.image &amp;&amp; config.image !== <span class="keyword">this</span>.config.image) {
-      <span class="keyword">this</span>.config.image = config.image;
-    }</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-4">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <p>Rerender the gadget with the newly uploaded image.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">this</span>.render(<span class="literal">true</span>);
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">this</span>.config.save();
+    <span class="keyword">this</span>.render(<span class="literal">true</span>);
   };
 
   SimpleImageGadget.prototype.toggleEdit = <span class="keyword">function</span>(editable) {
@@ -106,19 +90,19 @@
         </li>
         
         
-        <li id="section-5">
+        <li id="section-4">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p>An accessor for getting the URL to the gadget&#39;s image URL. Returns nothing if no image has been uploaded</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>  SimpleImageGadget.prototype.imageUrl = <span class="keyword">function</span>() {
-    <span class="keyword">if</span> (<span class="keyword">this</span>.config.image) {
-      <span class="keyword">return</span> <span class="keyword">this</span>.config.image.representations[<span class="number">0</span>].location;
+    <span class="keyword">if</span> (<span class="keyword">this</span>.config.get(<span class="string">'image'</span>)) {
+      <span class="keyword">return</span> <span class="keyword">this</span>.config.get(<span class="string">'image'</span>).representations[<span class="number">0</span>].location;
     }
   };
 
@@ -127,26 +111,11 @@
         </li>
         
         
-        <li id="section-6">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
-              </div>
-              <p>Initialize the caption to an empty string if we haven&#39;t set one yet.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">this</span>.config.caption = <span class="keyword">this</span>.config.caption || <span class="string">''</span>;</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-7">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>An empty template that we&#39;ll build up. Obviously we should be using real templating tools here but for simplicity&#39;s sake we&#39;re building up a string that we&#39;ll put in the DOM.</p>
 
@@ -157,11 +126,11 @@
         </li>
         
         
-        <li id="section-8">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>If there&#39;s an image in play display it.</p>
 
@@ -173,28 +142,28 @@
         </li>
         
         
-        <li id="section-9">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>Provide control for displaying or entering caption.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>      <span class="keyword">var</span> tag = editable ? <span class="string">'textarea'</span> : <span class="string">'span'</span>;
-      template += <span class="string">'&lt;'</span> + tag + <span class="string">' placeholder="Add a caption"&gt;'</span> + <span class="keyword">this</span>.config.caption + <span class="string">'&lt;/'</span> + tag + <span class="string">'&gt;'</span>;
+      template += <span class="string">'&lt;'</span> + tag + <span class="string">' placeholder="Add a caption"&gt;'</span> + <span class="keyword">this</span>.config.get(<span class="string">'caption'</span>) + <span class="string">'&lt;/'</span> + tag + <span class="string">'&gt;'</span>;
     }</pre></div></div>
             
         </li>
         
         
-        <li id="section-10">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>When the gadget is in authoring mode display a button for adding or updating a new image.</p>
 
@@ -208,11 +177,11 @@
         </li>
         
         
-        <li id="section-11">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Show the template we&#39;ve built up.</p>
 
@@ -223,11 +192,11 @@
         </li>
         
         
-        <li id="section-12">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>When the image upload button is clicked show the Versal asset picker.</p>
 
@@ -241,11 +210,13 @@
 
   SimpleImageGadget.prototype.save = <span class="keyword">function</span>() {
     <span class="keyword">var</span> $captionEl = <span class="keyword">this</span>.$el.find(<span class="string">'textarea'</span>);
-    <span class="keyword">var</span> caption = $captionEl.val() || <span class="string">''</span>;
+    <span class="keyword">if</span> ($captionEl.length &gt; <span class="number">0</span>) {
+      <span class="keyword">var</span> caption = $captionEl.val() || <span class="string">''</span>;
 
-    <span class="keyword">if</span> (caption !== <span class="keyword">this</span>.config.caption) {
-      <span class="keyword">this</span>.config.caption = caption;
-      <span class="keyword">this</span>.player.trigger(<span class="string">"save"</span>, <span class="keyword">this</span>.config);
+      <span class="keyword">if</span> (caption !== <span class="keyword">this</span>.config.get(<span class="string">'caption'</span>)) {
+        <span class="keyword">this</span>.config.set(<span class="string">'caption'</span>, caption);
+        <span class="keyword">this</span>.config.save();
+      }
     }
   };
 
