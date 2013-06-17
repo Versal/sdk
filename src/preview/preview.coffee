@@ -1,5 +1,4 @@
 connect = require 'connect'
-open = require 'open'
 path = require 'path'
 fs = require 'fs'
 _ = require 'underscore'
@@ -29,8 +28,10 @@ module.exports =
           cb null, true
         else 
           cb null, false
-
+    # run server after gadgets were compiled
     , (err, results) ->
+      if(err) then return callback err
+
       total = results.length
       successful = _.filter(results, (r) -> r).length
 

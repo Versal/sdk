@@ -32,7 +32,6 @@
     "optimist": "~0.3.5",
     "requirejs": "~2.1.5",
     "connect": "~2.7.3",
-    "open": "0.0.3",
     "fs-extra": "~0.5.0",
     "colors": "~0.6.0-1",
     "prompt": "~0.2.9",
@@ -60,6 +59,7 @@
     "grunt-contrib-copy": "~0.4.1",
     "grunt-mocha-test": "~0.4.0",
     "underscore": "~1.4.4",
-    "sinon": "~1.7.2"
+    "sinon": "~1.7.2",
+    "superagent": "~0.14.9"
   }
 }

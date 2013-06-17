@@ -27,4 +27,14 @@ module.exports = (grunt) ->
         timeout: 2000
         reporter: 'spec'
 
+    exec:
+      "build-docs":
+        command: 'cp -r ./node_modules/versal-gadget-docs ./tmp-docs && ' +
+                 'cd ./tmp-docs && ' +
+                 'npm install && ' +
+                 'grunt && ' +
+                 'rm -rf ../docs &&' +
+                 'cp -r ./dist ../docs && ' +
+                 'rm -rf ../tmp-docs'
+
   grunt.registerTask 'default', ['clean', 'coffee', 'mochaTest']
