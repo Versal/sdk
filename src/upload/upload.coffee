@@ -12,24 +12,14 @@ module.exports =
     options = _.extend defaults, options
     throw new Error 'sessionId is required' unless options.sessionId
     
-    bundlePath = path.resolve "#{dest}/bundle.zip"
-    if fs.existsSync bundlePath
-      # if bundle.zip exists in the specified location,
-      # upload it to the api
-      @upload bundlePath, options, callback
-    else
-      # if bundle.zip is not found in specified location,
-      # validate if this folder is a gadget at all and compress it.
-      sdk.validate bundlePath, (err) ->
-        if err then return callback new Error("bundle.zip not found in #{bundlePath}. Is this a valid gadget folder?") 
-        sdk.compress bundlePath, (err) ->
-          if err then return callback(err)
-          @upload bundlePath, options, callback
-    
+    gadgetBundlePath = path.resolve "#{dest}/bundle.zip"
 
-  upload: (bundlePath, options, callback) ->
+    unless fs.existsSync gadgetBundlePath
+      callback new Error("Gadget bundle not found in #{gadgetBundlePath}. Did you run `versal compress`?") 
+
+    fileData = fs.readFileSync gadgetBundlePath
     console.log "Uploading gadget from #{dest}..."
-    fileData = fs.readFileSync bundlePath
+
     needle.post "#{options.url}/gadgets",
       @requestData(fileData),
       @requestOptions(options.sessionId), 

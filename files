@@ -44,6 +44,8 @@
     [90m  ◦ should throw if run on non-empty folder: [0m[2K[0G    [32m  ✓[0m[90m should throw if run on non-empty folder [0m
 
 [0m  Preview[0m
+compiling gadgets...
+2 of 2 gadgets compiled successfully
   [90m  ◦ should call addGadget for every dir: [0m[2K[0G  [32m  ✓[0m[90m should call addGadget for every dir [0m
 
 [0m  Validate[0m
@@ -60,5 +62,5 @@
     [90m  ◦ should not return any errors: [0m[2K[0G    [32m  ✓[0m[90m should not return any errors [0m
 
 
-[92m [0m[32m 30 tests complete[0m[90m (530 ms)[0m
+[92m [0m[32m 30 tests complete[0m[90m (565 ms)[0m
 

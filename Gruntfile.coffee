@@ -24,7 +24,7 @@ module.exports = (grunt) ->
     mochaTest:
       files: ['temp/test/**/*_spec.js']
       options:
-        timeout: 7300
+        timeout: 2000
         reporter: 'spec'
 
   grunt.registerTask 'default', ['clean', 'coffee', 'mochaTest']
