@@ -8,9 +8,6 @@ shortid = require 'shortid'
 sdkSite = path.join __dirname, '../../preview'
 sdkFixtures = path.join __dirname, '../../preview/fixtures'
 
-defaults =
-  url: 'http://localhost:3000'
-
 module.exports = class Bridge
   constructor: (options = {}) ->
     throw new Error 'port has to be specified' unless options.port
@@ -49,15 +46,15 @@ module.exports = class Bridge
     # Do nothing
     api.put '/courses/:id/progress', (req, res) -> res.send 200
 
-    api.post '/courses/:id/lessons', -> res.send 201
-    api.put '/courses/:id/lessons/:lesson_id', -> res.send 200
-    api.delete '/courses/:id/lessons/:lesson_id', -> res.send 200
+    api.post '/courses/:id/lessons', (req, res) -> res.send 201
+    api.put '/courses/:id/lessons/:lesson_id', (req, res) -> res.send 200
+    api.delete '/courses/:id/lessons/:lesson_id', (req, res) -> res.send 200
 
-    api.post '/courses/:id/lessons/:lesson_id/gadgets', -> res.send 201
-    api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id', -> res.send 200
-    api.delete '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id', -> res.send 200
-    api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/config', -> res.send 200
-    api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/userstate', -> res.send 200
+    api.post '/courses/:id/lessons/:lesson_id/gadgets', (req, res) -> res.send 201
+    api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id', (req, res) -> res.send 200
+    api.delete '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id', (req, res) -> res.send 200
+    api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/config', (req, res) -> res.send 200
+    api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/userstate', (req, res) -> res.send 200
 
     @app.use express.static sdkSite
     @app.use '/api', api

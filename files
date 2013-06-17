@@ -1,0 +1,57 @@
+
+[0m[0m
+[0m  Bridge[0m
+  [90m  ◦ should set correct apiUrl: [0m[2K[0G  [32m  ✓[0m[90m should set correct apiUrl [0m
+  [90m  ◦ should return index: [0m[2K[0G  [32m  ✓[0m[90m should return index [0m
+  [90m  ◦ should return empty progress: [0m[2K[0G  [32m  ✓[0m[90m should return empty progress [0m
+[0m    course[0m
+    [90m  ◦ should serve course.json from sdk/fixtures folder: [0m[2K[0G    [32m  ✓[0m[90m should serve course.json from sdk/fixtures folder [0m
+    [90m  ◦ should serve lessons: [0m[2K[0G    [32m  ✓[0m[90m should serve lessons [0m
+    [90m  ◦ should serve lesson: [0m[2K[0G    [32m  ✓[0m[90m should serve lesson [0m
+[0m    gadgets[0m
+[0m      sandbox[0m
+      [90m  ◦ should serve gadgets from .versal folder: [0m[2K[0G      [32m  ✓[0m[90m should serve gadgets from .versal folder [0m
+[0m      pending[0m
+      [90m  ◦ should return empty array: [0m[2K[0G      [32m  ✓[0m[90m should return empty array [0m
+[0m      add[0m
+      [90m  ◦ should return new gadget from sandbox: [0m[2K[0G      [32m  ✓[0m[90m should return new gadget from sandbox [0m
+      [90m  ◦ should set files hash on manifest: [0m[2K[0G      [32m  ✓[0m[90m should set files hash on manifest [0m
+      [90m  ◦ should serve gadget files from /gadgets/:id folder: [0m[2K[0G      [32m  ✓[0m[90m should serve gadget files from /gadgets/:id folder [0m
+
+[0m  Compile[0m
+[0m    dist folder[0m
+    [90m  ◦ should exist: [0m[2K[0G    [32m  ✓[0m[90m should exist [0m
+    [90m  ◦ should contain assets: [0m[2K[0G    [32m  ✓[0m[90m should contain assets [0m
+    [90m  ◦ should have standard files: [0m[2K[0G    [32m  ✓[0m[90m should have standard files [0m
+[0m    code[0m
+    [90m  ◦ should equal standard gadget: [0m[2K[0G    [32m  ✓[0m[90m should equal standard gadget [0m
+
+[0m  Compress[0m
+  [90m  ◦ should not contain zip file before running compress: [0m[2K[0G  [32m  ✓[0m[90m should not contain zip file before running compress [0m
+[0m    in gadget directory[0m
+    [90m  ◦ should exist: [0m[2K[0G    [32m  ✓[0m[90m should exist [0m
+[0m    non-existent directory[0m
+    [90m  ◦ should callback with error: [0m[2K[0G    [32m  ✓[0m[90m should callback with error [0m
+
+[0m  Create[0m
+[0m    single gadget[0m
+    [90m  ◦ should copy template files for g1: [0m[2K[0G    [32m  ✓[0m[90m should copy template files for g1 [0m
+[0m    multiple gadgets[0m
+    [90m  ◦ should copy template files for g2: [0m[2K[0G    [32m  ✓[0m[90m should copy template files for g2 [0m
+    [90m  ◦ should copy template files for g3: [0m[2K[0G    [32m  ✓[0m[90m should copy template files for g3 [0m
+    [90m  ◦ should copy template files for g4: [0m[2K[0G    [32m  ✓[0m[90m should copy template files for g4 [0m
+[0m    in folder with files[0m
+    [90m  ◦ should throw if run on non-empty folder: [0m[2K[0G    [32m  ✓[0m[90m should throw if run on non-empty folder [0m
+
+[0m  Preview[0m
+  [90m  ◦ should call addGadget for every dir: [0m[2K[0G  [32m  ✓[0m[90m should call addGadget for every dir [0m
+
+[0m  Validate[0m
+[0m    valid manifest[0m
+    [90m  ◦ should return no errors: [0m[2K[0G    [32m  ✓[0m[90m should return no errors [0m
+[0m    invalid manifest[0m
+    [90m  ◦ should return errors: [0m[2K[0G    [32m  ✓[0m[90m should return errors [0m
+
+
+[92m [0m[32m 26 tests complete[0m[90m (476 ms)[0m
+

@@ -1,0 +1,3 @@
+[submodule "preview/shared-libs"]
+	path = preview/shared-libs
+	url = git@github.com:Versal/shared-libs

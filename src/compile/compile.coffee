@@ -21,6 +21,7 @@ module.exports = compile = (dir, options = {}, callback = ->) ->
       'cdn.backbone': 'empty:',
       'cdn.marionette': 'empty:',
       'cdn.jquery': 'empty:',
+      'cdn.underscore': 'empty:',
       'cdn.lodash': 'empty:',
       'cdn.processing': 'empty:',
       'cdn.raphael': 'empty:',

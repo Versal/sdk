@@ -33,7 +33,8 @@ if(command[0] == '_')
   sdk.exec(command, argv);
 } else {
   var options = _.omit(_.clone(argv), '_', '$0');
-
+  if(!argv._.length) argv._.push('.');
+  
   sdk2.exec(command, argv._, options, function(err){ 
     if(err) console.log(err);
   });
