@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 'use strict';
-
+var _ = require('underscore');
 var commands = ["create", "init", "register", "validate", "preview", "publish", "upload", "compile", "compress", "whoami", "docs"];
 var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") + ") [-arguments] [--options] [--version]";
 
@@ -32,5 +32,9 @@ if(command[0] == '_')
   command = command.replace('_','');
   sdk.exec(command, argv);
 } else {
-  sdk2.exec(command, argv._, argv.options);
+  var options = _.omit(_.clone(argv), '_', '$0');
+
+  sdk2.exec(command, argv._, options, function(err){ 
+    if(err) console.log(err);
+  });
 }

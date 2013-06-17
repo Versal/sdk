@@ -7,21 +7,26 @@ Bridge = require './bridge'
 
 defaults = 
   port: 3000
-  cwd: process.cwd()
 
-module.exports = (options, callback) ->
+defaults.bridge = new Bridge port: defaults.port
+
+module.exports = (dirs, options, callback = ->) ->
   options = _.extend defaults, options
-
-  callback = callback || ->
-  bridge = new Bridge port: options.port
 
   url = "http://localhost:#{options.port}"
 
-  # Add gadget from current directory, if exists
-  bridge.addGadget options.cwd
+  # Add gadget from specified directories
+  _.forEach dirs, (dir) ->
+    dir = path.resolve dir
+    # TODO maybe compile uncompiled gadgets?
+    # then we need to check for something like "is folder a gadget?"
+    options.bridge.addGadget "#{dir}/dist" if fs.existsSync "#{dir}/dist"
 
-  bridge.app.listen options.port
-  open url
+  unless options.test
+    options.bridge.app.listen options.port
+    open url
+
+  callback()
 #open url
 ###
   var omitPath; // save this to omit the compiled version of gadget if we show uncompiled

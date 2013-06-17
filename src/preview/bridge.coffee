@@ -59,13 +59,13 @@ module.exports = class Bridge
     api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/config', -> res.send 200
     api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/userstate', -> res.send 200
 
-    console.log 'Serving web site from ', sdkSite
     @app.use express.static sdkSite
     @app.use '/api', api
 
   addGadget: (gadgetPath) ->
     manifestPath = path.join gadgetPath, 'manifest.json'
     return unless fs.existsSync manifestPath
+    
     manifest = JSON.parse fs.readFileSync manifestPath
     # Generate random UID for the gadget, unless it is in manifest
     manifest.id = shortid.generate() unless manifest.id

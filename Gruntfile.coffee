@@ -6,13 +6,6 @@ module.exports = (grunt) ->
     clean:
       temp: 'temp/*'
 
-    copy:
-      fixtures:
-        expand: true
-        cwd: 'test/fixtures'
-        src: '**/*.*'
-        dest: 'temp/test/fixtures'
-
     coffee:
       temp:
         expand: true,
@@ -28,10 +21,9 @@ module.exports = (grunt) ->
         ext: '.js'
 
     mochaTest:
-      specs: ['temp/test/**/*_spec.js']
-    mochaTestConfig:
+      files: ['temp/test/**/*_spec.js']
       options:
         timeout: 7300
         reporter: 'spec'
 
-  grunt.registerTask 'default', ['clean', 'coffee', 'copy:fixtures', 'mochaTest:specs']
+  grunt.registerTask 'default', ['clean', 'coffee', 'mochaTest']

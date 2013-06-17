@@ -10,23 +10,9 @@ async = require 'async'
 defaults = 
   template: 'static'
 
-module.exports = (dest, options, callback = ->) ->
-  # in case options hash is omitted
-  if _.isFunction options
-    callback = options
-    options = {}
-
-  # if destination is array, call create for each dir
-  if _.isArray dest
-    funcs = _.map dest, (dir) -> (cb) -> create dir, options, cb
-    # run all tasks sequentially
-    async.series funcs, (err) -> callback err
-  else
-    create dest, options, callback
-
-create = (dest, options, callback = ->) ->
+module.exports = create = (dest, options, callback = ->) ->
   unless dest
-    return callback new Error("destination path must be provided as a string")
+    return callback new Error("destination path must be provided")
 
   dest = path.resolve dest
   options = _.extend defaults, options

@@ -1,5 +1,5 @@
 (function() {
-  var compile, create, fs, gadgetPath, glob, path;
+  var fs, gadgetPath, glob, path, sdk;
 
   require('chai').should();
 
@@ -9,37 +9,48 @@
 
   fs = require('fs');
 
-  compile = require('../../lib/compile/compile');
-
-  create = require('../../lib/create/create');
+  sdk = require('../../lib/sdk2');
 
   gadgetPath = path.resolve('./temp/gadgets');
 
   describe('Compile', function() {
-    return describe('single gadget', function() {
-      before(function(done) {
-        return create("" + gadgetPath + "/g5", function() {
-          return compile("" + gadgetPath + "/g5", function() {
-            return done();
-          });
+    before(function(done) {
+      return sdk.create("" + gadgetPath + "/g5", function() {
+        return sdk.compile("" + gadgetPath + "/g5", function(err) {
+          if (err) {
+            throw err;
+          }
+          return done();
         });
       });
-      it('should compile gadget into bundle folder', function() {
-        return fs.existsSync("" + gadgetPath + "/g5/bundle").should.be["true"];
+    });
+    describe('dist folder', function() {
+      it('should exist', function() {
+        return fs.existsSync("" + gadgetPath + "/g5/dist").should.be["true"];
       });
-      it('should copy assets', function() {
+      it('should contain assets', function() {
         var assets;
-        assets = glob.sync('**/*.*', "" + gadgetPath + "/g5/assets");
-        return glob.sync('**/*.*', "" + gadgetPath + "/g5/bundle/assets").should.eql(assets);
+        assets = glob.sync('**/*.*', {
+          cwd: "" + gadgetPath + "/g5/assets"
+        });
+        return glob.sync('**/*.*', {
+          cwd: "" + gadgetPath + "/g5/dist/assets"
+        }).should.eql(assets);
       });
-      it('should have gadget.js and gadget.css', function() {
-        console.log(glob.sync('*.*', "" + gadgetPath + "/g5/bundle"));
-        return glob.sync('*.*', "" + gadgetPath + "/g5/bundle").should.eql(standardFiles);
+      return it('should have standard files', function() {
+        var standardFiles;
+        standardFiles = ['gadget.css', 'gadget.js', 'manifest.json'];
+        return glob.sync('*.*', {
+          cwd: "" + gadgetPath + "/g5/dist"
+        }).should.eql(standardFiles);
       });
-      return it('gadget.js should equal standard gadget.js', function() {
-        var standardGadget;
-        standardGadget = fs.readFileSync(path.resolve('./test/fixtures/compile/static_gadget_compiled.js'), 'utf-8');
-        return fs.readFileSync("" + gadgetPath + "/g5/bundle/gadget.js", 'utf-8').should.eql(standardGadget);
+    });
+    return describe('code', function() {
+      return it('should equal standard gadget', function() {
+        var standardCode, standardPath;
+        standardPath = path.resolve('./test/fixtures/compile/static_compiled.js');
+        standardCode = fs.readFileSync(standardPath, 'utf-8');
+        return fs.readFileSync("" + gadgetPath + "/g5/dist/gadget.js", 'utf-8').should.eql(standardCode);
       });
     });
   });

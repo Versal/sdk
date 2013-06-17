@@ -1,7 +1,7 @@
 should = require('chai').should()
 path = require 'path'
 glob = require 'glob'
-create = require '../../lib/create/create'
+sdk = require '../../lib/sdk2'
 fs = require 'fs'
 
 gadgetPath = path.resolve './temp/gadgets'
@@ -12,15 +12,15 @@ describe 'Create', ->
 
   describe 'single gadget', ->
     before (done) ->
-      create "#{gadgetPath}/g1", done
+      sdk.create "#{gadgetPath}/g1", done
 
     it 'should copy template files for g1', ->
       glob.sync('**/*.*', cwd: "#{gadgetPath}/g1").should.eql @templateFiles
 
   describe 'multiple gadgets', ->
     before (done) ->
-      create ["#{gadgetPath}/g2"], ->
-        create ["#{gadgetPath}/g3", "#{gadgetPath}/g4"], -> done()
+      sdk.create ["#{gadgetPath}/g2"], ->
+        sdk.create ["#{gadgetPath}/g3", "#{gadgetPath}/g4"], -> done()
 
     it 'should copy template files for g2', ->
       glob.sync('**/*.*', cwd: "#{gadgetPath}/g2").should.eql @templateFiles
@@ -33,6 +33,6 @@ describe 'Create', ->
 
   describe 'in folder with files', ->
     it 'should throw if run on non-empty folder', (done) ->
-      create "#{gadgetPath}/g1", (err) -> 
+      sdk.create "#{gadgetPath}/g1", (err) -> 
         err.should.be.ok
         done()

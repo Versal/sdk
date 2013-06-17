@@ -1,5 +1,5 @@
 (function() {
-  var create, fs, gadgetPath, glob, path, should;
+  var fs, gadgetPath, glob, path, sdk, should;
 
   should = require('chai').should();
 
@@ -7,7 +7,7 @@
 
   glob = require('glob');
 
-  create = require('../../lib/create/create');
+  sdk = require('../../lib/sdk2');
 
   fs = require('fs');
 
@@ -21,7 +21,7 @@
     });
     describe('single gadget', function() {
       before(function(done) {
-        return create("" + gadgetPath + "/g1", done);
+        return sdk.create("" + gadgetPath + "/g1", done);
       });
       return it('should copy template files for g1', function() {
         return glob.sync('**/*.*', {
@@ -31,8 +31,8 @@
     });
     describe('multiple gadgets', function() {
       before(function(done) {
-        return create(["" + gadgetPath + "/g2"], function() {
-          return create(["" + gadgetPath + "/g3", "" + gadgetPath + "/g4"], function() {
+        return sdk.create(["" + gadgetPath + "/g2"], function() {
+          return sdk.create(["" + gadgetPath + "/g3", "" + gadgetPath + "/g4"], function() {
             return done();
           });
         });
@@ -55,7 +55,7 @@
     });
     return describe('in folder with files', function() {
       return it('should throw if run on non-empty folder', function(done) {
-        return create("" + gadgetPath + "/g1", function(err) {
+        return sdk.create("" + gadgetPath + "/g1", function(err) {
           err.should.be.ok;
           return done();
         });

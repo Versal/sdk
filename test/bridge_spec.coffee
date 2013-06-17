@@ -2,10 +2,8 @@ require('chai').should()
 request = require 'superagent'
 fs = require 'fs'
 path = require 'path'
+sdk = require '../../lib/sdk2'
 Bridge = require '../../lib/preview/bridge'
-
-# Init is required to create a gadget, that will be served by the bridge
-create = require '../../lib/create/create'
 
 class Helper
   url: "http://localhost:3073"
@@ -83,7 +81,7 @@ describe 'Bridge', ->
     describe 'add', ->
       before (done) ->
         @gadgetPath = path.resolve './temp/gadgets/bridge_gadget'
-        create @gadgetPath, {}, =>
+        sdk.create @gadgetPath, =>
           @bridge.addGadget @gadgetPath
           params =
             user: 'me'

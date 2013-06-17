@@ -1,3 +1,0 @@
-[submodule "lib/sdk/shared-libs"]
-	path = lib/sdk/shared-libs
-	url = git@github.com:Versal/shared-libs.git

@@ -3,29 +3,31 @@ path = require 'path'
 glob = require 'glob'
 fs = require 'fs'
 
-compile = require '../../lib/compile/compile'
-create = require '../../lib/create/create'
+sdk = require '../../lib/sdk2'
 
 gadgetPath = path.resolve './temp/gadgets'
 
 describe 'Compile', ->
-  describe 'single gadget', ->
-    before (done) ->
-      create "#{gadgetPath}/g5", ->
-        compile "#{gadgetPath}/g5", ->
-          done()
+  before (done) ->
+    sdk.create "#{gadgetPath}/g5", ->
+      sdk.compile "#{gadgetPath}/g5", (err) ->
+        throw err if err
+        done()
 
-    it 'should compile gadget into bundle folder', ->
-      fs.existsSync("#{gadgetPath}/g5/bundle").should.be.true
+  describe 'dist folder', ->
+    it 'should exist', ->
+      fs.existsSync("#{gadgetPath}/g5/dist").should.be.true
 
-    it 'should copy assets', ->
-      assets = glob.sync '**/*.*', "#{gadgetPath}/g5/assets"
-      glob.sync('**/*.*', "#{gadgetPath}/g5/bundle/assets").should.eql assets
+    it 'should contain assets', ->
+      assets = glob.sync '**/*.*', cwd: "#{gadgetPath}/g5/assets"
+      glob.sync('**/*.*', cwd: "#{gadgetPath}/g5/dist/assets").should.eql assets
 
-    it 'should have gadget.js and gadget.css', ->
-      console.log glob.sync('*.*', "#{gadgetPath}/g5/bundle")
-      glob.sync('*.*', "#{gadgetPath}/g5/bundle").should.eql standardFiles
+    it 'should have standard files', ->
+      standardFiles = ['gadget.css', 'gadget.js', 'manifest.json']
+      glob.sync('*.*', cwd: "#{gadgetPath}/g5/dist").should.eql standardFiles
 
-    it 'gadget.js should equal standard gadget.js', ->
-      standardGadget = fs.readFileSync path.resolve('./test/fixtures/compile/static_gadget_compiled.js'), 'utf-8'
-      fs.readFileSync("#{gadgetPath}/g5/bundle/gadget.js", 'utf-8').should.eql standardGadget
+  describe 'code', ->
+    it 'should equal standard gadget', ->
+      standardPath = path.resolve './test/fixtures/compile/static_compiled.js'
+      standardCode = fs.readFileSync standardPath, 'utf-8'
+      fs.readFileSync("#{gadgetPath}/g5/dist/gadget.js", 'utf-8').should.eql standardCode

@@ -1,5 +1,5 @@
 (function() {
-  var Bridge, Helper, create, fs, helper, path, request;
+  var Bridge, Helper, fs, helper, path, request, sdk;
 
   require('chai').should();
 
@@ -9,9 +9,9 @@
 
   path = require('path');
 
-  Bridge = require('../../lib/preview/bridge');
+  sdk = require('../../lib/sdk2');
 
-  create = require('../../lib/create/create');
+  Bridge = require('../../lib/preview/bridge');
 
   Helper = (function() {
     function Helper() {}
@@ -115,7 +115,7 @@
         before(function(done) {
           var _this = this;
           this.gadgetPath = path.resolve('./temp/gadgets/bridge_gadget');
-          return create(this.gadgetPath, {}, function() {
+          return sdk.create(this.gadgetPath, function() {
             var params;
             _this.bridge.addGadget(_this.gadgetPath);
             params = {
