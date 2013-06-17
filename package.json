@@ -60,6 +60,7 @@
     "grunt-contrib-copy": "~0.4.1",
     "grunt-mocha-test": "~0.4.0",
     "underscore": "~1.4.4",
-    "sinon": "~1.7.2"
+    "sinon": "~1.7.2",
+    "superagent": "~0.14.9"
   }
 }
