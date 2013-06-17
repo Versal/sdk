@@ -1,5 +1,4 @@
 connect = require 'connect'
-open = require 'open'
 path = require 'path'
 fs = require 'fs'
 _ = require 'underscore'
@@ -29,7 +28,5 @@ module.exports =
       console.log ''
       console.log " \\ \\/ /  Starting web server on #{options.bridge.url}"
       console.log "  \\/ /   Press Ctrl + C to exit..."
-
-      open options.bridge.url
 
     callback()
