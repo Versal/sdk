@@ -1,6 +1,23 @@
 _ = require 'underscore'
+glob = require 'glob'
+path = require 'path'
 
-validate =
+module.exports =
+  command: (dest, options= {}, callback = ->) ->
+    dest = path.resolve dest
+
+    files = glob.sync '**/*.*', cwd: dest
+    errors = @validateFiles files
+    return callback(errors) if errors.length
+
+    manifest = require "#{dest}/manifest.json"
+    errors = @validateManifest manifest
+    return callback(errors) if errors.length
+
+    #gadget is valid
+    callback()
+
+  # validation rules for manifest fields
   manifestFields:
     name:
       required: true
@@ -13,7 +30,8 @@ validate =
     description:
       required: true
 
-  command: (dirs, options, callback) ->
+  # minimal set of required files for a gadget
+  requiredFiles: ["manifest.json", "gadget.js", "gadget.css", "assets/icon.png"]
 
   validateManifest: (manifest) ->
     errors = []
@@ -29,7 +47,8 @@ validate =
     # combine all errors into an array
     errors = _.map missing, (key) -> "manifest.json: #{key} is required"
     errors = errors.concat _.map wrongFormat, (key) => @manifestFields[key].message
-
     return errors
 
-module.exports = validate
+  validateFiles: (files) ->
+    missing = _.difference @requiredFiles, files
+    return _.map missing, (file) -> return "#{file} not found in the gadget folder"

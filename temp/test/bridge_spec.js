@@ -9,7 +9,7 @@
 
   path = require('path');
 
-  sdk = require('../../lib/sdk2');
+  sdk = require('../../lib/sdk');
 
   Bridge = require('../../lib/preview/bridge');
 

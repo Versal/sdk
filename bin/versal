@@ -2,40 +2,32 @@
 
 'use strict';
 var _ = require('underscore');
-var commands = ["create", "init", "register", "validate", "preview", "publish", "upload", "compile", "compress", "whoami", "docs"];
-var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") + ") [-arguments] [--options] [--version]";
+var commands = ["create", "validate", "preview", "publish", "compile", "compress", "upload", "whoami", "docs"];
+var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") + ") [directories] [-arguments] [--options] [--version]";
 
 var argv = require("optimist")
   .usage(usageMessage)
   .check(function(argv) {
-    var command = argv._[0];
-    if (argv.help) {
-      console.log(usageMessage);
-    } else if (command == 'whoami' || command[0] == '_') {
-      // whoami can be called without arguments
-      return true;
-    } else if (argv._.length < 1 && !argv.version) {
-      throw "Not enough non-option arguments: got 0, need at least 1";
-    } else if (command && commands.concat('test').indexOf(command) < 0) {
-      throw 'Command does not exist: ' + command;
-    }
+    if (argv._.length == 0) throw new Error('command has not been specified');
+    command = argv._[0];
+    if (!_.contains(commands, command)) throw new Error('invalid command: ' + command);
     return true;
   })
   .argv;
 
-var sdk = require("../lib/sdk");
-var sdk2 = require('../lib/sdk2');
-
+var sdk = require('../lib/sdk');
+// command itself is first argument
 var command = argv._.shift();
-if(command[0] == '_')
-{
-  command = command.replace('_','');
-  sdk.exec(command, argv);
-} else {
-  var options = _.omit(_.clone(argv), '_', '$0');
-  if(!argv._.length) argv._.push('.');
-  
-  sdk2.exec(command, argv._, options, function(err){ 
+// if no dirs were specified after `versal something` then
+// run command from current `.` directory
+if(!argv._.length) argv._.push('.');
+// options - the rest of argv besides the special fields
+var options = _.omit(_.clone(argv), '_', '$0');
+
+try{
+  sdk[command].apply(null, [argv._, options, function(err){ 
     if(err) console.log(err);
-  });
+  }]);
+} catch(err) {
+  console.log(err);
 }

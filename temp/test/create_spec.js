@@ -7,7 +7,7 @@
 
   glob = require('glob');
 
-  sdk = require('../../lib/sdk2');
+  sdk = require('../../lib/sdk');
 
   fs = require('fs');
 
@@ -54,11 +54,10 @@
       });
     });
     return describe('in folder with files', function() {
-      return it('should throw if run on non-empty folder', function(done) {
-        return sdk.create("" + gadgetPath + "/g1", function(err) {
-          err.should.be.ok;
-          return done();
-        });
+      return it('should throw if run on non-empty folder', function() {
+        return (function() {
+          return sdk.create("" + gadgetPath + "/g1");
+        }).should["throw"];
       });
     });
   });

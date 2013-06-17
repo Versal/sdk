@@ -1,7 +1,7 @@
 should = require('chai').should()
 path = require 'path'
 glob = require 'glob'
-sdk = require '../../lib/sdk2'
+sdk = require '../../lib/sdk'
 fs = require 'fs'
 
 gadgetPath = path.resolve './temp/gadgets'
@@ -32,7 +32,5 @@ describe 'Create', ->
       glob.sync('**/*.*', cwd: "#{gadgetPath}/g4").should.eql @templateFiles
 
   describe 'in folder with files', ->
-    it 'should throw if run on non-empty folder', (done) ->
-      sdk.create "#{gadgetPath}/g1", (err) -> 
-        err.should.be.ok
-        done()
+    it 'should throw if run on non-empty folder', ->
+      (-> sdk.create "#{gadgetPath}/g1").should.throw

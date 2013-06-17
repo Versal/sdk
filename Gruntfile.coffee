@@ -5,6 +5,7 @@ module.exports = (grunt) ->
   grunt.initConfig
     clean:
       temp: 'temp/*'
+      lib: 'lib/*'
 
     coffee:
       temp:

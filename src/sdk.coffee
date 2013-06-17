@@ -1,14 +1,18 @@
 _ = require 'underscore'
 async = require 'async'
 
-sdk =
-  exec: (command, args...) ->
-    @[command].apply null, args
-
+module.exports = sdk =
+  create: -> sdk.execCommand('create').apply null, arguments
+  compile: -> sdk.execCommand('compile').apply null, arguments
+  compress: -> sdk.execCommand('compress').apply null, arguments
+  upload: -> sdk.execCommand('upload').apply null, arguments
+  preview: -> sdk.execCommand('preview', passThrough: true).apply null, arguments
+  validate: -> sdk.execCommand('validate').apply null, arguments
+  
   # creates a wrapper over a command, that prepares arguments 
   # for the command: converts dirs to array and handles
   # the case, when callback is passed in second argument
-  createCommand: (command, cmdOptions = {}) ->
+  execCommand: (command, cmdOptions = {}) ->
     (dirs, options, callback = ->) ->
       throw new Error 'dirs is required' unless dirs
 
@@ -25,18 +29,11 @@ sdk =
 
       if cmdOptions.passThrough
         # simply pass arguments to command
-        cmd dirs, options, callback
+        cmd.command dirs, options, callback
       else
         # otherwise call command async for each dir
-        funcs = _.map dirs, (dir) -> (cb) -> cmd dir, options, cb
+        funcs = _.map dirs, (dir) -> (cb) ->
+          cmd.command dir, options, cb
         # run all tasks sequentially
-        async.series funcs, (err) -> callback err
-
-_.extend sdk,
-  create: sdk.createCommand 'create'
-  compile: sdk.createCommand 'compile'
-  compress: sdk.createCommand 'compress'
-  upload: sdk.createCommand 'upload'
-  preview: sdk.createCommand 'preview', passThrough: true
-
-module.exports = sdk
+        async.series funcs, (err) -> 
+          callback err

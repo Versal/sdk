@@ -9,7 +9,7 @@
 
   fs = require('fs');
 
-  sdk = require('../../lib/sdk2');
+  sdk = require('../../lib/sdk');
 
   gadgetPath = path.resolve('./temp/gadgets');
 
