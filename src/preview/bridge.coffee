@@ -82,5 +82,5 @@ module.exports = class Bridge
       'gadget.js': "#{@url}/gadgets/#{id}/gadget.js"
       'gadget.css': "#{@url}/gadgets/#{id}/gadget.css"
     assets = glob.sync '*.*', cwd: path.join gadgetPath, 'assets'
-    _.each assets, (asset) -> files[asset] = asset
+    _.each assets, (asset) => files["assets/#{asset}"] = "#{@url}/gadgets/#{id}/assets/#{asset}"
     files
