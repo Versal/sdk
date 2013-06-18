@@ -36,9 +36,15 @@
         <p><a name="init" /></p>
 <h3>init</h3>
 <p>Generates all the files needed to build a gadget in the current directory.</p>
+<pre><code>versal create &lt;gadget_name&gt; [&lt;gadget_name_1&gt;, &lt;gadget_name_2&gt;, ...]</code></pre>
+<p>Examples:</p>
 
         
-          <div class='highlight'><pre>versal init</pre></div>
+          <div class='highlight'><pre># create a single gadget
+versal create flashcard_gadget
+
+# create multiple gadgets
+versal create physics_speed physics_position physics_gravity</pre></div>
         
       
         
@@ -66,28 +72,44 @@
         <p><a name="preview" /></p>
 <h3>preview</h3>
 <p>Runs a local server for previewing and manually testing your gadget:</p>
+<pre><code>versal preview [&lt;gadget_dir&gt;] [&lt;gadget_dir_1&gt;, &lt;gadget_dir_2&gt;, ...]</code></pre>
+<p>Examples:</p>
 
         
-          <div class='highlight'><pre>versal preview</pre></div>
+          <div class='highlight'><pre># equivalent to versal preview .
+versal preview
+
+# preview single gadget
+versal preview ../physics_speed
+
+# preview multiple gadgets
+versal preview ./physics_speed ./physics_position ./physics_gravity
+
+# preview all gadgets in a dir
+versal preview ./physics_gadgets/*</pre></div>
         
       
         
         <h4>UI</h4>
-<p>The UI simulates the environment of the Course Player that your final gadget will run in. Radio buttons labeled &quot;Teacher&quot; and &quot;Student&quot; for triggering the events that move the gadget from the teacher&#39;s editable view to the student&#39;s interactive view.</p>
-<h4>Debugging</h4>
-<p>All events that the player sends and receives are logged to the browser console</p>
+<p>The UI simulates the environment of the Course Player that your final gadget will run in.</p>
 <p><a name="publish" /></p>
 <h3>publish</h3>
 <p>Publish yours gadget to the Versal platform for review:</p>
+<pre><code>versal publish [&lt;gadget_dir&gt;] [&lt;gadget_dir_1&gt;, &lt;gadget_dir_2&gt;, ...]</code></pre>
+<p>Examples:</p>
 
         
-          <div class='highlight'><pre>versal publish</pre></div>
-        
-      
-        
-        <h4>Versioning</h4>
-<p>TODO</p>
+          <div class='highlight'><pre># equivalent to versal publish .
+versal publish
 
+# publish single gadget
+versal publish ../physics_speed
+
+# publish multiple gadgets
+versal publish ./physics_speed ./physics_position ./physics_gravity
+
+# publish all gadgets in a dir
+versal publish ./physics_gadgets/*</pre></div>
         
       
     </div>
