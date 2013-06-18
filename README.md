@@ -1,11 +1,3 @@
-NOTE on this branch (offline-player): 
-
-to get this to work, create .versal with {"session":"", "gadgets":[]} 
-
-'versal init' registers gadget, 'versal preview' shows all registered gadgets in offline player. If you'd like to see a previously created gadget, run 'versal register' in that gadget's directory.
-
-Running versal preview in the gadget's directory is the difference between seeing that gadget bundled or not.
-
 Versal Gadget SDK
 ===================
 
@@ -31,12 +23,11 @@ Usage
 ------------------
 
 ```
-mkdir my-gadget
-cd my-gadget
-versal init
+versal create hello_gadget
+cd hello_gadget
 ```
 
-This will initialize a new gadget inside `my-gadget` folder.
+This will initialize a new gadget inside `hello_gadget` folder.
 
 ```
 versal preview
@@ -59,9 +50,9 @@ Valid Versal account is required to complete this task. You will be prompted to 
 Commands
 --------------------
 
-### Init
+### Create
 ```
-versal init [--template <TEMPLATE_NAME>] [--dir <DIRECTORY>] [--force] [--clean]
+versal create <gadget_name>
 ```
 
 Init command must be run inside the gadget directory. It copies SDK folder from the current version of sdk and all files from the specified template. Calling `versal init` in existing folder will only rewrite `sdk` folder and leave other files unmodified.
@@ -91,7 +82,11 @@ Will `compile` gadget into `dist` folder, `compress` it into bundle.zip, authori
 
 ### Gadget Documention
 
-When previewing a gadget you can view gadget documentation at [http://localhost:3000/docs](http://localhost:3000/docs)
+```
+versal docs
+```
+
+You can view gadget documentation at [http://localhost:4000/docs](http://localhost:4000/docs)
 
 ### SDK Development
 
