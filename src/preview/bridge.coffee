@@ -68,6 +68,7 @@ module.exports = class Bridge
     manifest.id = shortid.generate() unless manifest.id
     manifest.type = "gadget/#{manifest.id}"
     manifest.catalog = 'sandbox'
+    manifest.icon = "#{@url}/gadgets/#{manifest.id}/assets/icon.png"
     # TODO: Is this OK? It doesn't belong to here
     manifest.files = @getFiles(manifest.id, gadgetPath) unless manifest.files
 
@@ -81,5 +82,5 @@ module.exports = class Bridge
       'gadget.js': "#{@url}/gadgets/#{id}/gadget.js"
       'gadget.css': "#{@url}/gadgets/#{id}/gadget.css"
     assets = glob.sync '*.*', cwd: path.join gadgetPath, 'assets'
-    _.each assets, (asset) -> files[asset] = asset
+    _.each assets, (asset) => files["assets/#{asset}"] = "#{@url}/gadgets/#{id}/assets/#{asset}"
     files

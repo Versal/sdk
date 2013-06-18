@@ -1,7 +1,6 @@
-define(['cdn.jquery','cdn.backbone'], function(){
+define(['cdn.jquery'], function(){
 var cdn = {};
 cdn.jquery = arguments[0];
-cdn.backbone = arguments[1];
 /**
  * almond 0.2.5 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -413,26 +412,30 @@ define('scripts/random',[], function(){
     return Math.floor(Math.random() * 100) + 1;
   }
 });
-define('gadget',["scripts/random", "cdn.jquery", "cdn.backbone"], function(random, $, Backbone){
+define('gadget',["scripts/random", "cdn.jquery"], function(random, $, Backbone){
 
-  var Gadget = function(player, config, $el) {
-    this.$el = $el;
-    this.editable = false;
+  var Gadget = function(options) {
+    this.$el = options.$el;
+    this.player = options.player;
+    this.config = options.config;
 
-    this.update(config);
+    options.propertySheetSchema.set('username', 'Text')
 
-    player.on('toggleEdit', this.toggleEdit, this);
-    player.on('configChange', this.update, this);
-    player.on('render', this.render, this);
+    this.update(options.config);
+
+    this.player.on('toggleEdit', this.toggleEdit, this);
+    this.config.on('change:username', this.update, this);
+    this.player.on('onReady', this.render, this);
   };
 
-  Gadget.prototype.update = function(config) {
-    this.username = config.username;
+  Gadget.prototype.update = function() {
+    this.username = this.config.get('username');
     this.foo = random();
+    this.render();
   };
 
-  Gadget.prototype.render = function() {
-    if(this.editable) {
+  Gadget.prototype.render = function(editable) {
+    if (editable) {
       this.$el.html('<h1>' + this.foo + ' is your lucky number, ' + this.username + '!</h1><button type="button">OK, thanks!</button>');
     } else {
       this.$el.html('<h1>' + this.foo + ' is your lucky number, ' + this.username + '!</h1>');
@@ -440,12 +443,10 @@ define('gadget',["scripts/random", "cdn.jquery", "cdn.backbone"], function(rando
   };
 
   Gadget.prototype.toggleEdit = function(editable) {
-    this.editable = editable;
-    this.render();
+    this.render(editable);
   };
 
   return Gadget;
 });
 define('cdn.jquery', [], function(){ return cdn.jquery });
-define('cdn.backbone', [], function(){ return cdn.backbone });
 return require('gadget');});
