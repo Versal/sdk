@@ -1,0 +1,189 @@
+.clayer-body-mouse .clayer-touch {
+  display: none;
+}
+.clayer-body-touch .clayer-mouse {
+  display: none;
+}
+.clayer-slider {
+  cursor: pointer;
+}
+.clayer-slider .clayer-slider-container {
+  position: relative;
+  width: 100%;
+  height: 4px;
+}
+.clayer-slider .clayer-slider-container .clayer-slider-bar {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+  background-color: white;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.5);
+}
+.clayer-slider .clayer-slider-container .clayer-slider-bar .clayer-slider-segment-container {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: visible;
+}
+.clayer-slider .clayer-slider-container .clayer-slider-bar .clayer-slider-marker,
+.clayer-slider .clayer-slider-container .clayer-slider-bar .clayer-slider-segment {
+  position: absolute;
+  height: 4px;
+  top: 0px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.clayer-slider .clayer-slider-container .clayer-slider-knob {
+  position: absolute;
+  top: 0px;
+  width: 11px;
+  height: 11px;
+  margin-top: -5.5px;
+  margin-left: -5.5px;
+  overflow: visible;
+  cursor: pointer;
+  border: 1px solid #888;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3), inset 0px 1px 0px rgba(255, 255, 255, 0.8);
+  -moz-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3), inset 0px 1px 0px rgba(255, 255, 255, 0.8);
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3), inset 0px 1px 0px rgba(255, 255, 255, 0.8);
+  background-color: #c9c9c9;
+  background-image: -moz-linear-gradient(top, #dddddd, #aaaaaa);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#dddddd), to(#aaaaaa));
+  background-image: -webkit-linear-gradient(top, #dddddd, #aaaaaa);
+  background-image: -o-linear-gradient(top, #dddddd, #aaaaaa);
+  background-image: linear-gradient(to bottom, #dddddd, #aaaaaa);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdddddd', endColorstr='#ffaaaaaa', GradientType=0);
+  margin-left: -5.6px;
+}
+.clayer-slider .clayer-slider-container .clayer-slider-knob  > div {
+  visibility: hidden;
+}
+.clayer-slider .clayer-slider-container .clayer-slider-knob:hover,
+.clayer-slider .clayer-slider-container .clayer-slider-knob.clayer-active {
+  display: block;
+  background-color: #b8b8b8;
+  background-image: -moz-linear-gradient(top, #cccccc, #999999);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#cccccc), to(#999999));
+  background-image: -webkit-linear-gradient(top, #cccccc, #999999);
+  background-image: -o-linear-gradient(top, #cccccc, #999999);
+  background-image: linear-gradient(to bottom, #cccccc, #999999);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcccccc', endColorstr='#ff999999', GradientType=0);
+}
+.clayer-slider .clayer-slider-container .clayer-slider-knob:hover  > div,
+.clayer-slider .clayer-slider-container .clayer-slider-knob.clayer-active  > div {
+  visibility: visible;
+}
+.clayer-slider .clayer-slider-container .clayer-slider-knob.clayer-pressed {
+  display: block;
+  background-color: #a7a7a7;
+  background-image: -moz-linear-gradient(top, #bbbbbb, #888888);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#bbbbbb), to(#888888));
+  background-image: -webkit-linear-gradient(top, #bbbbbb, #888888);
+  background-image: -o-linear-gradient(top, #bbbbbb, #888888);
+  background-image: linear-gradient(to bottom, #bbbbbb, #888888);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffbbbbbb', endColorstr='#ff888888', GradientType=0);
+}
+.clayer-slider .clayer-slider-container .clayer-slider-knob.clayer-pressed  > div {
+  visibility: visible;
+}
+body:not(:-moz-handler-blocked) .clayer-slider .clayer-slider-container .clayer-slider-knob {
+  border-color: rgba(70, 70, 70, 0.3);
+}
+.clayer-dragknob {
+  width: 26px;
+  height: 26px;
+  margin-top: -13px;
+  margin-left: -13px;
+  overflow: visible;
+  cursor: pointer;
+  border: 1px solid #888;
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  border-radius: 25px;
+  -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3), inset 0px 1px 0px rgba(255, 255, 255, 0.8);
+  -moz-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3), inset 0px 1px 0px rgba(255, 255, 255, 0.8);
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3), inset 0px 1px 0px rgba(255, 255, 255, 0.8);
+  background-color: #c9c9c9;
+  background-image: -moz-linear-gradient(top, #dddddd, #aaaaaa);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#dddddd), to(#aaaaaa));
+  background-image: -webkit-linear-gradient(top, #dddddd, #aaaaaa);
+  background-image: -o-linear-gradient(top, #dddddd, #aaaaaa);
+  background-image: linear-gradient(to bottom, #dddddd, #aaaaaa);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdddddd', endColorstr='#ffaaaaaa', GradientType=0);
+  position: absolute;
+}
+.clayer-dragknob  > div {
+  visibility: hidden;
+}
+.clayer-dragknob:hover,
+.clayer-dragknob.clayer-active {
+  display: block;
+  background-color: #b8b8b8;
+  background-image: -moz-linear-gradient(top, #cccccc, #999999);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#cccccc), to(#999999));
+  background-image: -webkit-linear-gradient(top, #cccccc, #999999);
+  background-image: -o-linear-gradient(top, #cccccc, #999999);
+  background-image: linear-gradient(to bottom, #cccccc, #999999);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcccccc', endColorstr='#ff999999', GradientType=0);
+}
+.clayer-dragknob:hover  > div,
+.clayer-dragknob.clayer-active  > div {
+  visibility: visible;
+}
+.clayer-dragknob.clayer-pressed {
+  display: block;
+  background-color: #a7a7a7;
+  background-image: -moz-linear-gradient(top, #bbbbbb, #888888);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#bbbbbb), to(#888888));
+  background-image: -webkit-linear-gradient(top, #bbbbbb, #888888);
+  background-image: -o-linear-gradient(top, #bbbbbb, #888888);
+  background-image: linear-gradient(to bottom, #bbbbbb, #888888);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffbbbbbb', endColorstr='#ff888888', GradientType=0);
+}
+.clayer-dragknob.clayer-pressed  > div {
+  visibility: visible;
+}
+body:not(:-moz-handler-blocked) .clayer-dragknob {
+  border-color: rgba(70, 70, 70, 0.3);
+}
+.clayer-dragknob .clayer-dragknob-label {
+  position: absolute;
+  top: 8px;
+  left: 0px;
+  width: 26px;
+  text-align: center;
+  font-size: 10px;
+  line-height: 10px;
+  color: #333;
+  display: none;
+}
+.clayer-dragknob.clayer-dragknob-show-label .clayer-dragknob-label {
+  display: block;
+}
+.clayer-dragknob-parent {
+  position: relative;
+}
+.clayer-dragknob-parent .clayer-dragknob {
+  display: none;
+}
+.clayer-dragknob-parent:hover .clayer-dragknob,
+.clayer-dragknob-parent .clayer-dragknob.clayer-pressed {
+  display: block;
+}
+.clayer-body-touch .clayer-dragknob-parent .clayer-dragknob {
+  display: block;
+}
