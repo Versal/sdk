@@ -21,6 +21,7 @@ module.exports =
     @verifySessionOrAuthenticate options, (err, sessionId) =>
       return callback err if err
       options.sessionId = sessionId
+      @saveSessionIdToConfig(options, sessionId)
       gadgetBundlePath = path.resolve "#{dest}/bundle.zip"
 
       unless fs.existsSync gadgetBundlePath
@@ -57,6 +58,8 @@ module.exports =
     timeout: 60000
 
   verifySession: (options, callback) ->
+    return callback new Error("Could not verify session") unless options.sessionId
+
     requestOptions =
       headers:
         session_id: options.sessionId
@@ -103,7 +106,55 @@ module.exports =
         sessionId = res.headers["session_id"]
         callback null, sessionId
 
+  initConfig: ->
+    config = { sessionIds: {} }
+    fs.writeFileSync @configPath(), JSON.stringify(config)
+
+    config
+
+  readConfig: ->
+    if fs.existsSync @configPath()
+      rawConfig = fs.readFileSync @configPath(), 'utf-8'
+      try
+        config = JSON.parse rawConfig
+        throw new Error unless config.sessionIds
+      catch e
+        config = @upgradeConfig()
+    else
+      config = @initConfig()
+
+    config
+
+  upgradeConfig: (options) ->
+    # Upgrade means delete for now
+    if fs.existsSync @configPath()
+      fs.unlinkSync @configPath()
+    @initConfig()
+
+  configPath: ->
+    path.join @getHomeDirectory(), '.versal'
+
+  writeConfig: (contents) ->
+    fs.writeFileSync @configPath(), JSON.stringify(contents)
+
+  saveSessionIdToConfig: (options, sessionId) ->
+    config = @readConfig()
+    config.sessionIds[options.url] = sessionId
+    @writeConfig config
+
+  sessionIdFromConfig: (options) ->
+    config = @readConfig()
+    if config.sessionIds
+      config.sessionIds[options.url]
+
+  getHomeDirectory: ->
+    if process.platform == 'win32'
+      process.env.USERPROFILE
+    else
+      process.env.HOME
+
   verifySessionOrAuthenticate: (options, callback) ->
+    options.sessionId = options.sessionId || @sessionIdFromConfig options
     @verifySession options, (err) =>
       if err
         @signIn options, callback
