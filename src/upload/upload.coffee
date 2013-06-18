@@ -10,12 +10,16 @@ needle = require 'needle' #TODO: can we do better and upload it with API?
 defaults =
   url: "https://stack.versal.com/api2"
   authUrl: "http://www1.versal.com/signin"
+  basicAuth:
+    username: 'versal'
+    password: 'OkeyDokey'
 
 module.exports = 
   command: (dest, options, callback = ->) ->
     options = _.extend defaults, options
 
-    @verifiedSessionId options, (sessionId) =>
+    @verifySessionOrAuthenticate options, (err, sessionId) =>
+      return callback err if err
       options.sessionId = sessionId
       gadgetBundlePath = path.resolve "#{dest}/bundle.zip"
 
@@ -52,28 +56,35 @@ module.exports =
       session_id: sessionId
     timeout: 60000
 
-  verifySessionId: (options, callback) ->
-    options =
+  verifySession: (options, callback) ->
+    requestOptions =
       headers:
         session_id: options.sessionId
 
-    needle.get "#{options.url}/user", options, (err, res, body) ->
-      console.log(err)
-      if res.statusCode == 200
-        callback options.sessionId
-      else
-        callback()
+    needle.get "#{options.url}/user", requestOptions, (err, res, body) ->
+      return callback() if res.statusCode == 200
+      return callback err if err
+      callback new Error("Could not verify session")
 
-  obtainSessionId: (options, callback) ->
+  signIn: (options, callback) ->
     querystring = require 'querystring'
     credentials =
       email: options.email
       password: options.password
 
-    prompt = require('prompt')
+    prompt = require 'prompt'
     promptParams = [
-      name: "email", message: "Email address:", required: true
-      name: "password", message: "Password at Versal.com:", required: true, hidden: true
+      {
+        name: "email"
+        message: "Email address:"
+        required: true
+      }
+      {
+        name: "password"
+        message: "Password at Versal.com:"
+        required: true
+        hidden: true
+      }
     ]
 
     prompt.message = ""
@@ -83,19 +94,18 @@ module.exports =
     prompt.get promptParams, (err, credentials) ->
       _.extend(options, credentials)
 
-    data = querystring.stringify(credentials)
-    requestOptions = _.extend({}, sdk.configuration.basicAuth);
+      data = querystring.stringify(credentials)
+      requestOptions = _.extend({}, options.basicAuth);
 
-    needle.post options.authUrl, data, requestOptions, (err, res, body) ->
-      return callback err if err
-      return callback new Error("Authorization unsuccessful. Error code: " + res.statusCode) if res.statusCode != 200
-      sessionId = res.headers["session_id"]
-      return callback sessionId
+      needle.post options.authUrl, data, requestOptions, (err, res, body) ->
+        return callback err if err
+        return callback new Error("Authorization unsuccessful. Error code: " + res.statusCode) if res.statusCode != 200
+        sessionId = res.headers["session_id"]
+        callback null, sessionId
 
-  verifiedSessionId: (options, callback) ->
-    @verifySessionId options, (sessionId) =>
-      if not sessionId
-        @obtainSessionId options, (sessionId) ->
-          callback(sessionId)
+  verifySessionOrAuthenticate: (options, callback) ->
+    @verifySession options, (err) =>
+      if err
+        @signIn options, callback
       else
-        callback()
+        callback null, options.sessionId
