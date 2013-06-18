@@ -22,10 +22,11 @@ module.exports = (grunt) ->
         ext: '.js'
 
     mochaTest:
-      files: ['temp/test/**/*_spec.js']
-      options:
-        timeout: 7300
-        reporter: 'spec'
+      test:
+        src: ['temp/test/**/*_spec.js']
+        options:
+          timeout: 7300
+          reporter: 'spec'
 
     exec:
       "build-docs":
