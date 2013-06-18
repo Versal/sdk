@@ -23,17 +23,22 @@ module.exports =
     needle.post "#{options.url}/gadgets",
       @requestData(fileData),
       @requestOptions(options.sessionId), 
-      (err, res, errors) ->
-        if err then return callback(err)
+      (err, res, body) ->
+        # TODO: Check response in Charles and remove this. body should be json
+        # body = JSON.parse body.toString 'utf-8'
+        if err then return callback err
+        
         # OK code
-        if res.statusCode >= 200 && res.statusCode < 300 then return callback()
+        if res.statusCode >= 200 && res.statusCode < 300
+          return callback null, body
+
         # Error code
         if res.statusCode >= 300
-          if _.isArray(errors)
-            messages = _.map(errors, (e)-> e.message).join(',')
+          if _.isArray(body)
+            messages = _.map(body, (e)-> e.message).join(',')
             return callback new Error "Following errors prevented the gadget from being uploaded: #{messages}"
           else
-            return callback new Error "Gadget uploading failed. Error code: #{res.statusCode}"
+            return callback new Error "Gadget uploading failed. Error: #{body.message}"
   
   requestData: (fileData) ->
     content: 

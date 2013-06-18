@@ -24,7 +24,7 @@ module.exports = (grunt) ->
     mochaTest:
       files: ['temp/test/**/*_spec.js']
       options:
-        timeout: 2000
+        timeout: 7300
         reporter: 'spec'
 
     exec:
