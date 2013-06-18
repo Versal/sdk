@@ -2,7 +2,7 @@
 
 'use strict';
 var _ = require('underscore');
-var commands = ["create", "validate", "preview", "publish", "compile", "compress", "upload", "whoami", "docs"];
+var commands = ["create", "validate", "preview", "publish", "compile", "compress", "upload", "docs"];
 var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") + ") [directories] [-arguments] [--options] [--version]";
 
 var argv = require("optimist")
