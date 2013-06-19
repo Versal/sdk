@@ -50,14 +50,14 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p><code>configChange</code> is called by the asset picker when an uploaded image is ready.</p>
+              <p>Listen to change events on <code>image</code> which is updated by the asset picker after an image is selected.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    player.on(<span class="string">'configChange'</span>, <span class="keyword">this</span>.configChange, <span class="keyword">this</span>);
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">this</span>.config.on(<span class="string">'change:image'</span>, <span class="keyword">this</span>.onImageChange, <span class="keyword">this</span>);
   };
 
-  SimpleImageGadget.prototype.configChange = <span class="keyword">function</span>(config) {</pre></div></div>
+  SimpleImageGadget.prototype.onImageChange = <span class="keyword">function</span>() {</pre></div></div>
             
         </li>
         
@@ -68,7 +68,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Rerender the gadget with the newly uploaded image.</p>
+              <p>Save and re-render the gadget with the newly uploaded image.</p>
 
             </div>
             
