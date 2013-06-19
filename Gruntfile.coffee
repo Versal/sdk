@@ -32,10 +32,12 @@ module.exports = (grunt) ->
                  'npm install && ' +
                  'grunt build && ' +
                  'cd - && ' +
-                 'rm -rf ./preview/player.js ./preview/main.css ./preview/vendor && ' +
+                 'rm -rf ./preview/player.js ./preview/main.css ./preview/vendor ./preview/assets/font ./preview/assets/img && ' +
                  'cp ../player/dist/scripts/player-bundle.js ./preview/player.js && ' +
                  'cp -r ../player/dist/styles/main.css ./preview/main.css && ' +
                  'cp -r ../player/dist/styles/vendor ./preview/vendor && ' +
+                 'cp -r ../player/dist/assets/img ./preview/assets/img && ' +
+                 'cp -r ../player/dist/assets/font ./preview/assets/font && ' +
                  'echo Done.'
 
   grunt.registerTask 'default', ['clean', 'mochaTest']
