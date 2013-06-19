@@ -15,13 +15,14 @@ module.exports = (grunt) ->
 
     exec:
       "build-docs":
-        command: 'cp -r ./node_modules/versal-gadget-docs ./tmp-docs && ' +
-                 'cd ./tmp-docs && ' +
+        command: 'cd ../gadget-docs && ' +
+                 'git checkout master && ' +
+                 'git pull && ' +
                  'npm install && ' +
                  'grunt && ' +
-                 'rm -rf ../docs &&' +
-                 'cp -r ./dist ../docs && ' +
-                 'rm -rf ../tmp-docs' +
+                 'cd - && ' +
+                 'rm -rf ./docs &&' +
+                 'cp -r ../gadget-docs/dist ./docs && ' +
                  'echo Done.'
 
       "build-player":

@@ -34,9 +34,9 @@ To build up a new version of documentation:
 
 #### Building docs
 
-    rm -rf node_modules/versal-gadget-docs && \
-      npm install && \
-      grunt exec:build-docs
+*Note: assumes you keep the `gadget-docs` repo in the same directory as the `sdk` repo
+
+    grunt exec:build-docs
 
 #### Building player
 
