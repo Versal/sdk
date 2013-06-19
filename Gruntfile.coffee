@@ -21,6 +21,20 @@ module.exports = (grunt) ->
                  'grunt && ' +
                  'rm -rf ../docs &&' +
                  'cp -r ./dist ../docs && ' +
-                 'rm -rf ../tmp-docs'
+                 'rm -rf ../tmp-docs' +
+                 'echo Done.'
+
+      "build-player":
+        command: 'cd ../player && ' +
+                 'git checkout master && ' +
+                 'git pull && ' +
+                 'npm install && ' +
+                 'grunt build && ' +
+                 'cd - && ' +
+                 'rm -rf ./preview/player.js ./preview/main.css ./preview/vendor && ' +
+                 'cp ../player/dist/scripts/player-bundle.js ./preview/player.js && ' +
+                 'cp -r ../player/dist/styles/main.css ./preview/main.css && ' +
+                 'cp -r ../player/dist/styles/vendor ./preview/vendor && ' +
+                 'echo Done.'
 
   grunt.registerTask 'default', ['clean', 'mochaTest']
