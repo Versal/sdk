@@ -9,6 +9,10 @@ var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") +
 var argv = require("optimist")
   .usage(usageMessage)
   .check(function(argv) {
+    if (argv.version) {
+      console.log(require('../package.json').version);
+      process.exit();
+    }
     if (argv._.length == 0) throw new Error('command has not been specified');
     command = argv._[0];
     if (!_.contains(commands, command)) throw new Error('invalid command: ' + command);
