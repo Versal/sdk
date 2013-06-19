@@ -1,0 +1,98 @@
+[
+  {
+    "id" : "1909e155-4900-42ae-a354-34b1ff95207e",
+    "representations" : [
+      {
+        "contentType" : "image/png",
+        "location" : "/cdn/images/img1.png"
+      },
+      {
+        "contentType" : "image/png",
+        "location" : "/cdn/images/img1.png",
+        "scale" : "320x240"
+      }
+    ],
+    "tags" : [
+      "a-tag",
+      "b-tag",
+      "c-tag",
+      "d-tag"
+    ],
+    "title" : "Sample Image 1"
+  },
+  {
+    "id" : "eecb098c-f433-46f2-8023-807731b160fd",
+    "representations" : [
+      {
+        "contentType" : "image/png",
+        "location" : "/cdn/images/img2.png"
+      },
+      {
+        "contentType" : "image/png",
+        "location" : "/cdn/images/img2.png",
+        "scale" : "320x240"
+      }
+    ],
+    "tags" : [
+      "a-tag",
+      "b-tag",
+      "c-tag"
+    ],
+    "title" : "Sample Image 2"
+  },
+  {
+    "id" : "9b01ac0b-7e5d-4f8a-a96b-d43e9aa94fc7",
+    "representations" : [
+      {
+        "contentType" : "image/png",
+        "location" : "/cdn/images/img3.png"
+      },
+      {
+        "contentType" : "image/png",
+        "location" : "/cdn/images/img3.png",
+        "scale" : "320x240"
+      }
+    ],
+    "tags" : [
+      "a-tag",
+      "b-tag"
+    ],
+    "title" : "Sample Image 3"
+  },
+  {
+    "id" : "d85bc8b0-0451-4473-933a-f752ed847443",
+    "representations" : [
+      {
+        "contentType" : "image/png",
+        "location" : "/cdn/images/img4.png"
+      },
+      {
+        "contentType" : "image/png",
+        "location" : "/cdn/images/img4.png",
+        "scale" : "320x240"
+      }
+    ],
+    "tags" : [
+      "c-tag"
+    ],
+    "title" : "Sample Image 4"
+  },
+  {
+    "id" : "1ddad217-cad2-4080-bbd5-f64131aa6ffa",
+    "representations" : [
+      {
+        "contentType" : "image/png",
+        "location" : "/cdn/images/img5.png"
+      },
+      {
+        "contentType" : "image/png",
+        "location" : "/cdn/images/img5.png",
+        "scale" : "320x240"
+      }
+    ],
+    "tags" : [
+      "x-tag"
+    ],
+    "title" : "Sample Image 5"
+  }
+]

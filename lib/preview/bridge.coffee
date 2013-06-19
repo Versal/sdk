@@ -42,6 +42,10 @@ module.exports = class Bridge
       else
         res.send []
     
+    api.get '/assets', (req, res) =>
+      assets = JSON.parse fs.readFileSync path.join sdkFixtures, "assets/#{req.query.tagLead}s.json"
+      res.send assets
+    
     # POST, PUT and DELETE various stuff
     # Do nothing
     api.put '/courses/:id/progress', (req, res) -> res.send 200
