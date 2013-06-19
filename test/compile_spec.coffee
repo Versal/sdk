@@ -6,6 +6,7 @@ fs = require 'fs'
 sdk = require '../lib/sdk'
 
 gadgetPath = path.resolve './temp/gadgets'
+fixturesPath = path.resolve './test/fixtures'
 
 describe 'Compile', ->
   before (done) ->
@@ -31,3 +32,13 @@ describe 'Compile', ->
       standardPath = path.resolve './test/fixtures/compile/static_compiled.js'
       standardCode = fs.readFileSync standardPath, 'utf-8'
       fs.readFileSync("#{gadgetPath}/g5/dist/gadget.js", 'utf-8').should.eql standardCode
+
+  describe 'text! dependencies', ->
+    before (done) ->
+      # if compilation is successful, then text! references were successfully resolved
+      sdk.compile "#{fixturesPath}/compile/text-gadget", out: "#{gadgetPath}/text-gadget", ->
+        done()
+
+    it 'should inline template', ->
+      gadgetCode = fs.readFileSync "#{gadgetPath}/text-gadget/gadget.js", 'utf-8'
+      gadgetCode.should.match new RegExp '<h1>Template!</h1>'
