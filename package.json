@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "grunt": "~0.4.0",
+    "watch": "~0.7.0",
     "mocha": "~1.8.1",
     "chai": "~1.5.0",
     "matchdep": "~0.1.2",
