@@ -13,6 +13,11 @@ module.exports = (grunt) ->
           timeout: 7300
           reporter: 'spec'
 
+    watch:
+      coffee:
+        files: ['**/*.coffee']
+        tasks: ['default']
+
     exec:
       "build-docs":
         command: 'cd ../gadget-docs && ' +
