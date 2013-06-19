@@ -42,7 +42,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>The gadget constructor can be called anything as long as it&#39;s returned at the end of the RequireJS definition (see end of file). The gadget constructor&#39;s <code>options</code> argument is explained in detail in the <a href="../../gadget-reference.js.html#constructor">Gadget Reference</a>.</p>
+              <p>The gadget constructor can be called anything as long as it&#39;s returned at the end of the RequireJS definition (see end of  file). The gadget constructor&#39;s <code>options</code> argument is explained in detail in the <a href="../../gadget-reference.js.html#constructor">Gadget Reference</a>.</p>
 
             </div>
             
@@ -80,6 +80,7 @@
             
             <div class="content"><div class='highlight'><pre>    <span class="keyword">this</span>.player.on(<span class="string">'toggleEdit'</span>, <span class="keyword">this</span>.toggleEdit, <span class="keyword">this</span>);
     <span class="keyword">this</span>.player.on(<span class="string">'domReady'</span>, <span class="keyword">this</span>.render, <span class="keyword">this</span>);
+
   };</pre></div></div>
             
         </li>
@@ -188,7 +189,9 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  SimpleTextGadget.prototype.save = <span class="keyword">function</span>() {</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  SimpleTextGadget.prototype.save = <span class="keyword">function</span>() {
+    <span class="keyword">var</span> $textEl = <span class="keyword">this</span>.$el.find(<span class="string">'textarea'</span>);
+    <span class="keyword">if</span> ($textEl.length &gt; <span class="number">0</span>) {</pre></div></div>
             
         </li>
         
@@ -199,12 +202,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
-              <p>Check that the textarea is present</p>
+              <p>Get the current value of the textarea</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> $textEl = <span class="keyword">this</span>.$el.find(<span class="string">'textarea'</span>);
-    <span class="keyword">if</span> ($textEl.length &gt; <span class="number">0</span>) {</pre></div></div>
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">var</span> text = $textEl.val() || <span class="string">''</span>;</pre></div></div>
             
         </li>
         
@@ -215,22 +217,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
-              <p>Get the current value of the textarea</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>      <span class="keyword">var</span> text = $textEl.val() || <span class="string">''</span>;</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-14">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
-              </div>
-              <p>If the text has changed update the <code>config</code> object and <code>save</code> it.</p>
+              <p>If the text has changed update the <code>config</code> object and trigger a <code>save</code> event on the <code>player</code>.</p>
 
             </div>
             
@@ -244,11 +231,11 @@
         </li>
         
         
-        <li id="section-15">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>Return the gadget definition from the RequireJS module.</p>
 
