@@ -1,10 +1,11 @@
-define(["scripts/random", "cdn.jquery"], function(random, $, Backbone){
+define(["scripts/random", "cdn.jquery"], function(random, $){
 
   var Gadget = function(options) {
     this.$el = options.$el;
     this.player = options.player;
     this.config = options.config;
-
+    this.userState = options.userState;
+    
     options.propertySheetSchema.set('username', 'Text')
 
     this.update(options.config);
