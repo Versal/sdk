@@ -19,6 +19,7 @@ module.exports =
 
     process.stdout.write "Compiling gadgets..."
     
+    # TODO: handle situation when dir contains already compiled gadget
     # Add gadget from specified directories
     async.map dirs, (dir, cb) ->
       dir = path.resolve dir

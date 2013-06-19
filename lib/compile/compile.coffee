@@ -9,13 +9,14 @@ module.exports =
   command: (dir, options = {}, callback = ->) ->
     src = path.resolve dir
     bundlePath = if options.out then path.resolve(options.out) else "#{src}/dist"
+    textPath = path.resolve "#{__dirname}/../../preview/plugins/text"
 
     config =
       baseUrl: src
       include: ['gadget']
       optimize: 'none'
       paths:
-        text: 'sdk/text',
+        text: textPath,
         jquery: 'empty:',
         backbone: 'empty:',
         underscore: 'empty:',

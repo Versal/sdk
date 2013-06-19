@@ -1,0 +1,10 @@
+{
+  "name": "test-text-gadget",
+  "title": "Test text gadget",
+  "description": "Gadget to test text! paths",
+  "version": "0.0.1",
+  "author": "You",
+  "defaultConfig": {
+    "username" : "Bob"
+  }
+}
