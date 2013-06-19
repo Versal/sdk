@@ -1,4 +1,5 @@
 connect = require 'connect'
+watch = require 'watch'
 path = require 'path'
 fs = require 'fs'
 _ = require 'underscore'
@@ -16,7 +17,7 @@ module.exports =
     unless options.bridge
       options.bridge = new Bridge port: options.port
 
-    console.log "compiling gadgets..."
+    process.stdout.write "Compiling gadgets..."
     
     # Add gadget from specified directories
     async.map dirs, (dir, cb) ->
@@ -29,13 +30,13 @@ module.exports =
         else 
           cb null, false
     # run server after gadgets were compiled
-    , (err, results) ->
+    , (err, results) =>
       if(err) then return callback err
 
       total = results.length
       successful = _.filter(results, (r) -> r).length
 
-      console.log "#{successful} of #{total} gadgets compiled successfully"
+      console.log " #{successful} of #{total} done."
 
       unless options.test
         options.bridge.app.listen options.port
@@ -43,5 +44,38 @@ module.exports =
         console.log ''
         console.log " \\ \\/ /  Starting web server on #{options.bridge.url}"
         console.log "  \\/ /   Press Ctrl + C to exit..."
+        console.log ''
 
-      callback()
+      @watchGadgets options, dirs, callback
+
+  watchGadgets: (options, dirs, callback) ->
+    filtered = (dir, file) ->
+      relPath = file.substr(dir.length + 1)
+      pathParts = relPath.split(path.sep)
+
+      fileName = pathParts.pop()
+      return true if fileName == 'bundle.zip'
+
+      dirName = pathParts.shift()
+      return true if dirName == 'dist'
+
+    watchHandler = (dir) ->
+      (file, stat) ->
+        return if filtered dir, file
+        process.stdout.write "Recompiling (#{dir})... "
+        sdk.compile dir, options, (err) ->
+          if err
+            console.log "failed."
+          else
+            console.log "done."
+
+    _.each dirs, (dir) ->
+      watchOptions =
+        ignoreDotFiles: true
+
+      watch.createMonitor dir, watchOptions, (monitor) ->
+        monitor.on "created", watchHandler dir
+        monitor.on "changed", watchHandler dir
+        monitor.on "removed", watchHandler dir
+
+    callback()

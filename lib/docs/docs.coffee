@@ -15,5 +15,6 @@ module.exports =
     console.log ''
     console.log " \\ \\/ /  Starting docs server on #{url}"
     console.log "  \\/ /   Press Ctrl + C to exit..."
+    console.log ''
 
     callback()
