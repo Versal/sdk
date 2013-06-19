@@ -1,4 +1,4 @@
-define(["scripts/random", "cdn.jquery"], function(random, $, Backbone){
+define(["scripts/random", "cdn.jquery"], function(random, $){
 
   var Gadget = function(options) {
     this.$el = options.$el;
