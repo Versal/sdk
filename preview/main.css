@@ -1,10 +1,73 @@
-@import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700");
+
+article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary{display:block}
+audio,canvas,video{display:inline-block;*display:inline;*zoom:1}
+audio:not([controls]){display:none;height:0}
+[hidden]{display:none}
+html{font-size:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+body{margin:0}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+h2{font-size:1.5em;margin:.83em 0}
+h3{font-size:1.17em;margin:1em 0}
+h4{font-size:1em;margin:1.33em 0}
+h5{font-size:.83em;margin:1.67em 0}
+h6{font-size:.75em;margin:2.33em 0}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+blockquote{margin:1em 40px}
+dfn{font-style:italic}
+mark{background:#ff0;color:#000}
+p,pre{margin:1em 0}
+code,kbd,pre,samp{font-family:monospace,serif;_font-family:'courier new',monospace;font-size:1em}
+pre{white-space:pre-wrap;word-wrap:break-word}
+q{quotes:none}
+q:before,q:after{content:none}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+dl,menu,ol,ul{margin:1em 0}
+dd{margin:0 0 0 40px}
+menu,ol,ul{padding:0 0 0 40px}
+nav ul,nav ol{list-style:none;list-style-image:none}
+img{border:0;-ms-interpolation-mode:bicubic}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+form{margin:0}
+fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0;white-space:normal;*margin-left:-7px}
+button,input,select,textarea{font-size:100%;margin:0;vertical-align:baseline;*vertical-align:middle}
+button,input{line-height:normal}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer;*overflow:visible}
+button[disabled],input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0;*height:13px;*width:13px}
+input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+
+.vs-sticky{z-index:99;position:relative}
+.vs-sticky.vs-sticky-stuck{z-index:98;position:fixed;width:100%}
+
+@import url("http://hello.myfonts.net/count/275ebe");
+@font-face{font-family:'AvenirNextLTPro-Demi';src:url("../assets/font/275EBE_0_0.eot");src:url("../assets/font/275EBE_0_0.eot?#iefix") format('embedded-opentype'),url("../assets/font/275EBE_0_0.woff") format('woff'),url("../assets/font/275EBE_0_0.ttf") format('truetype')}
+@font-face{font-family:'AvenirNextLTPro-Regular';src:url("../assets/font/275EBE_1_0.eot");src:url("../assets/font/275EBE_1_0.eot?#iefix") format('embedded-opentype'),url("../assets/font/275EBE_1_0.woff") format('woff'),url("../assets/font/275EBE_1_0.ttf") format('truetype')}
+
 html{overflow-x:hidden}
-body{font:12px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;word-wrap:break-word;-webkit-user-select:none;user-select:none}
-html,button,input,select,textarea{font-family:'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif}
+body{font:12px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;word-wrap:break-word;-webkit-user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+html,button,input,select,textarea{font-family:'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif}
 .loadingCourse{display:none;text-align:center;width:100%;height:30px;font-size:30px;position:absolute;top:50%;margin-top:-15px;}
 .loadingCourse .icon-spin{margin-right:20px;height:auto;width:auto;line-height:30px}
 .loading{display:none}
+button{font-size:12px;text-align:center;font-weight:bold;-webkit-border-radius:2px;border-radius:2px;background:#7c7975;border:0;color:#fff;padding:10px 20px;}
+button:hover{background:#6f6c69}
+button:active{background:#625f5c}
+
+.gadget-column-gadget{background-color:#f5f5f5;padding:20px;font-family:Helvetica,sans-serif;}
+.gadget-column-gadget h2{margin:0;padding:0;background-color:#ccc;padding:10px;text-align:center}
+.gadget-column-gadget .column{float:left;margin:15px;width:50%;padding:10px;box-sizing:border-box;border:5px solid #ccc;margin:0;border-radius:5px}
 
 .assets-modal{width:750px;margin-left:-375px;min-height:490px;}
 .assets-modal .addAsset{position:absolute;top:0;left:0;width:100%;height:100%;display:none;background-color:#fff;padding:20px;}
@@ -36,12 +99,12 @@ html,button,input,select,textarea{font-family:'Source Sans Pro','Helvetica Neue'
 .authorSidebar .ui-sortable-helper .content{background-color:#fff}
 .authorSidebar .pull-right{text-align:right;padding:10px;}
 .authorSidebar .pull-right .lastSaved{color:#a9acb1;font-size:11px;-o-text-overflow:ellipsis;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
-.authorSidebar .pull-right button.publish{padding:1px 7px;font-size:14px;background-color:#4c7274;color:#fff;border:0;margin-bottom:3px;}
-.authorSidebar .pull-right button.publish:hover{opacity:.9;filter:alpha(opacity=90);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=90)"}
-.authorSidebar .pull-right button.publish:active{opacity:.8;filter:alpha(opacity=80);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)"}
+.authorSidebar .pull-right button.publish{padding:2px 7px;font-size:12px;background:#486b6d;color:#fff;border:0;margin-bottom:3px;}
+.authorSidebar .pull-right button.publish:hover{background:#385455}
+.authorSidebar .pull-right button.publish:active{background:#283d3d}
 .authorSidebar .addSection{border:1px dashed #a9acb1;text-align:center;font-size:18px;background-color:#fff;padding:7px;margin:8px 10px;cursor:move}
 .authorSidebar .search-outer{margin:5px 10px;}
-.authorSidebar .search-outer .search{font:13px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;width:250px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:5px 10px;height:auto;margin:0;background:#fff url("../assets/img/authorSidebar/icon_search.png") 96% center no-repeat;}
+.authorSidebar .search-outer .search{font:13px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;width:250px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:5px 10px;height:auto;margin:0;background:#fff url("../assets/img/authorSidebar/icon_search.png") 96% center no-repeat;}
 .authorSidebar .search-outer .search::-webkit-input-placeholder,.authorSidebar .search-outer .search::-moz-placeholder,.authorSidebar .search-outer .search:-ms-input-placeholder{font-style:italic}
 .authorSidebar .card-options{padding:3px 10px;}
 .authorSidebar .card-options .marketplace-link{padding-top:6px;color:#a9acb1;cursor:pointer;}
@@ -85,7 +148,7 @@ html,button,input,select,textarea{font-family:'Source Sans Pro','Helvetica Neue'
 .authorSidebar .gadgetCards .gadgetCard .icon.bluebg{background-color:#69cadc}
 .authorSidebar .gadgetCards .gadgetCard .icon.pinkbg{background-color:#bd2957}
 .authorSidebar .gadgetCards .gadgetCard .icon.graybg{background-color:#464751}
-.authorSidebar .gadgetCards .gadgetCard .title{color:#464751;line-height:1;font-size:14px;font-family:'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;margin-top:6px;white-space:nowrap;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis}
+.authorSidebar .gadgetCards .gadgetCard .title{color:#464751;line-height:1;font-size:14px;font-family:'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;margin-top:6px;white-space:nowrap;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis}
 .authorSidebar .gadgetCards .gadgetCard .author{color:#c1c5cb;line-height:1;margin-top:3px;margin-bottom:4px;font-size:12px;white-space:nowrap;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis}
 
 .toc-icon{width:24px;height:24px;display:block;position:absolute;left:22px;top:15px;background:url("../assets/img/toc.png") no-repeat;cursor:pointer;opacity:.7;filter:alpha(opacity=70);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";}
@@ -105,8 +168,8 @@ html,button,input,select,textarea{font-family:'Source Sans Pro','Helvetica Neue'
 .course .lessonTitleWrapper,.course .courseTitleWrapper{padding:2px 0 1px 0;border:1px solid transparent;display:inline-block;position:relative;}
 .course .lessonTitleWrapper .fade-out,.course .courseTitleWrapper .fade-out{display:block;position:absolute;top:0;left:0;height:100%;width:700px;pointer-events:none;-webkit-box-shadow:inset -25px 0 20px -10px #fff;box-shadow:inset -25px 0 20px -10px #fff;}
 html.no-pointerevents .course .lessonTitleWrapper .fade-out,html.no-pointerevents .course .courseTitleWrapper .fade-out{display:none}
-.course .lessonTitleWrapper .courseTitle,.course .courseTitleWrapper .courseTitle{font:12px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif}
-.course .lessonTitleWrapper .lessonTitle,.course .courseTitleWrapper .lessonTitle{font:18px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;display:inline-block}
+.course .lessonTitleWrapper .courseTitle,.course .courseTitleWrapper .courseTitle{font:12px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif}
+.course .lessonTitleWrapper .lessonTitle,.course .courseTitleWrapper .lessonTitle{font:18px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;display:inline-block}
 .course .lessonTitleWrapper .lessonTitle,.course .courseTitleWrapper .lessonTitle,.course .lessonTitleWrapper .courseTitle,.course .courseTitleWrapper .courseTitle{color:#333;margin:0;padding:0;overflow-x:hidden;max-width:700px;white-space:nowrap;min-width:20px;min-height:1em;}
 .course .lessonTitleWrapper .lessonTitle.placeholder:after,.course .courseTitleWrapper .lessonTitle.placeholder:after,.course .lessonTitleWrapper .courseTitle.placeholder:after,.course .courseTitleWrapper .courseTitle.placeholder:after{content:attr(placeholder);color:#ccc;cursor:default}
 .course .lessonTitleWrapper .lessonTitleEditable,.course .courseTitleWrapper .lessonTitleEditable{height:14px}
@@ -178,10 +241,6 @@ html.no-pointerevents .course .lessonTitleWrapper .fade-out,html.no-pointerevent
 .editing .toolbar .edit{background:url("../assets/img/railicons/edit-pressed.png") no-repeat center}
 .toolbar.blocked{visibility:hidden !important}
 
-.gadget-column-gadget{background-color:#f5f5f5;padding:20px;font-family:Helvetica,sans-serif;}
-.gadget-column-gadget h2{margin:0;padding:0;background-color:#ccc;padding:10px;text-align:center}
-.gadget-column-gadget .column{float:left;margin:15px;width:50%;padding:10px;box-sizing:border-box;border:5px solid #ccc;margin:0;border-radius:5px}
-
 .inlineCatalogue h2{background:none;text-align:left;font-size:20px;}
 .inlineCatalogue h2 button{float:right;margin-top:5px}
 .inlineCatalogue ul{list-style:none;margin:0;padding:0;border-bottom:1px solid #ccc;}
@@ -190,9 +249,9 @@ html.no-pointerevents .course .lessonTitleWrapper .fade-out,html.no-pointerevent
 .inlineCatalogue ul li:hover{opacity:.8}
 .inlineCatalogue ul li *{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .inlineCatalogue ul li .icon{height:52px;width:52px;float:left;margin-right:10px}
-.inlineCatalogue ul li .title{font:14px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;color:#464751}
+.inlineCatalogue ul li .title{font:14px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;color:#464751}
 .inlineCatalogue ul li .author{font-size:12px;color:#c1c5cb}
-.inlineCatalogue ul li .version{position:absolute;bottom:5px;right:8px;font:12px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;color:#ccc}
+.inlineCatalogue ul li .version{position:absolute;bottom:5px;right:8px;font:12px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;color:#ccc}
 
 @media (max-width: 1024px){.learnerSidebar{display:none}
 }.learnerSidebar ul.lesson-list{list-style:none;margin:0;padding:0;}
@@ -202,20 +261,26 @@ html.no-pointerevents .course .lessonTitleWrapper .fade-out,html.no-pointerevent
 .learnerSidebar ul.lesson-list li.lesson.active-lesson{font-weight:bold}
 .learnerSidebar ul.lesson-list li.lesson.disabled-lesson{cursor:default;background:#ddd}
 
-.course .lessons{position:relative;margin:57px 0 0 0;width:750px;-webkit-user-select:text;user-select:text;font-family:Georgia,serif;font-size:16px;line-height:28px}
+.course .lessons{position:relative;margin:62px 0 0 0;width:750px;-webkit-user-select:text;user-select:text;font-family:Georgia,serif;font-size:16px;line-height:28px}
 
 .modal{z-index:6001}
 .modal-header h3{line-height:1em;margin:.4em 0 0}
 .modal-backdrop{z-index:6000;background-color:rgba(0,0,0,0.4)}
 
 .nav{margin:0;}
-.nav .nav-buttons{padding:20px 0 20px 20px;margin-top:-20px;}
-.nav .nav-buttons button{padding:10px 20px;color:#fff;background:#4c7274;border:0;font-size:14px;}
-.nav .nav-buttons button:hover{opacity:.92;filter:alpha(opacity=92);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=92)"}
-.nav .nav-buttons button:active{opacity:.82;filter:alpha(opacity=82);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=82)"}
-.nav .nav-buttons .previous-button{float:left}
-.nav .nav-buttons .next-button{float:right}
-.nav .nav-buttons .finish-button{background:#3a968a;float:right}
+.nav .nav-buttons{padding:20px 0 20px 20px;}
+.nav .nav-buttons a{color:#aaa;cursor:pointer;padding:8px;position:relative;}
+.nav .nav-buttons a:hover{text-decoration:none}
+.nav .nav-buttons a i{display:inline-block;-webkit-background-size:8px 15px;-moz-background-size:8px 15px;background-size:8px 15px;height:15px;width:8px;position:relative;top:4px}
+.nav .nav-buttons .previous-button{float:left;left:-8px}
+.nav .nav-buttons .previous-button i{background-image:url("../assets/img/nav_arrows/arrow_left_normal.png")}
+.nav .nav-buttons .previous-button:hover i{background-image:url("../assets/img/nav_arrows/arrow_left_hover.png")}
+.nav .nav-buttons .previous-button:active i{background-image:url("../assets/img/nav_arrows/arrow_left_active.png")}
+.nav .nav-buttons .next-button,.nav .nav-buttons .finish-button{float:right;left:8px}
+.nav .nav-buttons .next-button i,.nav .nav-buttons .finish-button i{background-image:url("../assets/img/nav_arrows/arrow_right_normal.png")}
+.nav .nav-buttons .next-button:hover i,.nav .nav-buttons .finish-button:hover i{background-image:url("../assets/img/nav_arrows/arrow_right_hover.png")}
+.nav .nav-buttons .next-button:active i,.nav .nav-buttons .finish-button:active i{background-image:url("../assets/img/nav_arrows/arrow_right_active.png")}
+.nav .nav-buttons .finish-button i{margin-left:10px}
 
 ul.timeline{list-style:none;padding:0;position:relative}
 ul.timeline li{display:inline-block}
@@ -232,10 +297,10 @@ ul.timeline li{display:inline-block}
 
 .properties-dialog{position:absolute;top:3px;width:250px;left:-272px;margin-left:-8px;border:1px solid #ccc;background-color:#fff;box-shadow:0 0 10px 0 rgba(0,0,0,0.5);z-index:900;}
 .properties-dialog .properties-dialog-arrow{position:absolute;width:0;height:0;top:9px;right:-8px;margin-top:6px;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid #f4f4f4}
-.properties-dialog .properties-dialog-header{font:16px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;padding:10px;background-color:#f4f4f4}
+.properties-dialog .properties-dialog-header{font:16px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;padding:10px;background-color:#f4f4f4}
 .properties-dialog fieldset{margin:0;padding:10px;border:none}
-.properties-dialog label{font:14px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif}
-.properties-dialog input,.properties-dialog textarea,.properties-dialog select,.properties-dialog .bbf-radio,.properties-dialog .bbf-checkboxes,.properties-dialog .bbf-date,.properties-dialog .bbf-datetime{font:14px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;margin-bottom:0}
+.properties-dialog label{font:14px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif}
+.properties-dialog input,.properties-dialog textarea,.properties-dialog select,.properties-dialog .bbf-radio,.properties-dialog .bbf-checkboxes,.properties-dialog .bbf-date,.properties-dialog .bbf-datetime{font:14px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;margin-bottom:0}
 .properties-dialog .bbf-field{margin-bottom:15px;}
 .properties-dialog .bbf-field:last-child{margin-bottom:5px}
 .properties-dialog .bbf-field{position:relative;}
@@ -250,12 +315,12 @@ ul.timeline li{display:inline-block}
 .properties-dialog .sp-replacer .sp-preview{margin:0;width:15px}
 .properties-dialog .sp-replacer .sp-dd{display:none}
 .properties-dialog .clayer-slider{margin-left:5px;padding:15px 0}
-.properties-dialog .clayer-slider-knob-value{font:11px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;width:50px;margin-left:-19px;text-align:center;margin-top:-15px;color:#999ca1}
+.properties-dialog .clayer-slider-knob-value{font:11px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;width:50px;margin-left:-19px;text-align:center;margin-top:-15px;color:#999ca1}
 .properties-dialog .bbf-error-tooltip-container{position:absolute;top:50%;left:230px;width:700px;margin-top:-20px;display:none}
 .properties-dialog .bbf-error .bbf-error-tooltip-container{display:block}
 .properties-dialog .properties-dialog-error-count{display:inline-block;float:right;font-family:$baseFontFamily;font-size:10pt;padding:3px 10px;margin-top:-2px;color:#fff;background-color:#c80e07;border-radius:2px}
 
-.gadgetContent.section-header{font:18px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;width:100%;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:8px 0;background-color:#fff;}
+.gadgetContent.section-header{font:18px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;width:100%;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:8px 0;background-color:#fff;}
 .gadgetContent.section-header.vs-sticky-stuck{background-color:rgba(255,255,255,0.9);width:730px}
 .gadgetContent.section-header .section-content{overflow-x:hidden;white-space:nowrap;}
 .gadgetContent.section-header .section-content:empty{min-height:1em}
@@ -268,13 +333,13 @@ ul.timeline li{display:inline-block}
 .authorSidebar .versal-logo,.learnerSidebar .versal-logo{cursor:pointer;display:block;height:30px;width:30px;float:left;margin:13px;background-image:url("../assets/img/logo.png");background-size:30px 30px}
 
 .tagbox{width:220px;}
-.tagbox ul li .tag{font:13px/20px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;background-color:#d8dadc}
-.tagbox ul li.new input,.tagbox ul li.new input:focus{font:14px/20px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif}
+.tagbox ul li .tag{font:13px/20px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;background-color:#d8dadc}
+.tagbox ul li.new input,.tagbox ul li.new input:focus{font:14px/20px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif}
 .tagbox ul li:hover .tag{color:#f4f4f4;background-color:#b0b3b8}
 .tagbox ul li:hover .delete{color:#f4f4f4}
 .tagbox ul li.selected .tag{color:#f4f4f4;background-color:#999ca1}
 .tagbox ul li.selected .delete{color:#f4f4f4}
-.autocomplete li{font:13px/20px 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif}
+.autocomplete li{font:13px/20px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif}
 .autocomplete li.selected,.autocomplete li.over{background-color:#999ca1;color:#f4f4f4}
 
 .toc{border:1px solid #ccc;position:fixed;top:55px;display:none;width:450px;z-index:200;background:#fff;margin:1px 0 0 -1px;-webkit-box-shadow:0 0 10px rgba(0,0,0,0.2);box-shadow:0 0 10px rgba(0,0,0,0.2);}
@@ -310,56 +375,3 @@ ul.timeline li{display:inline-block}
 }@keyframes flash{0%,100%{background:#f6f8fa}
 50%{background:#daf6dd}
 }
-
-
-article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary{display:block}
-audio,canvas,video{display:inline-block;*display:inline;*zoom:1}
-audio:not([controls]){display:none;height:0}
-[hidden]{display:none}
-html{font-size:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
-body{margin:0}
-a:focus{outline:thin dotted}
-a:active,a:hover{outline:0}
-h1{font-size:2em;margin:.67em 0}
-h2{font-size:1.5em;margin:.83em 0}
-h3{font-size:1.17em;margin:1em 0}
-h4{font-size:1em;margin:1.33em 0}
-h5{font-size:.83em;margin:1.67em 0}
-h6{font-size:.75em;margin:2.33em 0}
-abbr[title]{border-bottom:1px dotted}
-b,strong{font-weight:bold}
-blockquote{margin:1em 40px}
-dfn{font-style:italic}
-mark{background:#ff0;color:#000}
-p,pre{margin:1em 0}
-code,kbd,pre,samp{font-family:monospace,serif;_font-family:'courier new',monospace;font-size:1em}
-pre{white-space:pre-wrap;word-wrap:break-word}
-q{quotes:none}
-q:before,q:after{content:none}
-small{font-size:80%}
-sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
-sup{top:-.5em}
-sub{bottom:-.25em}
-dl,menu,ol,ul{margin:1em 0}
-dd{margin:0 0 0 40px}
-menu,ol,ul{padding:0 0 0 40px}
-nav ul,nav ol{list-style:none;list-style-image:none}
-img{border:0;-ms-interpolation-mode:bicubic}
-svg:not(:root){overflow:hidden}
-figure{margin:0}
-form{margin:0}
-fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:.35em .625em .75em}
-legend{border:0;padding:0;white-space:normal;*margin-left:-7px}
-button,input,select,textarea{font-size:100%;margin:0;vertical-align:baseline;*vertical-align:middle}
-button,input{line-height:normal}
-button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer;*overflow:visible}
-button[disabled],input[disabled]{cursor:default}
-input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0;*height:13px;*width:13px}
-input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
-input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}
-button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
-textarea{overflow:auto;vertical-align:top}
-table{border-collapse:collapse;border-spacing:0}
-
-.vs-sticky{z-index:99;position:relative}
-.vs-sticky.vs-sticky-stuck{z-index:98;position:fixed;width:100%}

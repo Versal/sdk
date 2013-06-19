@@ -23558,6 +23558,9 @@ define("cdn.jqueryui.legacy", ["cdn.jquery"], (function (global) {
         var instance;
         if (instance = this.catalogue.buildInstanceOfType(type)) {
           instance.startEditable = true;
+          instance.set({
+            index: index
+          });
           this.collection.create(instance, {
             at: index
           });
@@ -24040,7 +24043,7 @@ define('text!views/../../toc/./author.html',[],function () { return '<ul class="
 
 }).call(this);
 
-define('text!templates/nav-buttons.html',[],function () { return '<%= buttonIf(previousAvailable(), \'js-prev previous-button\', \'&laquo; \' + previousTitle()) %>\n<%= buttonIf(nextAvailable(), \'js-next next-button\', nextTitle() + \'&raquo;\') %>\n<%= buttonIf(isComplete() && !nextAvailable(), \'js-finish finish-button\', \'Finish Course &raquo;\') %>\n<div class=\'clearfix\'></div>\n';});
+define('text!templates/nav-buttons.html',[],function () { return '<%= buttonIf(previousAvailable(), \'js-prev previous-button\') %>\n<%= buttonIf(nextAvailable(), \'js-next next-button\') %>\n<%= buttonIf(isComplete() && !nextAvailable(), \'js-finish finish-button\', \'finish course\') %>\n<div class=\'clearfix\'></div>\n';});
 
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -24057,10 +24060,6 @@ define('text!templates/nav-buttons.html',[],function () { return '<%= buttonIf(p
         this.templateHelpers = __bind(this.templateHelpers, this);
 
         this.isComplete = __bind(this.isComplete, this);
-
-        this.nextTitle = __bind(this.nextTitle, this);
-
-        this.previousTitle = __bind(this.previousTitle, this);
 
         this.nextAvailable = __bind(this.nextAvailable, this);
 
@@ -24120,24 +24119,17 @@ define('text!templates/nav-buttons.html',[],function () { return '<%= buttonIf(p
         return (this.next != null) && (this.next.get('isAccessible') || this.model.get('isEditable'));
       };
 
-      NavButtonsView.prototype.previousTitle = function() {
-        var _ref;
-        return (_ref = this.prev) != null ? _ref.get('title') : void 0;
-      };
-
-      NavButtonsView.prototype.nextTitle = function() {
-        var _ref;
-        return (_ref = this.next) != null ? _ref.get('title') : void 0;
-      };
-
       NavButtonsView.prototype.isComplete = function() {
         var _ref;
         return ((_ref = this.lessonView) != null ? _ref.isComplete() : void 0) && !this.next;
       };
 
       NavButtonsView.prototype.buttonIf = function(criterion, classname, content) {
+        if (content == null) {
+          content = '';
+        }
         if (criterion) {
-          return "<button class='" + classname + "'>" + content + "</button>";
+          return "<a class='" + classname + "'>" + content + "<i></i></a>";
         }
       };
 
@@ -24145,8 +24137,6 @@ define('text!templates/nav-buttons.html',[],function () { return '<%= buttonIf(p
         return {
           previousAvailable: this.previousAvailable,
           nextAvailable: this.nextAvailable,
-          previousTitle: this.previousTitle,
-          nextTitle: this.nextTitle,
           isComplete: this.isComplete,
           buttonIf: this.buttonIf
         };
@@ -24449,7 +24439,7 @@ define('text!templates/nav-buttons.html',[],function () { return '<%= buttonIf(p
 
 }).call(this);
 
-define('text!templates/author_sidebar/author_sidebar.html',[],function () { return '<div class="section first">\n  <a class=\'versal-logo\'></a>\n  <div class=\'pull-right\'>\n    <button class=\'js-publish publish\'>Publish</button>\n    <div class="lastSaved">Last saved <span class="timestamp">seconds</span> ago</div>\n  </div>\n</div>\n\n\n<div class=\'header-drag-container\'><!-- Container for the Sortable list -->\n  <div data-type="gadget/section" class="addSection js-section">drag to add new header</div>\n</div>\n\n<div class="js-catalogue catalogue"></div>\n';});
+define('text!templates/author_sidebar/author_sidebar.html',[],function () { return '<div class="section first">\n  <% if(!whitelabel()){ %>\n    <a class=\'versal-logo\'></a>\n  <% } %>\n  <div class=\'pull-right\'>\n    <button class=\'js-publish publish\'>Publish</button>\n    <div class="lastSaved">Last saved <span class="timestamp">seconds</span> ago</div>\n  </div>\n</div>\n\n\n<div class=\'header-drag-container\'><!-- Container for the Sortable list -->\n  <div data-type="gadget/section" class="addSection js-section">drag to add new header</div>\n</div>\n\n<div class="js-catalogue catalogue"></div>\n';});
 
 define('text!templates/author_sidebar/catalogue.html',[],function () { return '<!-- Removed per #430 until search is functional\n<div class="search-outer">\n  <input type="text" class="search" placeholder="Search gadgets" />\n</div>\n-->\n<div class="card-options">\n  <ul class="pull-left view-modes">\n    <li><i class="js-show-tile-view tile-view inactive"></i></li>\n    <li><i class="js-show-list-view list-view"></i></li>\n\n  </ul>\n  <!--\n  Removed per issue #415 until we finish up Marketplace\n  <div class="pull-right marketplace-link">\n    Gadget marketplace\n    <i class="tiny-arrow-icon"></i>\n  </div>\n  -->\n  <div class="clearfix"></div>\n</div>\n<div class="js-gadgets gadgetCards list-view">\n  <h3 class="header sandbox">Working Set:</h3>\n  <h3 class="header pending">Pending Approval:</h3>\n  <h3 class="header approved">Public:</h3>\n\n</div>\n';});
 
@@ -24784,7 +24774,7 @@ define("plugins/backbone.filter", ["cdn.backbone"], function(){});
 
 }).call(this);
 
-define('text!templates/learner_sidebar.html',[],function () { return '<div class=\'section first\'>\n  <% if(!whitelabel()){ %>\n    <a class=\'versal-logo\' href=\'http://versal.com\'></a>\n  <% } %>\n</div>\n<ul class="lesson-list"></ul>\n';});
+define('text!templates/learner_sidebar.html',[],function () { return '<div class=\'section first\'>\n  <% if(!whitelabel()){ %>\n    <a class=\'versal-logo\'></a>\n  <% } %>\n</div>\n<ul class="lesson-list"></ul>\n';});
 
 define('text!templates/learner_sidebar_item.html',[],function () { return '<span title="<%= title %>"><%= title %></span>\n';});
 
@@ -24866,15 +24856,6 @@ define('text!templates/learner_sidebar_item.html',[],function () { return '<span
         'click .versal-logo': 'onLogoClick'
       };
 
-      LearnerSidebar.prototype.templateHelpers = function() {
-        var _this = this;
-        return {
-          whitelabel: function() {
-            return _this.model.whitelabel;
-          }
-        };
-      };
-
       LearnerSidebar.prototype.selectLesson = function(lessonView) {
         var lesson;
         lesson = lessonView.model;
@@ -24889,6 +24870,15 @@ define('text!templates/learner_sidebar_item.html',[],function () { return '<span
         lesson = view.model;
         this.$('.active-lesson').removeClass('active-lesson');
         return this.children.findByModel(lesson).$el.addClass('active-lesson');
+      };
+
+      LearnerSidebar.prototype.templateHelpers = function() {
+        var _this = this;
+        return {
+          whitelabel: function() {
+            return _this.model.whitelabel;
+          }
+        };
       };
 
       return LearnerSidebar;
@@ -24914,7 +24904,8 @@ define('text!templates/learner_sidebar_item.html',[],function () { return '<span
 }).call(this);
 
 (function() {
-  var __hasProp = {}.hasOwnProperty,
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define('views/sidebar/author/author',['cdn.marionette', 'text!templates/author_sidebar/author_sidebar.html', 'app/mediator', './catalogue', 'views/sidebar/sidebar', 'cdn.jqueryui.legacy'], function(Marionette, template, mediator, SidebarCatalogueView, Sidebar) {
@@ -24924,6 +24915,7 @@ define('text!templates/learner_sidebar_item.html',[],function () { return '<span
       __extends(AuthorSidebar, _super);
 
       function AuthorSidebar() {
+        this.templateHelpers = __bind(this.templateHelpers, this);
         return AuthorSidebar.__super__.constructor.apply(this, arguments);
       }
 
@@ -25004,6 +24996,15 @@ define('text!templates/learner_sidebar_item.html',[],function () { return '<span
         return mediator.trigger('parent:notify', {
           event: "publishCourse"
         });
+      };
+
+      AuthorSidebar.prototype.templateHelpers = function() {
+        var _this = this;
+        return {
+          whitelabel: function() {
+            return _this.model.whitelabel;
+          }
+        };
       };
 
       return AuthorSidebar;
@@ -25122,7 +25123,7 @@ define('text!templates/loading.html',[],function () { return '<i class=\'icon-sp
           return mediator.trigger('course:rendered', _this.courseView);
         });
         this.router = new PlayerRouter;
-        this.options = _.extend({}, options, this.defaults);
+        this.options = _.extend({}, this.defaults, options);
         courseId = this.options.courseId;
         if (courseId) {
           this.router.courseId = courseId;
