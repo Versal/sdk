@@ -1,9 +1,9 @@
 {
   "name": "new-gadget",
   "title": "New gadget",
-  "description": "",
+  "description": "A cool new gadget",
   "version": "0.0.1",
-  "author": "",
+  "author": "You",
   "defaultConfig": {
     "username" : "Bob"
   }
