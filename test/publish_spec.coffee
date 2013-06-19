@@ -1,4 +1,4 @@
-sdk = require '../../lib/sdk'
+sdk = require '../lib/sdk'
 path = require 'path'
 sinon = require 'sinon'
 

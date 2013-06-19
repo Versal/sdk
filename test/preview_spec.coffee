@@ -1,7 +1,7 @@
-sdk = require '../../lib/sdk'
+sdk = require '../lib/sdk'
 path = require 'path'
 sinon = require 'sinon'
-Bridge = require '../../lib/preview/bridge'
+Bridge = require '../lib/preview/bridge'
 
 bridge = new Bridge port: 3000
 gadgetPath = path.resolve './temp/gadgets'

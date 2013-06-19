@@ -28,7 +28,7 @@
   },
   "preferGlobal": true,
   "dependencies": {
-    "wrench": "~1.4.4",
+    "coffee-script": "~1.6.3",
     "optimist": "~0.3.5",
     "requirejs": "~2.1.5",
     "connect": "~2.7.3",
@@ -55,7 +55,6 @@
     "versal-gadget-docs": "git+ssh://git@github.com:Versal/gadget-docs.git",
     "matchdep": "~0.1.2",
     "grunt-contrib-clean": "~0.4.1",
-    "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-mocha-test": "~0.4.0",
     "underscore": "~1.4.4",

@@ -5,25 +5,10 @@ module.exports = (grunt) ->
   grunt.initConfig
     clean:
       temp: 'temp/*'
-      lib: 'lib/*'
-
-    coffee:
-      temp:
-        expand: true,
-        cwd: 'src/',
-        src: '**/*.coffee',
-        dest: 'lib/',
-        ext: '.js'
-      test:
-        expand: true,
-        cwd: 'test/',
-        src: '**/*.coffee',
-        dest: 'temp/test/',
-        ext: '.js'
 
     mochaTest:
       test:
-        src: ['temp/test/**/*_spec.js']
+        src: ['test/**/*_spec.coffee']
         options:
           timeout: 7300
           reporter: 'spec'
@@ -38,4 +23,4 @@ module.exports = (grunt) ->
                  'cp -r ./dist ../docs && ' +
                  'rm -rf ../tmp-docs'
 
-  grunt.registerTask 'default', ['clean', 'coffee', 'mochaTest']
+  grunt.registerTask 'default', ['clean', 'mochaTest']

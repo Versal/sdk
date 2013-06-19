@@ -2,8 +2,8 @@ require('chai').should()
 request = require 'superagent'
 fs = require 'fs'
 path = require 'path'
-sdk = require '../../lib/sdk'
-Bridge = require '../../lib/preview/bridge'
+sdk = require '../lib/sdk'
+Bridge = require '../lib/preview/bridge'
 
 class Helper
   url: "http://localhost:3073"

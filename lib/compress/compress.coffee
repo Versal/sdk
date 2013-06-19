@@ -8,7 +8,7 @@ spawn = require('child_process').spawn
 module.exports = 
   command: (dest, options, callback = ->) ->
     dest = path.resolve dest
-    excludePath = path.resolve "#{__dirname}/../../src/compress/exclude.lst"
+    excludePath = path.resolve "#{__dirname}/../../lib/compress/exclude.lst"
     
     unless fs.existsSync dest
       return callback new Error "directory does not exist: #{dest}"

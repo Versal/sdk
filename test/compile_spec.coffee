@@ -3,7 +3,7 @@ path = require 'path'
 glob = require 'glob'
 fs = require 'fs'
 
-sdk = require '../../lib/sdk'
+sdk = require '../lib/sdk'
 
 gadgetPath = path.resolve './temp/gadgets'
 
