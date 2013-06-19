@@ -3,7 +3,7 @@ fs = require 'fs-extra'
 glob = require 'glob'
 path = require 'path'
 async = require 'async'
-spawn = require('child_process').spawn
+exec = require('child_process').exec
 
 module.exports = 
   command: (dest, options, callback = ->) ->
@@ -14,9 +14,7 @@ module.exports =
       return callback new Error "directory does not exist: #{dest}"
 
     # TODO: needs to be tested on windows
-    zip = spawn 'zip', ['-r', 'bundle.zip', '.', "-x@#{excludePath}"], cwd: dest
-
-    zip.on 'exit', (code) ->
-      unless code == 0
-        return callback new Error "zip process exited with code #{code}"
+    zip = exec "zip -r bundle.zip . -x@#{excludePath}", cwd: dest, (err) ->
+      if err
+        return callback new Error "zip process exited with code #{err.code}"
       callback()
