@@ -44,9 +44,6 @@ To build up a new version of documentation:
 
     grunt exec:build-player
 
-*Note: unfortunately must remove node_modules to make sure the latest `gadget-docs`*
-*TODO: fix this if possible*
-
 ### 3rd Party Developers
 
 To initiate a 3rd party gadget developer prior to public release they should be added to the `3rd-party-gadget-developer` group on GitHub. They should also, at minimum, be told about the `versal docs`.

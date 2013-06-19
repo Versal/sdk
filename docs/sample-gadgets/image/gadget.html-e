@@ -54,7 +54,7 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    config.on(<span class="string">'change:image'</span>, <span class="keyword">this</span>.onImageChange, <span class="keyword">this</span>);
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">this</span>.config.on(<span class="string">'change:image'</span>, <span class="keyword">this</span>.onImageChange, <span class="keyword">this</span>);
   };
 
   SimpleImageGadget.prototype.onImageChange = <span class="keyword">function</span>() {</pre></div></div>
