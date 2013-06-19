@@ -412,13 +412,14 @@ define('scripts/random',[], function(){
     return Math.floor(Math.random() * 100) + 1;
   }
 });
-define('gadget',["scripts/random", "cdn.jquery"], function(random, $, Backbone){
+define('gadget',["scripts/random", "cdn.jquery"], function(random, $){
 
   var Gadget = function(options) {
     this.$el = options.$el;
     this.player = options.player;
     this.config = options.config;
-
+    this.userState = options.userState;
+    
     options.propertySheetSchema.set('username', 'Text')
 
     this.update(options.config);
