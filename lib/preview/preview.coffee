@@ -5,6 +5,7 @@ fs = require 'fs'
 _ = require 'underscore'
 sdk = require '../../lib/sdk'
 async = require 'async'
+open = require 'open'
 Bridge = require './bridge'
 
 defaults = 
@@ -45,6 +46,8 @@ module.exports =
         console.log " \\ \\/ /  Starting web server on #{options.bridge.url}"
         console.log "  \\/ /   Press Ctrl + C to exit..."
         console.log ''
+
+        if options.open then open options.bridge.url 
 
       @watchGadgets options, dirs, callback
 
