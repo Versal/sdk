@@ -30,8 +30,6 @@ Now you can view gadget documentation at [http://localhost:4000/docs](http://loc
 
 ### SDK Development
 
-To build up a new version of documentation:
-
 #### Building docs
 
 *Note: assumes you keep the `gadget-docs` repo in the same directory as the `sdk` repo
