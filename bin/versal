@@ -1,17 +1,24 @@
 #!/usr/bin/env node
 
 'use strict';
+
 var coffee = require('coffee-script');
 var _ = require('underscore');
-var commands = ["create", "validate", "preview", "publish", "compile", "compress", "upload", "docs"];
-var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") + ") [directories] [-arguments] [--options] [--version]";
+
+// Commands that are displayed in cli help
+var commands = ["create", "preview", "publish", "docs"];
+// Debug commands are not displayed in cli help, but still runnable
+var debugCommands = ["validate", "compile", "compress", "upload"];
+
+var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") + ") [directories] [--options] [--version]";
 
 var argv = require("optimist")
   .usage(usageMessage)
   .check(function(argv) {
     if (argv._.length == 0) throw new Error('command has not been specified');
+
     command = argv._[0];
-    if (!_.contains(commands, command)) throw new Error('invalid command: ' + command);
+    if (!_.contains(commands, command) && !_.contains(debugCommands, command)) throw new Error('invalid command: ' + command);
     return true;
   })
   .argv;
