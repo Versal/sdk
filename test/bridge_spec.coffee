@@ -51,6 +51,19 @@ describe 'Bridge', ->
         res.body.id.should.eq 1
         done()
 
+  describe 'assets', ->
+    describe 'images', ->
+      it 'should fake image assets', (done) ->
+        request.get(helper.getApiUrl('assets?tagLead=image')).end (res) ->
+          res.body.should.eql helper.getFixture 'assets/images'
+          done()
+
+    describe 'videos', ->
+      it 'should fake video assets', (done) ->
+        request.get(helper.getApiUrl('assets?tagLead=video')).end (res) ->
+          res.body.should.eql helper.getFixture 'assets/videos'
+          done()
+
   describe 'gadgets', ->
     describe 'sandbox', ->
       before (done) ->
