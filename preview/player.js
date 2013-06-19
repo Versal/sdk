@@ -3834,24 +3834,6 @@ define('text!gadgets/lipsum/template.html',[],function () { return '  <h1>Lorem 
         title: "Sections",
         type: "gadget/section",
         version: "0.0.0"
-      }, {
-        author: "Versal Team",
-        catalog: "approved",
-        icon: "http://f.cl.ly/items/3p2A0A0W0Q2y1Q0j1U0l/Screen%20Shot%202013-05-30%20at%204.26.25%20PM.png",
-        classDefinition: ColumnGadget,
-        id: "column-gadget",
-        title: "Columns",
-        type: "column-gadget",
-        version: "0.0.1"
-      }, {
-        author: "Versal Team",
-        catalog: "approved",
-        icon: "http://www.karatepkf.com/media/11786/lorem-ipsum-logo.jpg",
-        classDefinition: LipsumGadget,
-        id: "lipsum-gadget",
-        title: "Lorem Ipsum",
-        type: "lipsum-gadget",
-        version: "0.0.1"
       }
     ]);
     CombinedCatalogue = (function(_super) {
