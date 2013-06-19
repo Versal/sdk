@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 'use strict';
+var coffee = require('coffee-script');
 var _ = require('underscore');
 var commands = ["create", "validate", "preview", "publish", "compile", "compress", "upload", "docs"];
 var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") + ") [directories] [-arguments] [--options] [--version]";

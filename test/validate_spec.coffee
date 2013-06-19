@@ -1,7 +1,7 @@
 should = require('chai').should()
-sdk = require '../../lib/sdk'
+sdk = require '../lib/sdk'
 path = require 'path'
-validate = require '../../lib/validate/validate'
+validate = require '../lib/validate/validate'
 sinon = require 'sinon'
 
 describe 'Validate', ->

@@ -1,6 +1,6 @@
 require('chai').should()
 path = require 'path'
-sdk = require '../../lib/sdk'
+sdk = require '../lib/sdk'
 sinon = require 'sinon'
 
 gadgetPath = path.resolve './test/fixtures/upload'
