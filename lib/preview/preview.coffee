@@ -78,6 +78,7 @@ module.exports =
           if err
             console.log "failed."
           else
+            options.bridge.updateGadget dir
             console.log "done."
 
     _.each dirs, (dir) ->
