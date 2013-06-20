@@ -66,10 +66,14 @@ module.exports =
       dirName = pathParts.shift()
       return true if dirName == 'dist'
 
+    gadgetNameFromDir = _.memoize (dir) ->
+      manifestPath = path.resolve dir, 'manifest.json'
+      require(manifestPath).name
+
     watchHandler = (dir) ->
       (file, stat) ->
         return if filtered dir, file
-        process.stdout.write "Recompiling (#{dir})... "
+        process.stdout.write "Recompiling #{gadgetNameFromDir(dir)}..."
         sdk.compile dir, options, (err) ->
           if err
             console.log "failed."
