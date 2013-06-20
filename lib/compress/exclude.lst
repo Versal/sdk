@@ -1,3 +1,4 @@
 dist/*
 bundle.zip
 .*
+node_modules
