@@ -12,7 +12,7 @@ define(["scripts/random", "cdn.jquery"], function(random, $){
 
     this.player.on('toggleEdit', this.toggleEdit, this);
     this.config.on('change:username', this.update, this);
-    this.player.on('onReady', this.render, this);
+    this.player.on('domReady', this.render, this);
   };
 
   Gadget.prototype.update = function() {
