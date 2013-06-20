@@ -54,7 +54,10 @@ module.exports =
 
   watchGadgets: (options, dirs, callback) ->
     filtered = (dir, file) ->
-      relPath = file.substr(dir.length + 1)
+      dirPath = path.resolve(dir)
+      filePath = path.resolve(file)
+
+      relPath = filePath.substr(dirPath.length + 1)
       pathParts = relPath.split(path.sep)
 
       fileName = pathParts.pop()
