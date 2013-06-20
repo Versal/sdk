@@ -54,7 +54,10 @@ module.exports =
 
   watchGadgets: (options, dirs, callback) ->
     filtered = (dir, file) ->
-      relPath = file.substr(dir.length + 1)
+      dirPath = path.resolve(dir)
+      filePath = path.resolve(file)
+
+      relPath = filePath.substr(dirPath.length + 1)
       pathParts = relPath.split(path.sep)
 
       fileName = pathParts.pop()
@@ -63,14 +66,19 @@ module.exports =
       dirName = pathParts.shift()
       return true if dirName == 'dist'
 
+    gadgetNameFromDir = _.memoize (dir) ->
+      manifestPath = path.resolve dir, 'manifest.json'
+      require(manifestPath).name
+
     watchHandler = (dir) ->
       (file, stat) ->
         return if filtered dir, file
-        process.stdout.write "Recompiling (#{dir})... "
+        process.stdout.write "Recompiling #{gadgetNameFromDir(dir)}..."
         sdk.compile dir, options, (err) ->
           if err
             console.log "failed."
           else
+            options.bridge.updateGadget dir
             console.log "done."
 
     _.each dirs, (dir) ->

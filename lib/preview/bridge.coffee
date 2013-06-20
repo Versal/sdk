@@ -64,21 +64,37 @@ module.exports = class Bridge
     @app.use '/api', api
 
   addGadget: (gadgetPath) ->
+    id = shortid.generate()
+    manifest = @prepareManifest gadgetPath, id
+    return unless manifest
+
+    @gadgets.push manifest
+
+    # Redirect all requests to gadgets/:id to gadget folder
+    @app.use "/gadgets/#{manifest.id}", express.static gadgetPath
+
+  prepareManifest: (gadgetPath, id) ->
     manifestPath = path.join gadgetPath, 'manifest.json'
     return unless fs.existsSync manifestPath
-    
+
     manifest = JSON.parse fs.readFileSync manifestPath
+    manifest._gadgetPath = gadgetPath
     # Generate random UID for the gadget, unless it is in manifest
-    manifest.id = shortid.generate() unless manifest.id
+    manifest.id = id unless manifest.id
     manifest.type = "gadget/#{manifest.id}"
     manifest.catalog = 'sandbox'
     manifest.icon = "#{@url}/gadgets/#{manifest.id}/assets/icon.png"
     # TODO: Is this OK? It doesn't belong to here
     manifest.files = @getFiles(manifest.id, gadgetPath) unless manifest.files
 
-    # Redirect all requests to gadgets/:id to gadget folder
-    @app.use "/gadgets/#{manifest.id}", express.static gadgetPath
-    @gadgets.push manifest
+    manifest
+
+  updateGadget: (dir) ->
+    gadgetPath = path.resolve dir, 'dist'
+    originalManifest = _.find @gadgets, (gadget) -> gadget._gadgetPath == gadgetPath
+    index = _.indexOf @gadgets, originalManifest
+    manifest = @prepareManifest gadgetPath, originalManifest.id
+    @gadgets[index] = manifest
 
   # Get files hash for local gadgets
   getFiles: (id, gadgetPath) ->
