@@ -86,6 +86,8 @@ module.exports = class Bridge
     manifest.icon = "#{@url}/gadgets/#{manifest.id}/assets/icon.png"
     # TODO: Is this OK? It doesn't belong to here
     manifest.files = @getFiles(manifest.id, gadgetPath) unless manifest.files
+    # TODO this isn't ideal because gadgets could shadow each other's assets.
+    @app.use "/assets", express.static  "#{gadgetPath}/assets"
 
     manifest
 
@@ -101,6 +103,6 @@ module.exports = class Bridge
     files = 
       'gadget.js': "#{@url}/gadgets/#{id}/gadget.js"
       'gadget.css': "#{@url}/gadgets/#{id}/gadget.css"
-    assets = glob.sync '*.*', cwd: path.join gadgetPath, 'assets'
+    assets = glob.sync '**/*', cwd: path.join gadgetPath, 'assets'
     _.each assets, (asset) => files["assets/#{asset}"] = "#{@url}/gadgets/#{id}/assets/#{asset}"
     files
