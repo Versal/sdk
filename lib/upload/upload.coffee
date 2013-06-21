@@ -16,7 +16,6 @@ defaults =
 
 module.exports = 
   command: (dest, options, callback = ->) ->
-    console.log 'command'
     options = _.extend defaults, options
 
     @verifySessionOrAuthenticate options, (err, sessionId) =>
@@ -59,14 +58,12 @@ module.exports =
     timeout: 60000
 
   verifySession: (options, callback) ->
-    console.log 'verify session 1', options
     return callback new Error("Could not verify session") unless options.sessionId
 
     requestOptions =
       headers:
         session_id: options.sessionId
 
-    console.log 'verify session 2'
     needle.get "#{options.url}/user", requestOptions, (err, res, body) ->
       console.log 'verify session 3'
       return callback() if res.statusCode == 200
@@ -76,7 +73,6 @@ module.exports =
       callback new Error("Could not verify session")
 
   signIn: (options, callback) ->
-    console.log 'sign in'
     querystring = require 'querystring'
     credentials =
       email: options.email
@@ -114,7 +110,6 @@ module.exports =
         callback null, sessionId
 
   initConfig: ->
-    console.log 'init config'
     config = { sessionIds: {} }
     fs.writeFileSync @configPath(), JSON.stringify(config)
 
@@ -134,7 +129,6 @@ module.exports =
     config
 
   upgradeConfig: (options) ->
-    console.log 'upgrade config'
     # Upgrade means delete for now
     if fs.existsSync @configPath()
       fs.unlinkSync @configPath()
@@ -144,21 +138,16 @@ module.exports =
     path.join @getHomeDirectory(), '.versal'
 
   writeConfig: (contents) ->
-    console.log 'write config'
     fs.writeFileSync @configPath(), JSON.stringify(contents)
 
   saveSessionIdToConfig: (options, sessionId) ->
-    console.log 'save session id to config'
     config = @readConfig()
     config.sessionIds[options.url] = sessionId
     @writeConfig config
 
   sessionIdFromConfig: (options) ->
-    console.log 'session id from config 1'
     config = @readConfig()
-    console.log 'session id from config 2', config
     if config.sessionIds
-      console.log 'session id from config 3'
       config.sessionIds[options.url]
 
   getHomeDirectory: ->
@@ -168,7 +157,6 @@ module.exports =
       process.env.HOME
 
   verifySessionOrAuthenticate: (options, callback) ->
-    console.log 'verify session or auth'
     options.sessionId = options.sessionId || @sessionIdFromConfig options
     @verifySession options, (err) =>
       if err
