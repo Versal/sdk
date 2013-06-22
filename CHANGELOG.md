@@ -1,3 +1,9 @@
+# v0.2.3
+
+* Bumped player
+* Normalized callback args
+* Bugfixes
+
 # v0.2.2
 
 * Fixed watch/compile bug
