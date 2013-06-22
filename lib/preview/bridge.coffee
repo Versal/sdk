@@ -60,8 +60,13 @@ module.exports = class Bridge
     api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/config', (req, res) -> res.send 200
     api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/userstate', (req, res) -> res.send 200
 
+    @app.get '/', (req, res) => res.send @loadIndex().replace('BRIDGE_PORT', options.port)
     @app.use express.static sdkSite
     @app.use '/api', api
+
+  loadIndex: () ->
+    index = path.join sdkSite, 'index.html'
+    fs.readFileSync index, 'utf8'
 
   addGadget: (gadgetPath) ->
     id = shortid.generate()
