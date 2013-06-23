@@ -65,11 +65,8 @@ module.exports =
         session_id: options.sessionId
 
     needle.get "#{options.url}/user", requestOptions, (err, res, body) ->
-      console.log 'verify session 3'
       return callback() if res.statusCode == 200
-      console.log 'verify session 4'
       return callback err if err
-      console.log 'verify session 5'
       callback new Error("Could not verify session")
 
   signIn: (options, callback) ->
@@ -96,7 +93,7 @@ module.exports =
     prompt.message = ""
     prompt.delimiter = ""
 
-    console.log("Enter your Versal credentials to sign in:")
+    console.log "Enter your Versal credentials to sign in:"
     prompt.get promptParams, (err, credentials) ->
       _.extend(options, credentials)
 
