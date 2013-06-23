@@ -22,7 +22,7 @@ var argv = require("optimist")
     if (argv._.length == 0) throw new Error('command has not been specified');
 
     command = argv._[0];
-    if (!_.contains(commands, command) && !_.contains(debugCommands, command)) throw new Error('invalid command: ' + command);
+    if (!_.contains(commands.concat(debugCommands), command)) throw new Error('invalid command: ' + command);
     return true;
   })
   .argv;
