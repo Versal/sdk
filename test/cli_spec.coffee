@@ -1,3 +1,0 @@
-describe 'cli interface', ->
-  before ->
-    
