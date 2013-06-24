@@ -1,3 +1,9 @@
+# v0.2.4
+
+* Bumped player
+* Support compilation of node modules
+* Bugfixes
+
 # v0.2.3
 
 * Bumped player
