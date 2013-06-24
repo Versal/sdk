@@ -15,6 +15,7 @@ module.exports =
       baseUrl: src
       include: ['gadget']
       optimize: 'none'
+      cjsTranslate: true
       paths:
         text: textPath,
         jquery: 'empty:',
@@ -29,6 +30,7 @@ module.exports =
         'cdn.raphael': 'empty:',
         'cdn.jqueryui': 'empty:',
         'cdn.mathjax': 'empty'
+      stubModules: ['text']
       # output optimized code and create gadget bundle
       out: (code) => @createBundle code, src, bundlePath, callback
 
@@ -37,7 +39,7 @@ module.exports =
   createBundle: (code, src, bundlePath, callback) ->
     if fs.existsSync bundlePath then fs.removeSync bundlePath
 
-    # create "bundle" directory
+    # create "dist" directory
     fs.mkdirsSync bundlePath
 
     # wrap and write gadget.js
@@ -48,8 +50,11 @@ module.exports =
 
   wrap: (code) ->
     code = @wrapInAlmond code
-    deps = @extractDeps code
-    code = @wrapDeps code, deps
+    cdndeps = @extractCDNDeps code
+    nodedeps = @extractNodeDeps code
+    
+    code = @wrapNodeDeps code, nodedeps
+    code = @wrapCDNDeps code, cdndeps
     return code
 
   wrapInAlmond: (code) ->
@@ -58,7 +63,7 @@ module.exports =
     almondCode = fs.readFileSync almondPath, 'utf-8'
     return almondCode + code
 
-  wrapDeps: (code, deps) ->
+  wrapCDNDeps: (code, deps) ->
     # Inject list of cdn.deps into root-level call of define
     # e.g.: define(['cdn.jquery', 'cdn.backbone'])
     commaSeparatedDeps = _.map(deps, (dep) -> "'#{dep}'").join ','
@@ -81,18 +86,32 @@ module.exports =
 
     return start + code + end
 
-  extractDeps: (code) ->
+  wrapNodeDeps: (code, deps) ->
+    end = ''
+    for dep in deps
+      end += "define('#{dep}', [], function(){ return cdn.#{dep}; });\r\n"
+    return code + end
+
+  extractNodeDeps: (code) ->
+    # find dependencies on underscore, backbone, jquery
+    # that are specified in node requires:
+    #   require 'underscore'
+    depFinder = /require\s*[\(]?\s*['"](underscore|jquery|backbone)['"]/gi
+    deps = []
+    while match = depFinder.exec code
+      deps.push match[1]
+    return _.uniq deps
+
+  extractCDNDeps: (code) ->
     # find all dependencies in gadget code
     # assumes, that dependency matches 
     # `cdn.<something>` wrapped in quotation marks:
     # e.g. 'cdn.backbone', "cdn.jquery"
     depFinder = /['"](cdn\.([^'"]+))['"]/g
     deps = []
-
-    while match = depFinder.exec(code)
-      deps.push(match[1])
-
-    return _.uniq(deps)
+    while match = depFinder.exec code
+      deps.push match[1]
+    return _.uniq deps
 
   copyFiles: (src, bundlePath, callback) ->
     # copy gadget.css, manifest.json and assets folder

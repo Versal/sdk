@@ -4,6 +4,7 @@ glob = require 'glob'
 fs = require 'fs'
 
 sdk = require '../lib/sdk'
+compile = require '../lib/compile/compile'
 
 gadgetPath = path.resolve './temp/gadgets'
 fixturesPath = path.resolve './test/fixtures'
@@ -12,7 +13,7 @@ describe 'Compile', ->
   before (done) ->
     sdk.create "#{gadgetPath}/g5", ->
       sdk.compile "#{gadgetPath}/g5", (err) ->
-        throw err if err
+        console.log err if err
         done()
 
   describe 'dist folder', ->
@@ -42,3 +43,20 @@ describe 'Compile', ->
     it 'should inline template', ->
       gadgetCode = fs.readFileSync "#{gadgetPath}/text-gadget/gadget.js", 'utf-8'
       gadgetCode.should.match new RegExp '<h1>Template!</h1>'
+
+  describe 'cdn.* dependencies', ->
+    before ->
+      code = '"cdn.jquery" and \'cdn.underscore\' and again \'cdn.jquery\''
+      @deps = compile.extractCDNDeps code
+
+    it 'should extract jquery and underscore', ->
+      @deps.should.eql ['cdn.jquery', 'cdn.underscore']
+
+  describe 'node dependencies', ->
+    before ->
+      code = 'var underscore = require ( "underscore" ) and jquery = require \'jquery\''
+      @deps = compile.extractNodeDeps code
+
+    it 'should contain jquery and underscore', ->
+      @deps.should.eql ['underscore', 'jquery']
+
