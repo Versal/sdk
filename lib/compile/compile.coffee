@@ -29,7 +29,7 @@ module.exports =
         'cdn.processing': 'empty:',
         'cdn.raphael': 'empty:',
         'cdn.jqueryui': 'empty:',
-        'cdn.mathjax': 'empty'
+        'cdn.mathjax': 'empty:'
       stubModules: ['text']
       # output optimized code and create gadget bundle
       out: (code) => @createBundle code, src, bundlePath, callback
