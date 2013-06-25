@@ -1,3 +1,7 @@
+# v0.2.5
+
+* Fixed mathjax inclusion typo
+
 # v0.2.4
 
 * Bumped player
