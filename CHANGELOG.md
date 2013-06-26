@@ -1,3 +1,7 @@
+# v0.2.6
+
+* Fixed use of alternate port on `versal preview`
+
 # v0.2.5
 
 * Fixed mathjax inclusion typo
