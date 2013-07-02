@@ -36,8 +36,8 @@ module.exports = class Bridge
       lesson = _.find course.lessons, (lesson) -> lesson.id == lesson_id
       res.send lesson
 
-    api.get '/gadgets', (req, res) => 
-      if req.param('catalog') == 'sandbox'
+    api.get '/gadgets', (req, res) =>
+      if req.param('catalog') == 'approved'
         res.send @gadgets
       else
         res.send []
@@ -87,7 +87,7 @@ module.exports = class Bridge
     # Generate random UID for the gadget, unless it is in manifest
     manifest.id = id unless manifest.id
     manifest.type = "gadget/#{manifest.id}"
-    manifest.catalog = 'sandbox'
+    manifest.catalog = 'approved'
     manifest.icon = "#{@url}/gadgets/#{manifest.id}/assets/icon.png"
     # TODO: Is this OK? It doesn't belong to here
     manifest.files = @getFiles(manifest.id, gadgetPath) unless manifest.files
