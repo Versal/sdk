@@ -65,12 +65,12 @@ describe 'Bridge', ->
           done()
 
   describe 'gadgets', ->
-    describe 'sandbox', ->
+    describe 'approved', ->
       before (done) ->
         @gadgets = []
         params = 
           user: 'me'
-          catalog: 'sandbox'
+          catalog: 'approved'
         request.get(helper.getApiUrl('gadgets')).send(params).end (res) ->
           @gadgets = res.body
           done()
@@ -98,12 +98,12 @@ describe 'Bridge', ->
           @bridge.addGadget @gadgetPath
           params =
             user: 'me'
-            catalog: 'sandbox'
+            catalog: 'approved'
           request.get(helper.getApiUrl('gadgets')).send(params).end (res) =>
             @gadgets = res.body
             done()
-      
-      it 'should return new gadget from sandbox', ->
+
+      it 'should return new gadget from approved', ->
         @gadgets.length.should.eq 1
 
       it 'should set files hash on manifest', ->
