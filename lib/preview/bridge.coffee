@@ -16,6 +16,7 @@ module.exports = class Bridge
     @gadgets = []
     @app = express()
     api = express()
+    @options = options
 
     api.use express.bodyParser()
 
@@ -60,13 +61,17 @@ module.exports = class Bridge
     api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/config', (req, res) -> res.send 200
     api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/userstate', (req, res) -> res.send 200
 
-    @app.get '/', (req, res) => res.send @loadIndex().replace('BRIDGE_PORT', options.port)
+    @app.get '/', (req, res) => res.send @loadIndex()
     @app.use express.static sdkSite
     @app.use '/api', api
 
-  loadIndex: () ->
-    index = path.join sdkSite, 'index.html'
-    fs.readFileSync index, 'utf8'
+  loadIndex: ->
+    indexPath = path.join sdkSite, 'index.html'
+    index = fs.readFileSync indexPath, 'utf8'
+    @rewritePort index
+
+  rewritePort: (index) ->
+    index.replace 'BRIDGE_PORT', @options.port
 
   addGadget: (gadgetPath) ->
     id = shortid.generate()
