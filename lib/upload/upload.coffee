@@ -9,10 +9,7 @@ needle = require 'needle' #TODO: can we do better and upload it with API?
 
 defaults =
   url: "https://stack.versal.com/api2"
-  authUrl: "http://www1.versal.com/signin"
-  basicAuth:
-    username: 'versal'
-    password: 'OkeyDokey'
+  authUrl: "https://versal.com/signin"
 
 module.exports = 
   command: (dest, options, callback = ->) ->
@@ -32,15 +29,15 @@ module.exports =
 
       needle.post "#{options.url}/gadgets",
         @requestData(fileData),
-        @requestOptions(options.sessionId), 
-        (err, res, errors) ->
+        @requestOptions(options.sessionId),
+        (err, res, body) ->
           if err then return callback(err)
           # OK code
           if res.statusCode >= 200 && res.statusCode < 300 then return callback()
           # Error code
           if res.statusCode >= 300
-            if _.isArray(errors)
-              messages = _.map(errors, (e)-> e.message).join(',')
+            if _.isArray(body)
+              messages = _.map(body, (e)-> e.message).join(',')
               return callback new Error "Following errors prevented the gadget from being uploaded: #{messages}"
             else
               return callback new Error "Gadget uploading failed. Error code: #{res.statusCode}"
@@ -98,12 +95,12 @@ module.exports =
       _.extend(options, credentials)
 
       data = querystring.stringify(credentials)
-      requestOptions = _.extend({}, options.basicAuth);
+      requestOptions = 'X-Requested-With': 'XMLHttpRequest'
 
       needle.post options.authUrl, data, requestOptions, (err, res, body) ->
         return callback err if err
         return callback new Error("Authorization unsuccessful. Error code: " + res.statusCode) if res.statusCode != 200
-        sessionId = res.headers["session_id"]
+        sessionId = body.sessionId
         callback null, sessionId
 
   initConfig: ->
