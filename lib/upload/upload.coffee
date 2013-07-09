@@ -18,7 +18,6 @@ module.exports =
     @verifySessionOrAuthenticate options, (err, sessionId) =>
       return callback err if err
       options.sessionId = sessionId
-      @saveSessionIdToConfig(options, sessionId)
       gadgetBundlePath = path.resolve "#{dest}/bundle.zip"
 
       unless fs.existsSync gadgetBundlePath
@@ -154,6 +153,8 @@ module.exports =
     options.sessionId = options.sessionId || @sessionIdFromConfig options
     @verifySession options, (err) =>
       if err
-        @signIn options, callback
+        @signIn options, (err, sessionId) =>
+          unless err then @saveSessionIdToConfig(options, sessionId)
+          callback()
       else
         callback null, options.sessionId
