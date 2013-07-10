@@ -33,7 +33,7 @@
 <dl>
 
 <dt>
-<strong>player</strong>
+<strong>options.player</strong>
 </dt>
 <dd>
 The player object for sending and receiving gadget events. For syntax purposes, it extends <a href="http://backbonejs.org/#Events">Backbone.Events</a>
@@ -45,8 +45,7 @@ The player object for sending and receiving gadget events. For syntax purposes, 
 <strong>config</strong>
 </dt>
 <dd>
-A set of configuration properties for the gadget. This is a <a href="http://backbonejs.org/#Model">Backbone.Model</a>, which means you can retrieve properties using <code>config.get(&#39;propertyName&#39;)</code> and store properties <code>config.set(&#39;propertyName&#39;, &quot;value&quot;)</code>.
-</dd>
+A set of configuration properties for the gadget. This is a <a href="http://backbonejs.org/#Model">Backbone.Model</a>, which means you can retrieve properties using <code>config.get(&#39;propertyName&#39;)</code> and store properties <code>config.save(&#39;propertyName&#39;, &quot;value&quot;)</code>. See the <a href="#configuration">config section</a> for more information.</dd>
 
 <br>
 
@@ -54,16 +53,16 @@ A set of configuration properties for the gadget. This is a <a href="http://back
 <strong>userState</strong>
 </dt>
 <dd>
-A set of properties for learner data. This is a <a href="http://backbonejs.org/#Model">Backbone.Model</a>, which means you can retrieve properties using <code>userState.get(&#39;propertyName&#39;)</code> and store properties <code>userState.set(&#39;propertyName&#39;, &quot;value&quot;)</code>.
+A set of properties for learner data. This is a <a href="http://backbonejs.org/#Model">Backbone.Model</a>, which means you can retrieve properties using <code>userState.get(&#39;propertyName&#39;)</code> and store properties <code>userState.save(&#39;propertyName&#39;, &quot;value&quot;)</code> See the <a href="#user-state">userState section</a> for more information.
 </dd>
 
 <br>
 
 <dt>
-<strong>el</strong>
+<strong>$el</strong>
 </dt>
 <dd>
-A DOM element to render gadget content inside.
+A <a href="jquery.com">Jquery</a> object representing the DOM element containing the gadget. You&#39;ll render the gadget inside this element.
 </dd>
 
 <br>
@@ -72,25 +71,13 @@ A DOM element to render gadget content inside.
 <strong>propertySheetSchema</strong>
 </dt>
 <dd>
-A <a href="http://backbonejs.org/#Model">Backbone.Model</a> which can be used to configure the optional property sheet. We&#39;ll discuss property sheets later.
+A <a href="http://backbonejs.org/#Model">Backbone.Model</a> which can be used to configure the optional property sheet. See the <a href="#property-sheets">propery sheet section</a> for more information.
 </dd>
 
 </dl>
 
-<p>This is how we could call your gadget:</p>
 
-        
-          <div class='highlight'><pre>options = {
-  el:                  document.getElementById(<span class="string">'gadgetId123'</span>),
-  config:              <span class="keyword">new</span> Backbone.Model(),
-  player:              <span class="keyword">new</span> Backbone.Events(),
-  propertySheetSchema: <span class="keyword">new</span> Backbone.Model()
-};
-<span class="keyword">new</span> MyGadget(options);</pre></div>
-        
-      
-        
-        <p><em>Note: You don&#39;t have to use Backbone for your gadget at all, it&#39;s just the library we use internally.</em></p>
+<p><em>Note: Backbone is always available, but you don&#39;t need to use it for your gadget at all. It&#39;s just the library we use internally.</em></p>
 <p><a name="events" /></p>
 <h2>Events</h2>
 
@@ -99,80 +86,223 @@ A <a href="http://backbonejs.org/#Model">Backbone.Model</a> which can be used to
         
         <dl>
 
-<dt>
+<p><dt>
 <strong>toggleEdit</strong> <em>(editing: boolean)</em>
-</dt>
-<dd>
-Fired by the player when an the gadget changes to and from edit mode. The <code>editing</code> parameter is a boolean value indicating if the gadget is in editing mode or not. This happens when the course author starts and ends editing a gadget.
-</dd>
+</dt></p>
+<p><dd>
+Fired by the player when the gadget changes to and from edit mode. The <code>editing</code> parameter is a boolean value indicating if the gadget is in editing mode or not. This happens when the course author starts and ends editing a gadget.</p>
+<p>In the &#39;template gadget&#39; you get when running &#39;versal create $gadget-name&#39;, you can see toggleEdit in action:</p>
 
-<br>
+        
+          <div class='highlight'><pre><span class="keyword">this</span>.player.on(<span class="string">'toggleEdit'</span>, <span class="keyword">this</span>.toggleEdit, <span class="keyword">this</span>);</pre></div>
+        
+      
+        
+        <p>This line tells the player to run the Gadget.toggleEdit function, bound to the current <code>this</code> context, whenever a <code>toggleEdit</code> event is fired. This function is defined later:</p>
 
-<dt>
+        
+          <div class='highlight'><pre>Gadget.prototype.toggleEdit = <span class="keyword">function</span>(editable){
+  <span class="keyword">this</span>.render(editable);
+}</pre></div>
+        
+      
+        
+        <p>Generally, you&#39;ll want to defer to the render() function, since the gadget will need to display differently if it is editable or not. If <code>editable</code> is true, then your gadget should show interface elements that allow the author to edit the configuration of your gadget. If <code>editable</code> is false, the editing interface should be hidden again.</p>
+<p></dd></p>
+<p><br></p>
+<p><dt>
 <strong>domReady</strong>
-</dt>
+</dt></p>
 <dd>
-Fired by the player when it&#39;s ready to display the gadget. If the gadget is meant to be visible the method bound to this event should cause the gadget to render itself in it&#39;s <code>el</code>.
+Fired by the player when it&#39;s ready to display the gadget. If the gadget is meant to be visible the method bound to this event should cause the gadget to render itself in its <code>$el.</code>
+
+Here&#39;s the snippet from the template gadget:
+  this.player.on(&#39;domReady&#39;, this.render, this);
+
+Again, we defer to Gadget.render() to handle the display.
 </dd>
 
-</dl>
-
+<p></dl></p>
 <p><a name="configuration" /></p>
 <h2>Configuration</h2>
 
         
       
         
-        <p>Each gadget instance has a configuration defined by the author via the gadget&#39;s UI and/or property sheet. These can be persisted manually via a <strong>save</strong> event and/or by the player automatically when manipulated via the property sheet editor.</p>
-<p>Each gadget instance has a configuration defined by the author via the gadget&#39;s UI and/or property sheet. The configuration object extends <a href="http://backbonejs.org/#Model">Backbone.Model</a> and can be accessed using the <code>options</code> object passed at initialization, <code>options.config</code>.</p>
-<p>To get a single property from the config use <code>options.config.get(&#39;propertyName&#39;)</code>, and to set a single property use <code>options.config.set(&#39;propertyName&#39;, &#39;value&#39;)</code>.</p>
-<p>You can also pass multiple properties using <code>options.config.set({property1: &#39;value&#39;, property2: &#39;otherValue&#39;})</code>. When setting a property it is automatically saved on the server.</p>
-<p>Besides setting properties manually they can also be changed externally, for example through a property sheet. You can listen to the <strong>change</strong> event by writing <strong>options.config.on(&quot;change&quot;, function() { /<em> do stuff </em>/ })</strong>.</p>
-<p>The change event fires every time you call <code>options.config.set</code> or when it changes by editing the property sheet. It is recommended to use this event to update your gadget, in order to make it easy to add a property sheet later.</p>
+        <p>Each gadget instance has a configuration defined by the author via the gadget&#39;s UI and property sheet. The configuration object extends <a href="http://backbonejs.org/#Model">Backbone.Model</a> and can be accessed using the <code>options</code> object passed at initialization, <code>options.config</code>.</p>
+<p>To get a single property from the config use <code>options.config.get(&#39;propertyName&#39;)</code>. To change a single property value, use <code>options.config.save(&#39;propertyName&#39;, &#39;value&#39;)</code>. This also saves the property to the server, allowing you to retrieve it later.</p>
+<p>You can  pass multiple properties using <code>options.config.save({property1: &#39;value&#39;, property2: &#39;otherValue&#39;})</code>. As before, setting a property automatically saves it on the server.</p>
+<p>Property sheets can change <code>options.config</code> externally, and you&#39;ll probably want to update your gadget when they do. You can listen to the <a href="http://backbonejs.org/#Events-on">change event</a> by writing <strong>options.config.on(&quot;change&quot;, function() { /<em> do stuff </em>/ })</strong>. The change event fires every time you call <code>options.config.save</code> or when it changes due to editing the property sheet. It is recommended to use this event to update your gadget, in order to make it easy to add a property sheet later.</p>
+<p>There may be situations where you want to set a value of the config, but not save it to the server. You can use <code>options.config.set</code> to do just that. If you then want to save these changes, you can call <code>options.config.save()</code> - with no arguments - to sync the <code>options.config</code>&#39;s current state with the server.</p>
 <p><a name="user-state" /></p>
 <h2>User state</h2>
 
         
       
         
-        <p>Much like a gadget&#39;s configuration gadget&#39;s also have <code>userState</code> to persist info per learner. <code>userState</code> works just like <code>config</code> and is useful storing data generated by learners.</p>
-<p><a name="editing-a-gadget" /></p>
-<h2>Editing a gadget</h2>
+        <p>Much like a gadget&#39;s configuration gadget&#39;s also have <code>userState</code> to persist info per learner. <code>userState</code> works just like <code>config</code> and is useful storing data generated by learners. While config stores information about a gadget and can change the gadget for all learners, userState stores information on the current user.</p>
+<p>In the slideshow gadget, for example, the slide text and image URLs are stored in <code>config</code>, so that when an author makes a change, it shows up for all learners in the course. The slide that a learner is on, however, is stored in <code>userState</code> so that they can exit the course and pick up exactly where they left off.</p>
+<p>You can specify a defaultUserState in manifest.json in the same way you would specify a defaultConfig. When userState is undefined (such as the first time a learner loads the gadget), the player will create a userState model with the defaultUserState parameters.</p>
+<p>NOTE: Soon we will load userState in the same way that we load config, ie automatically. However, the operative word there is <em>soon</em>. For the meanwhile, please use this little workaround a la JQuery.deferred (taken directly from the slideshow gadget): </p>
 
+        
+          <div class='highlight'><pre>  <span class="comment">/* Some userstate hackin' */</span>
+
+  <span class="keyword">var</span> deferred;
+  <span class="keyword">var</span> self = <span class="keyword">this</span>;
+  <span class="keyword">var</span> userStateId = <span class="keyword">this</span>.userState.gadget.get(<span class="string">"id"</span>);
+
+  <span class="keyword">if</span> (userStateId) {
+      deferred = <span class="keyword">this</span>.userState.fetch();
+  } <span class="keyword">else</span> {
+      deferred = (<span class="keyword">new</span> $.Deferred()).resolve();
+  }
+  <span class="comment">/* Execute when the userState has been fetched */</span>
+  deferred.done(<span class="keyword">function</span>() {
+   <span class="comment">/*Userstate may or may not currently be defined. */</span>
+   <span class="comment">/*If it is defined, then use its slideOn property for self.slideOn */</span>
+    <span class="keyword">if</span>(self.userState.get(<span class="string">'slideOn'</span>)){
+        self.slideOn = self.userState.get(<span class="string">'slideOn'</span>);
+    }
+    <span class="comment">/*If it is not defined, use 0 as the default value, and save it to the server */</span>
+    <span class="keyword">else</span>{
+        self.slideOn = <span class="number">0</span>;
+        self.userState.save({slideOn: self.slideOn});
+    }
+    self.render(<span class="literal">false</span>);
+  });</pre></div>
         
       
         
-        <p>The player (<code>options.player</code>) fires a <strong>toggleEdit</strong> event when an author clicks on the edit button. An <strong>editing</strong> boolean is passed which says if the gadget should become editable or not.</p>
-<p>If <em>editing</em> is true, then your gadget should show interface elements that allow the author to edit the configuration of your gadget. If <em>editing</em> is false, the editing interface should be hidden again.</p>
-<p><a name="property-sheets" /></p>
+        <p><a name="property-sheets" /></p>
 <h2>Property sheets</h2>
 
         
       
         
         <p>Whenever possible you should try to build interface elements for editing a gadget directly within the gadget. This works best if the properties that can be edited have a visual representation within the gadget. For example, width and height of elements could be edited by dragging and dropping.</p>
-<p>Sometimes a configuration property has no clear visual representation. For those cases, we provide a simple way of building a property sheet. This can be done by simply calling, for example, <code>options.propertySheetSchema.set(&#39;propertyName&#39;, &#39;Text&#39;)</code>. This adds a textbox to the property sheet form.</p>
+<p>Sometimes a configuration property has no clear visual representation. For instance, the default parameters for a simulation, or default variable values in an equation. For those cases, we provide a simple way of building a property sheet. This can be done by making a call like
+  options.propertySheetSchema.set(&#39;propertyName&#39;, &#39;Text&#39;)</p>
+<p>This adds a textbox to the property sheet form, like so:</p>
+<p><img src="http://i.imgur.com/XAZTuOc.png" alt="text property sheet element"></p>
 <p>Now every time an author edits a property, the configuration (<code>options.config</code>) fires a <strong>change</strong> event. You can listen to this event and update the gadget accordingly.</p>
-<p><a name="property-sheets-advanced" /></p>
-<h2>Property sheets (advanced)</h2>
-
-        
-      
-        
-        <p>It&#39;s also possible to configure these properties with attributes, for example by calling <code>options.propertySheetSchema.set(&#39;percentage&#39;, {type: &#39;Range&#39;, min: 0, max: 100})</code>. In this case we add a range slider. The following form elements are supported:</p>
+<p>It&#39;s also possible to configure these properties with attributes, for example by calling <code>options.propertySheetSchema.set(&#39;percentage&#39;, {type: &#39;Range&#39;, min: 0, max: 100})</code>. In this case we add a range slider. The following form elements are supported (click the name for a sreenshot):</p>
 <ul>
-<li><strong>Text:</strong> simple textbox</li>
-<li><strong>TextArea:</strong> larger textbox</li>
-<li><strong>Checkbox:</strong> simple checkbox</li>
-<li><strong>Number:</strong> textbox for numerical values with up and down buttons</li>
-<li><strong>Range:</strong> interactive range slider <em>attributes: &#39;min&#39;, &#39;max&#39;, &#39;step&#39;*</em></li>
-<li><strong>Color:</strong> textbox for color values (such as <code>#abcdef</code>) with color picker</li>
-<li><strong>Select:</strong> drop down menu <em>attributes: &#39;options&#39;*</em></li>
-<li><strong>Radio:</strong> radio buttons <em>attributes: &#39;options&#39;*</em></li>
-<li><strong>Checkboxes:</strong> checkboxes <em>attributes: &#39;options&#39;*</em></li>
-<li><strong>Date:</strong> date <em>attributes: &#39;yearStart&#39;, &#39;yearEnd&#39;*</em></li>
-<li><strong>DateTime:</strong> date and time <em>attributes: &#39;yearStart&#39;, &#39;yearEnd&#39;, &#39;minsInterval&#39;*</em></li>
+<li><p><a href="http://i.imgur.com/XAZTuOc.png"><strong>Text:</strong></a> Simple input box.</p>
+</li>
+<li><p><a href="http://i.imgur.com/mTdaBxR.png?2"><strong>TextArea:</strong></a> Larger textbox</p>
+</li>
+<li><p><a href="http://i.imgur.com/H1VGHjb.png?1"><strong>Checkbox:</strong></a> Simple checkbox. <code>config.get()</code> returns a boolean value indicating whether it is checked.</p>
+</li>
+<li><p><a href="http://i.imgur.com/xHUrSfB.png"><strong>Number:</strong></a> Textbox for integer values with up/down buttons</p>
+</li>
+<li><p><a href="http://i.imgur.com/BvxD43D.png"><strong>Range:</strong></a> Interactive range slider <em>attributes: &#39;min&#39;, &#39;max&#39;, &#39;step&#39;</em> (all Numbers)</p>
+</li>
+<li><p><a href="http://i.imgur.com/2tpCeAW.png?1"><strong>Color:</strong></a> Textbox for color values (such as <code>#abcdef</code>) with visual color picker</p>
+</li>
+<li><p><a href="http://i.imgur.com/OodaZmP.png"><strong>Date:</strong></a> Simple date picker. <em>attributes: &#39;yearStart&#39;, &#39;yearEnd&#39;</em></p>
+<ul>
+<li>Using <code>config.get()</code> returns a <a href="http://www.w3schools.com/jsref/jsref_obj_date.asp">Javascript Date object</a>.</li>
 </ul>
+</li>
+<li><p><strong>DateTime:</strong> Date/time picker. <em>attributes: &#39;yearStart&#39;, &#39;yearEnd&#39;, &#39;minsInterval&#39;</em></p>
+<ul>
+<li>Using <code>config.get()</code> returns a <a href="http://www.w3schools.com/jsref/jsref_obj_date.asp">Javascript Date object</a>.</li>
+</ul>
+</li>
+<li><p><a href="http://i.imgur.com/5qGqGUn.png"><strong>Select:</strong></a> Drop down menu <em>attributes: &#39;options&#39;</em></p>
+<ul>
+<li><em>options</em> is a list of values to choose from in array, HTML <code>&lt;option&gt;</code> tags, or object array format. The following will produce the same menu to select from, though the last will save the <code>val</code> numbers (not the label) to the server.</li>
+</ul>
+</li>
+</ul>
+<div class = "highlight" style="margin-left: 76px">
+<pre style = "width: 730px;"> 
+<span class = "comment">//Simple string array</span>
+options.propertySheetSchema.set(&#39;Favorite Character&#39;, 
+{
+&nbsp;&nbsp;type: <span class = "string">&quot;Select&quot;</span>, 
+&nbsp;&nbsp;options: [<span class = "string">&quot;Ned Stark&quot;</span>, <span class = "string">&quot;Jon Snow&quot;</span>, <span class = "string">&quot;Tyrion Lannister&quot;</span>]
+});<br>
+<span class = "comment">//String of &lt;option&gt; HTML tags</span>
+options.propertySheetSchema.set(&#39;Favorite Character&#39;, 
+{
+&nbsp;&nbsp;type: <span class = "string">&quot;Select&quot;</span>, 
+&nbsp;&nbsp;options: <span class = "string">&quot;&lt;option&gt;Ned Stark&lt;/option&gt;&lt;option&gt;Jon Snow&lt;/option&gt;&lt;option&gt;Tyrion Lannister&lt;/option&gt;&quot;</span>
+});<br>
+<span class = "comment">//Array of Javascript objects with val and label properties</span>
+options.propertySheetSchema.set(&#39;Favorite Character&#39;, 
+{
+&nbsp;&nbsp;type: <span class = "string">&quot;Select&quot;</span>, 
+&nbsp;&nbsp;options: 
+&nbsp;&nbsp;[
+&nbsp;&nbsp;&nbsp;&nbsp;{val: 1, label: <span class = "string">&quot;Ned Stark&quot;</span>}, 
+&nbsp;&nbsp;&nbsp;&nbsp;{val: 2, label: <span class = "string">&quot;Jon Snow&quot;</span>}, 
+&nbsp;&nbsp;&nbsp;&nbsp;{val:3, label:<span class = "string">&quot;Tyrion Lannister&quot;</span>}
+&nbsp;&nbsp;]
+});<br><br></pre>
+</div>
+
+<ul>
+<li><a href="http://i.imgur.com/u1P477J.png"><strong>Radio:</strong></a> Radio buttons <em>attributes: &#39;options&#39;</em><ul>
+<li><em>options</em> is a list of values to choose from in array or object array format. The following will produce the same menu to select from, though the last will save the <code>val</code> numbers (not the label) to the server.</li>
+</ul>
+</li>
+</ul>
+<div class = "highlight" style="margin-left: 76px">
+<pre style = "width: 730px;"> 
+<span class = "comment">//Simple string array</span>
+options.propertySheetSchema.set(&#39;Favorite Character&#39;, 
+{
+&nbsp;&nbsp;type: <span class = "string">&quot;Radio&quot;</span>, 
+&nbsp;&nbsp;options: [<span class = "string">&quot;Ned Stark&quot;</span>, <span class = "string">&quot;Jon Snow&quot;</span>, <span class = "string">&quot;Tyrion Lannister&quot;</span>]
+});
+
+<span class = "comment">//Array of Javascript objects with val and label properties</span>
+options.propertySheetSchema.set(&#39;Favorite Character&#39;, 
+{
+&nbsp;&nbsp;type: <span class = "string">&quot;Radio&quot;</span>, 
+&nbsp;&nbsp;options: 
+&nbsp;&nbsp;[
+&nbsp;&nbsp;&nbsp;&nbsp;{val: 1, label: <span class = "string">&quot;Ned Stark&quot;</span>}, 
+&nbsp;&nbsp;&nbsp;&nbsp;{val: 2, label: <span class = "string">&quot;Jon Snow&quot;</span>}, 
+&nbsp;&nbsp;&nbsp;&nbsp;{val:3, label:<span class = "string">&quot;Tyrion Lannister&quot;</span>}
+&nbsp;&nbsp;]
+});<br><br></pre>
+</div>
+
+<ul>
+<li><a href="http://i.imgur.com/2aEHO2j.png"><strong>Checkboxes:</strong></a> checkboxes <em>attributes: &#39;options&#39;</em><ul>
+<li><em>options</em> is a list of values to be checked/unchecked. Like <strong>Radio</strong> and <strong>Select</strong> it can be in array or object array format; however, using <code>config.get()</code> will return an array of all currently checked values. As always, if you use the object array format, the <code>val</code> field will be saved to the server, not the label.</li>
+</ul>
+</li>
+</ul>
+<div class = "highlight" style="margin-left: 76px">
+<pre style = "width: 730px;"> 
+<span class = "comment">//Simple string array</span>
+options.propertySheetSchema.set(<span class = "string">&#39;Study Group Members&#39;</span>, 
+{
+&nbsp;&nbsp;type: <span class = "string">&quot;Checkboxes&quot;</span>, 
+&nbsp;&nbsp;options: [<span class = "string">&quot;Annie&quot;</span>, <span class = "string">&quot;Jeff&quot;</span>, <span class = "string">&quot;Chang&quot;</span>]
+});
+<span class = "comment">//Sample return value: [&quot;Annie&quot;, &quot;Jeff&quot;]</span><br>
+<span class = "comment">//Array of Javascript objects with val and label properties</span>
+options.propertySheetSchema.set(<span class = "string">&#39;Study Group Members&#39;</span>, 
+{
+&nbsp;&nbsp;type: <span class = "string">&quot;Checkboxes&quot;</span>, 
+&nbsp;&nbsp;options: 
+&nbsp;&nbsp;[
+&nbsp;&nbsp;&nbsp;&nbsp;{val: 1, label: <span class = "string">&quot;Annie&quot;</span>}, 
+&nbsp;&nbsp;&nbsp;&nbsp;{val: 2, label: <span class = "string">&quot;Jeff&quot;</span>}, 
+&nbsp;&nbsp;&nbsp;&nbsp;{val:3, label:<span class = "string">&quot;Chang&quot;</span>}
+&nbsp;&nbsp;]
+});
+<span class = "comment">//Sample return value: [&quot;1&quot;, &quot;2&quot;]</span>
+<span class = "comment">//Note that the string representation of val is returned, not the original Number</span><br>
+</pre>
+</div>
+
+
 <p>Besides the listed options you can always specify <strong>title</strong> for a custom title label.</p>
 <p>You can also pass in a <strong>validators</strong> array. Please see the <a href="https://github.com/powmedia/backbone-forms">Backbone.Forms</a> documentation for more details on how this works.</p>
 <p><a name="css" /></p>
@@ -181,7 +311,7 @@ Fired by the player when it&#39;s ready to display the gadget. If the gadget is 
         
       
         
-        <p>Gadget CSS is expected to be in a file called <code>gadget.css</code>.</p>
+        <p>Gadget CSS is expected to be in a file called <code>gadget.css</code>. You can write CSS exactly how you  would for a normal webpage. It will be automatically scoped when the gadget is published, so it will only affect your gadget.</p>
 <p><a name="asset-selection" /></p>
 <h2>Asset selection</h2>
 
@@ -192,16 +322,16 @@ Fired by the player when it&#39;s ready to display the gadget. If the gadget is 
 <p>To initiate asset selection:</p>
 
         
-          <div class='highlight'><pre><span class="keyword">this</span>.player.trigger(<span class="string">'asset:select'</span>, { as: <span class="string">'myImage'</span>, type: <span class="string">'image'</span> });</pre></div>
+          <div class='highlight'><pre><span class="keyword">this</span>.player.trigger(<span class="string">'asset:select'</span>, { as: <span class="string">'myImage'</span>, type: <span class="string">'image'</span> , success: <span class="keyword">function</span>(imageObject){<span class="comment">/*Execute on success*/</span>});</pre></div>
         
       
         
-        <p>After the user completes the process of uploading or picking an asset a <code>change</code> event is fired on the <code>config</code> model. Given the example above the config object will end up with a key called <code>myImage</code>, e.g.:</p>
+        <p>After the user completes the process of uploading or picking an asset, the <code>success</code> callback function is executed, and a <code>change</code> event is fired on the <code>config</code> model. Since we specified <code>as: &#39;myImage&#39;</code> in the example above the config object will end up with a key called <code>myImage</code>, e.g.:</p>
 
         
           <div class='highlight'><pre>{
   ...
-  <span class="string">"myImage"</span> : [
+  <span class="string">"myImage"</span> :
     {
       <span class="string">"id"</span> : <span class="string">"1909e155-4900-42ae-a354-34b1ff95207e"</span>,
       <span class="string">"representations"</span> : [
@@ -221,7 +351,8 @@ Fired by the player when it&#39;s ready to display the gadget. If the gadget is 
         
       
         
-        <p><a name="gadget-project-assets" /></p>
+        <p>This image object is also available as the first (and only) argument to the success callback. The most important bit is probably the URL, which you can use to display the image. In this case, you would use <code>config.get(&#39;myImage&#39;).representations[0].location</code> to obtain the URL string, or <code>imageObject.representations[0].location</code> if you are in the success callback.</p>
+<p><a name="gadget-project-assets" /></p>
 <h2>Gadget project assets</h2>
 
         
@@ -229,16 +360,16 @@ Fired by the player when it&#39;s ready to display the gadget. If the gadget is 
         
         <p>Gadget projects can include thier own static assets that will be served from Versal&#39;s CDN. We designate the <code>assets/</code> directory in a gadget project for this purpose and treat the files specially when the gadget is uploaded to the Versal platform:</p>
 <p>1) Each file will be uploaded to our CDN</p>
-<p>2) We expose a function on the player called <code>assetUrl</code> for looking up the CDN URL.</p>
-<p>In your gadget&#39;s JS you can refer use <code>options.player.assetUrl</code> to lookup the asset&#39;s location (assuming you&#39;ve set the player to a property on your gadget asset):</p>
+<p>2) We expose a function on the player, called <code>player.assetUrl</code>, for looking up the CDN URL.</p>
+<p>In your gadget&#39;s JS you can refer use <code>options.player.assetUrl</code> to lookup the asset&#39;s location:</p>
 
         
-          <div class='highlight'><pre><span class="keyword">var</span> template = <span class="string">'&lt;img src="'</span> + <span class="keyword">this</span>.player.assetUrl(<span class="string">'assets/myImage.png'</span>) + <span class="string">'" /&gt;'</span>;</pre></div>
+          <div class='highlight'><pre><span class="keyword">var</span> template = <span class="string">'&lt;img src="'</span> + options.player.assetUrl(<span class="string">'assets/myImage.png'</span>) + <span class="string">'" /&gt;'</span>;</pre></div>
         
       
         
         <p>In CSS we replace URLs for you so you are able to refer gadget assets by their relative path and your uploaded gadgets will load the same assets from our CDN.</p>
-<p>Note: In the future we will be able to do the same replacement on JS files that we do on CSS so you&#39;ll only have to use <code>assetUrl</code> for dynamically generated asset names, e.g. <code>&lt;img src=&quot;&#39; + this.player.assetUrl(&#39;assets/myImage&#39; + index + &#39;.png&#39;) + &#39;&quot; /&gt;</code></p>
+<p>Note: In the future we will be able to do the same replacement on JS files that we do on CSS so you&#39;ll only have to use <code>assetUrl</code> for dynamically generated asset names, e.g. <code>&lt;img src=&quot;&#39; + options.player.assetUrl(&#39;assets/myImage&#39; + index + &#39;.png&#39;) + &#39;&quot; /&gt;</code></p>
 <p><a name="requirejs-primer" /></p>
 <h2>RequireJS Primer</h2>
 
