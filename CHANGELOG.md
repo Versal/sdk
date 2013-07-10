@@ -1,3 +1,10 @@
+# v0.2.7
+
+* Fixed authentication
+* Fixed --sessionId overwriting ~/.versal
+* Included revised docs (thanks Ian!)
+* Show preview gadgets in approved rather than sandbox
+
 # v0.2.6
 
 * Fixed use of alternate port on `versal preview`
