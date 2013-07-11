@@ -51,7 +51,7 @@ module.exports =
     multipart: true
     headers: 
       session_id: sessionId
-    timeout: 60000
+    timeout: 720000
 
   verifySession: (options, callback) ->
     return callback new Error("Could not verify session") unless options.sessionId
