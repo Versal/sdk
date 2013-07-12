@@ -1,7 +1,7 @@
 fs = require 'fs'
 path = require 'path'
 require('chai').should()
-sdk = require '../lib/sdk'
+sdk = require '../src/sdk'
 
 gadgetPath = path.resolve './temp/gadgets'
 

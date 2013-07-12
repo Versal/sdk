@@ -2,8 +2,8 @@ require('chai').should()
 request = require 'superagent'
 fs = require 'fs'
 path = require 'path'
-sdk = require '../lib/sdk'
-Bridge = require '../lib/preview/bridge'
+sdk = require '../src/sdk'
+Bridge = require '../src/preview/bridge'
 
 class Helper
   url: "http://localhost:3073"
@@ -68,7 +68,7 @@ describe 'Bridge', ->
     describe 'approved', ->
       before (done) ->
         @gadgets = []
-        params = 
+        params =
           user: 'me'
           catalog: 'approved'
         request.get(helper.getApiUrl('gadgets')).send(params).end (res) ->
@@ -81,7 +81,7 @@ describe 'Bridge', ->
     describe 'pending', ->
       before (done) ->
         @gadgets = []
-        params = 
+        params =
           user: 'me'
           catalog: 'pending'
         request.get(helper.getApiUrl('gadgets')).send(params).end (res) ->

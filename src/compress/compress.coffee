@@ -5,11 +5,11 @@ path = require 'path'
 async = require 'async'
 exec = require('child_process').exec
 
-module.exports = 
+module.exports =
   command: (dest, options, callback = ->) ->
     dest = path.resolve dest
-    excludePath = path.resolve "#{__dirname}/../../lib/compress/exclude.lst"
-    
+    excludePath = path.resolve "#{__dirname}/../../src/compress/exclude.lst"
+
     unless fs.existsSync dest
       return callback new Error "directory does not exist: #{dest}"
 

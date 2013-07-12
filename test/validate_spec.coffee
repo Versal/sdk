@@ -1,7 +1,7 @@
 should = require('chai').should()
-sdk = require '../lib/sdk'
+sdk = require '../src/sdk'
 path = require 'path'
-validate = require '../lib/validate/validate'
+validate = require '../src/validate/validate'
 sinon = require 'sinon'
 
 describe 'Validate', ->
@@ -12,7 +12,7 @@ describe 'Validate', ->
         version: '0.1.2'
         description: 'Foo gadget.'
       @errors = validate.validateManifest manifest
-    
+
     it 'should return no errors', ->
       @errors.length.should.equal 0
 

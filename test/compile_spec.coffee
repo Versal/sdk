@@ -3,8 +3,8 @@ path = require 'path'
 glob = require 'glob'
 fs = require 'fs'
 
-sdk = require '../lib/sdk'
-compile = require '../lib/compile/compile'
+sdk = require '../src/sdk'
+compile = require '../src/compile/compile'
 
 gadgetPath = path.resolve './temp/gadgets'
 fixturesPath = path.resolve './test/fixtures'

@@ -3,7 +3,7 @@ fs = require 'fs'
 url = require 'url'
 prompt = require 'prompt'
 https = require 'https'
-sdk = require '../../lib/sdk'
+sdk = require '../../src/sdk'
 path = require 'path'
 needle = require 'needle' #TODO: can we do better and upload it with API?
 
@@ -11,7 +11,7 @@ defaults =
   url: "https://stack.versal.com/api2"
   authUrl: "https://versal.com/signin"
 
-module.exports = 
+module.exports =
   command: (dest, options, callback = ->) ->
     options = _.extend defaults, options
 
@@ -21,7 +21,7 @@ module.exports =
       gadgetBundlePath = path.resolve "#{dest}/bundle.zip"
 
       unless fs.existsSync gadgetBundlePath
-        callback new Error("Gadget bundle not found in #{gadgetBundlePath}. Did you run `versal compress`?") 
+        callback new Error("Gadget bundle not found in #{gadgetBundlePath}. Did you run `versal compress`?")
 
       fileData = fs.readFileSync gadgetBundlePath
       console.log "Uploading gadget from #{dest}..."
@@ -40,16 +40,16 @@ module.exports =
               return callback new Error "Following errors prevented the gadget from being uploaded: #{messages}"
             else
               return callback new Error "Gadget uploading failed. Error code: #{res.statusCode}"
-  
+
   requestData: (fileData) ->
-    content: 
+    content:
       buffer: fileData
       filename: 'bundle.zip'
       content_type: 'application/zip'
-    
+
   requestOptions: (sessionId) ->
     multipart: true
-    headers: 
+    headers:
       session_id: sessionId
     timeout: 720000
 

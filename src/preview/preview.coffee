@@ -3,15 +3,15 @@ watch = require 'watch'
 path = require 'path'
 fs = require 'fs'
 _ = require 'underscore'
-sdk = require '../../lib/sdk'
+sdk = require '../../src/sdk'
 async = require 'async'
 open = require 'open'
 Bridge = require './bridge'
 
-defaults = 
+defaults =
   port: 3000
 
-module.exports = 
+module.exports =
   command: (dirs, options, callback = ->) ->
     options = _.extend defaults, options
 
@@ -19,7 +19,7 @@ module.exports =
       options.bridge = new Bridge port: options.port
 
     process.stdout.write "Compiling gadgets..."
-    
+
     # TODO: handle situation when dir contains already compiled gadget
     # Add gadget from specified directories
     async.map dirs, (dir, cb) ->
@@ -29,7 +29,7 @@ module.exports =
         if fs.existsSync "#{dir}/dist"
           options.bridge.addGadget "#{dir}/dist"
           cb null, true
-        else 
+        else
           cb null, false
     # run server after gadgets were compiled
     , (err, results) =>
@@ -42,13 +42,13 @@ module.exports =
 
       unless options.test
         options.bridge.app.listen options.port
-        
+
         console.log ''
         console.log " \\ \\/ /  Starting web server on #{options.bridge.url}"
         console.log "  \\/ /   Press Ctrl + C to exit..."
         console.log ''
 
-        if options.open then open options.bridge.url 
+        if options.open then open options.bridge.url
 
       @watchGadgets options, dirs, callback
 
