@@ -1,5 +1,5 @@
 _ = require 'underscore'
-sdk = require '../../lib/sdk'
+sdk = require '../../src/sdk'
 path = require 'path'
 async = require 'async'
 
@@ -9,7 +9,7 @@ module.exports = publish =
       return callback new Error("path for publish must be provided")
 
     dest = path.resolve dest
-    
+
     async.series
       validate: (cb) -> sdk.validate dest, options, cb
       compress: (cb) -> sdk.compress dest, options, cb

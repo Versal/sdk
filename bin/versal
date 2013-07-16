@@ -27,7 +27,7 @@ var argv = require("optimist")
   })
   .argv;
 
-var sdk = require('../lib/sdk');
+var sdk = require('../src/sdk');
 // command itself is first argument
 var command = argv._.shift();
 // if no dirs were specified after `versal something` then
@@ -37,7 +37,7 @@ if(!argv._.length) argv._.push('.');
 var options = _.omit(_.clone(argv), '_', '$0');
 
 try{
-  sdk[command].apply(null, [argv._, options, function(err){ 
+  sdk[command].apply(null, [argv._, options, function(err){
     if(err) console.log(err);
   }]);
 } catch(err) {
