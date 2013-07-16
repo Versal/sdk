@@ -44,8 +44,7 @@
     "express": "~3.2.6",
     "shortid": "~1.0.9",
     "archiver": "~0.4.4",
-    "almond": "~0.2.5",
-    "js-api": "git+ssh://git@github.com:Versal/api2.git"
+    "almond": "~0.2.5"
   },
   "devDependencies": {
     "grunt": "~0.4.0",
