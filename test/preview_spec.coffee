@@ -3,20 +3,20 @@ path = require 'path'
 sinon = require 'sinon'
 Bridge = require '../src/preview/bridge'
 
-bridge = new Bridge port: 3000
-gadgetPath = path.resolve './temp/gadgets'
-
 describe 'Preview', ->
+  bridge = new Bridge port: 3000
+  gadgetPath = path.resolve './temp/gadgets'
+  addGadget = sinon.stub bridge, 'addGadget'
+
   before (done) ->
-    @addGadget = sinon.stub bridge, 'addGadget'
     gadgets = ["#{gadgetPath}/preview_gadget_1", "#{gadgetPath}/preview_gadget_2"]
     sdk.create gadgets, ->
       sdk.compile gadgets, ->
         sdk.preview gadgets, { bridge: bridge, test: true }, -> done()
 
   after ->
-    @addGadget.restore()
+    addGadget.restore()
 
   it 'should call addGadget for every dir', ->
-    @addGadget.callCount.should.eq 2
+    addGadget.callCount.should.eq 2
 

@@ -42,11 +42,11 @@ module.exports = class Bridge
         res.send @gadgets
       else
         res.send []
-    
+
     api.get '/assets', (req, res) =>
       assets = JSON.parse fs.readFileSync path.join sdkFixtures, "assets/#{req.query.tagLead}s.json"
       res.send assets
-    
+
     # POST, PUT and DELETE various stuff
     # Do nothing
     api.put '/courses/:id/progress', (req, res) -> res.send 200
@@ -64,6 +64,17 @@ module.exports = class Bridge
     @app.get '/', (req, res) => res.send @loadIndex()
     @app.use express.static sdkSite
     @app.use '/api', api
+
+  start: ->
+    @server = @app.listen @options.port
+
+    console.log ''
+    console.log " \\ \\/ /  Starting web server on #{@url}"
+    console.log "  \\/ /   Press Ctrl + C to exit..."
+    console.log ''
+
+  stop: ->
+    if @server then @server.close()
 
   loadIndex: ->
     indexPath = path.join sdkSite, 'index.html'
@@ -110,7 +121,7 @@ module.exports = class Bridge
 
   # Get files hash for local gadgets
   getFiles: (id, gadgetPath) ->
-    files = 
+    files =
       'gadget.js': "#{@url}/gadgets/#{id}/gadget.js"
       'gadget.css': "#{@url}/gadgets/#{id}/gadget.css"
     assets = glob.sync '**/*', cwd: path.join gadgetPath, 'assets'
