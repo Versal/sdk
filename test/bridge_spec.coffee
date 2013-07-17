@@ -5,7 +5,7 @@ path = require 'path'
 sdk = require '../src/sdk'
 Bridge = require '../src/preview/bridge'
 
-class Helper
+helper =
   url: "http://localhost:3073"
   port: 3073
 
@@ -15,12 +15,15 @@ class Helper
   getFixture: (fixture) ->
     return JSON.parse fs.readFileSync "./preview/fixtures/#{fixture}.json", 'utf-8'
 
-helper = new Helper()
-
 describe 'Bridge', ->
+  bridge = null
+
   before ->
-    @bridge = new Bridge port: helper.port
-    @bridge.app.listen helper.port
+    bridge = new Bridge port: helper.port
+    bridge.start()
+
+  after ->
+    bridge.stop()
 
   it 'should set correct apiUrl', ->
     helper.getApiUrl('whatever').should.eq "http://localhost:3073/api/whatever"
@@ -65,53 +68,44 @@ describe 'Bridge', ->
           done()
 
   describe 'gadgets', ->
-    describe 'approved', ->
-      before (done) ->
-        @gadgets = []
+    describe 'initially', ->
+      it 'approved catalog should be empty', (done) ->
         params =
           user: 'me'
           catalog: 'approved'
         request.get(helper.getApiUrl('gadgets')).send(params).end (res) ->
-          @gadgets = res.body
+          res.body.should.eql []
           done()
 
-      it 'should serve gadgets from .versal folder', () ->
-        @gadgets.should.eql []
-
-    describe 'pending', ->
-      before (done) ->
-        @gadgets = []
+      it 'pending catalog should be empty', (done) ->
         params =
           user: 'me'
           catalog: 'pending'
         request.get(helper.getApiUrl('gadgets')).send(params).end (res) ->
-          @gadgets = res.body
+          res.body.should.eql []
           done()
 
-      it 'should return empty array', () ->
-        @gadgets.should.eql []
+    describe 'add a gadget', ->
+      gadgets = null
+      gadgetPath = path.resolve './test/fixtures/bridge/gadget/dist'
 
-    describe 'add', ->
       before (done) ->
-        @gadgetPath = path.resolve './temp/gadgets/bridge_gadget'
-        sdk.create @gadgetPath, =>
-          @bridge.addGadget @gadgetPath
-          params =
-            user: 'me'
-            catalog: 'approved'
-          request.get(helper.getApiUrl('gadgets')).send(params).end (res) =>
-            @gadgets = res.body
-            done()
+        bridge.addGadget gadgetPath
+        params =
+          user: 'me'
+          catalog: 'approved'
+        request.get(helper.getApiUrl('gadgets')).send(params).end (res) =>
+          gadgets = res.body
+          done()
 
       it 'should return new gadget from approved', ->
-        @gadgets.length.should.eq 1
+        gadgets.length.should.eq 1
 
       it 'should set files hash on manifest', ->
-        @gadgets[0].files.should.be.ok
+        gadgets[0].files.should.be.ok
 
       it 'should serve gadget files from /gadgets/:id folder', (done) ->
-        gadget = @gadgets[0]
-        url = "#{helper.url}/gadgets/#{gadget.id}/gadget.js"
+        url = "#{helper.url}/gadgets/#{gadgets[0].id}/gadget.js"
         request.get(url).end (res) ->
           res.status.should.eq 200
           done()

@@ -13,7 +13,6 @@ describe 'Compile', ->
   before (done) ->
     sdk.create "#{gadgetPath}/g5", ->
       sdk.compile "#{gadgetPath}/g5", (err) ->
-        console.log err if err
         done()
 
   describe 'dist folder', ->
@@ -45,18 +44,21 @@ describe 'Compile', ->
       gadgetCode.should.match new RegExp '<h1>Template!</h1>'
 
   describe 'cdn.* dependencies', ->
+    deps = null
+
     before ->
       code = '"cdn.jquery" and \'cdn.underscore\' and again \'cdn.jquery\''
-      @deps = compile.extractCDNDeps code
+      deps = compile.extractCDNDeps code
 
     it 'should extract jquery and underscore', ->
-      @deps.should.eql ['cdn.jquery', 'cdn.underscore']
+      deps.should.eql ['cdn.jquery', 'cdn.underscore']
 
   describe 'node dependencies', ->
+    deps = null
+
     before ->
       code = 'var underscore = require ( "underscore" ) and jquery = require \'jquery\''
-      @deps = compile.extractNodeDeps code
+      deps = compile.extractNodeDeps code
 
     it 'should contain jquery and underscore', ->
-      @deps.should.eql ['underscore', 'jquery']
-
+      deps.should.eql ['underscore', 'jquery']
