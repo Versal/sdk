@@ -4,7 +4,7 @@ sinon = require 'sinon'
 Bridge = require '../src/preview/bridge'
 
 describe 'Preview', ->
-  bridge = new Bridge port: 3000
+  bridge = new Bridge
   gadgetPath = path.resolve './temp/gadgets'
   addGadget = sinon.stub bridge, 'addGadget'
 

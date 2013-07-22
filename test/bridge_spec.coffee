@@ -19,8 +19,8 @@ describe 'Bridge', ->
   bridge = null
 
   before ->
-    bridge = new Bridge port: helper.port
-    bridge.start()
+    bridge = new Bridge
+    bridge.start helper.port
 
   after ->
     bridge.stop()
@@ -34,24 +34,40 @@ describe 'Bridge', ->
       done()
 
   it 'should return empty progress', (done) ->
-    request.get(helper.getApiUrl('courses/1/progress')).end (res) ->
+    request.get(helper.getApiUrl('courses/default/progress')).end (res) ->
       res.body.should.eql {}
       done()
 
   describe 'course', ->
     it 'should serve course.json from sdk/fixtures folder', (done) ->
-      request.get(helper.getApiUrl('courses/1')).end (res) ->
+      request.get(helper.getApiUrl('courses/default')).end (res) ->
         res.body.should.eql helper.getFixture 'course'
         done()
 
     it 'should serve lessons', (done) ->
-      request.get(helper.getApiUrl('courses/1/lessons')).end (res) ->
+      request.get(helper.getApiUrl('courses/default/lessons')).end (res) ->
         res.body.length.should.eq 2
         done()
 
     it 'should serve lesson', (done) ->
-      request.get(helper.getApiUrl('courses/1/lessons/1')).end (res) ->
+      request.get(helper.getApiUrl('courses/default/lessons/1')).end (res) ->
         res.body.id.should.eq 1
+        done()
+
+  describe 'non-existing course', ->
+    it 'should return 404', (done) ->
+      request.get(helper.getApiUrl('courses/unknown')).end (res) ->
+        res.status.should.eq 404
+        done()
+
+    it 'should return 404 for lessons', (done) ->
+      request.get(helper.getApiUrl('courses/unknown/lessons')).end (res) ->
+        res.status.should.eq 404
+        done()
+
+    it 'should return 404 for lesson', (done) ->
+      request.get(helper.getApiUrl('courses/unknown/lessons/unknown')).end (res) ->
+        res.status.should.eq 404
         done()
 
   describe 'assets', ->
@@ -67,8 +83,6 @@ describe 'Bridge', ->
           res.body.should.eql helper.getFixture 'assets/videos'
           done()
 
-  describe 'gadgets', ->
-    describe 'initially', ->
       it 'approved catalog should be empty', (done) ->
         params =
           user: 'me'
@@ -85,27 +99,40 @@ describe 'Bridge', ->
           res.body.should.eql []
           done()
 
-    describe 'add a gadget', ->
-      gadgets = null
-      gadgetPath = path.resolve './test/fixtures/bridge/gadget/dist'
+  describe 'gadgets', ->
+    gadgets = null
+    gadgetPath = path.resolve './test/fixtures/bridge/gadget/dist'
 
-      before (done) ->
-        bridge.addGadget gadgetPath
-        params =
-          user: 'me'
-          catalog: 'approved'
-        request.get(helper.getApiUrl('gadgets')).send(params).end (res) =>
-          gadgets = res.body
-          done()
+    before (done) ->
+      bridge.addGadget gadgetPath
+      params =
+        user: 'me'
+        catalog: 'approved'
+      request.get(helper.getApiUrl('gadgets')).send(params).end (res) =>
+        gadgets = res.body
+        done()
 
-      it 'should return new gadget from approved', ->
-        gadgets.length.should.eq 1
+    it 'should return new gadget from approved', ->
+      gadgets.length.should.eq 1
 
-      it 'should set files hash on manifest', ->
-        gadgets[0].files.should.be.ok
+    describe 'paths', ->
+      gadgetUrl = manifest = null
+
+      before ->
+        manifest = gadgets[0]
+        gadgetUrl = "api/gadgets/#{manifest.id}"
+
+      it 'should contain valid icon path', ->
+        manifest.icon.should.eq "#{gadgetUrl}/assets/icon.png"
 
       it 'should serve gadget files from /gadgets/:id folder', (done) ->
-        url = "#{helper.url}/gadgets/#{gadgets[0].id}/gadget.js"
+        url = "#{helper.url}/#{gadgetUrl}/gadget.js"
+        request.get(url).end (res) ->
+          res.status.should.eq 200
+          done()
+
+      it 'should serve gadget assets from /gadgets/:id/assets', (done) ->
+        url = "#{helper.url}/#{gadgetUrl}/assets/icon.png"
         request.get(url).end (res) ->
           res.status.should.eq 200
           done()

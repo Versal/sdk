@@ -13,21 +13,20 @@ defaults =
 
 module.exports =
   command: (dirs, options, callback = ->) ->
-    options = _.extend defaults, options
+    options = _.extend _.clone(defaults), options
 
-    unless options.bridge
-      options.bridge = new Bridge port: options.port
+    @bridge = options.bridge || new Bridge
 
     process.stdout.write "Compiling gadgets..."
 
     # TODO: handle situation when dir contains already compiled gadget
     # Add gadget from specified directories
-    async.map dirs, (dir, cb) ->
+    async.map dirs, (dir, cb) =>
       dir = path.resolve dir
-      sdk.compile dir, options, (err) ->
+      sdk.compile dir, options, (err) =>
         if err then return cb(err)
         if fs.existsSync "#{dir}/dist"
-          options.bridge.addGadget "#{dir}/dist"
+          @bridge.addGadget "#{dir}/dist"
           cb null, true
         else
           cb null, false
@@ -41,14 +40,8 @@ module.exports =
       console.log " #{successful} of #{total} done."
 
       unless options.test
-        options.bridge.app.listen options.port
-
-        console.log ''
-        console.log " \\ \\/ /  Starting web server on #{options.bridge.url}"
-        console.log "  \\/ /   Press Ctrl + C to exit..."
-        console.log ''
-
-        if options.open then open options.bridge.url
+        @bridge.start options.port
+        if options.open then open "http://localhost:#{options.port}"
 
       @watchGadgets options, dirs, callback
 
@@ -70,6 +63,7 @@ module.exports =
       manifestPath = path.resolve dir, 'manifest.json'
       require(manifestPath).name
 
+    # TODO: Fix a bug when watch and coffee -cw are being run simultaneously
     watchHandler = (dir) ->
       (file, stat) ->
         return if filtered dir, file
@@ -78,7 +72,7 @@ module.exports =
           if err
             console.log "failed."
           else
-            options.bridge.updateGadget dir
+            @bridge.updateGadget dir
             console.log "done."
 
     _.each dirs, (dir) ->
