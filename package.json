@@ -44,7 +44,8 @@
     "express": "~3.2.6",
     "shortid": "~1.0.9",
     "archiver": "~0.4.4",
-    "almond": "~0.2.5"
+    "almond": "~0.2.5",
+    "stylus": "~0.34.1"
   },
   "devDependencies": {
     "grunt": "~0.4.0",
