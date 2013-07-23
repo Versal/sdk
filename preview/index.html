@@ -35,9 +35,9 @@
         window.onPlayerReady = function(PlayerApplication) {
           window.Player = new PlayerApplication({
             container   : '#player-container',
-            courseId    : 1,
+            courseId    : '%COURSE_ID%',
             api: {
-              apiUrl: 'http://localhost:BRIDGE_PORT/api',
+              apiUrl: 'http://localhost:%BRIDGE_PORT%/api',
               sessionId: ''
             }
           });
