@@ -7,7 +7,7 @@ gadgetPath = path.resolve './temp/gadgets'
 
 describe 'Compress', ->
   before (done) ->
-    sdk.create "#{gadgetPath}/g6", -> done()
+    sdk.createGadget "#{gadgetPath}/g6", -> done()
 
   it 'should not contain zip file before running compress', ->
     fs.existsSync("#{gadgetPath}/g6/bundle.zip").should.be.false

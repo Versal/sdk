@@ -10,7 +10,7 @@ var commands = ["create", "preview", "publish", "docs"];
 // Debug commands are not displayed in cli help, but still runnable
 var debugCommands = ["validate", "compile", "compress", "upload"];
 
-var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") + ") [directories] [--options] [--version]";
+var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") + ") <dir> [--options] [--version]";
 
 var argv = require("optimist")
   .usage(usageMessage)
@@ -23,6 +23,16 @@ var argv = require("optimist")
 
     command = argv._[0];
     if (!_.contains(commands.concat(debugCommands), command)) throw new Error('invalid command: ' + command);
+
+    // special case for "create" command - it requires second argument
+    // Second argument must be either "gadget" or "course"
+    if (command == 'create') {
+      if(!(argv._.length > 1 && _.contains(['gadget','course'], argv._[1]))) {
+        // show usage information
+        throw new Error('"create" command requires second argument.\nUsage: "versal create (gadget|course) <dir> [--options]\nExamples:\nversal create gadget chemistry-gadget\nversal create course chemistry-course\n');
+      }
+    }
+
     return true;
   })
   .argv;
@@ -30,6 +40,13 @@ var argv = require("optimist")
 var sdk = require('../src/sdk');
 // command itself is first argument
 var command = argv._.shift();
+// special case for "create" command
+if(command == 'create') {
+  var p = argv._.shift();
+  // set command to "createGadget" or "createCourse"
+  command += p[0].toUpperCase() + p.slice(1);
+}
+
 // if no dirs were specified after `versal something` then
 // run command from current `.` directory
 if(!argv._.length) argv._.push('.');

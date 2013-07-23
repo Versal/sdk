@@ -11,15 +11,15 @@ describe 'Create', ->
 
   describe 'single gadget', ->
     before (done) ->
-      sdk.create "#{gadgetPath}/g1", done
+      sdk.createGadget "#{gadgetPath}/g1", done
 
     it 'should copy template files for g1', ->
       glob.sync('**/*.*', cwd: "#{gadgetPath}/g1").should.eql templateFiles
 
   describe 'multiple gadgets', ->
     before (done) ->
-      sdk.create ["#{gadgetPath}/g2"], ->
-        sdk.create ["#{gadgetPath}/g3", "#{gadgetPath}/g4"], -> done()
+      sdk.createGadget ["#{gadgetPath}/g2"], ->
+        sdk.createGadget ["#{gadgetPath}/g3", "#{gadgetPath}/g4"], -> done()
 
     it 'should copy template files for g2', ->
       glob.sync('**/*.*', cwd: "#{gadgetPath}/g2").should.eql templateFiles
@@ -32,4 +32,4 @@ describe 'Create', ->
 
   describe 'in folder with files', ->
     it 'should throw if run on non-empty folder', ->
-      (-> sdk.create "#{gadgetPath}/g1").should.throw
+      (-> sdk.createGadget "#{gadgetPath}/g1").should.throw

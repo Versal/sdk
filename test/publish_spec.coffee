@@ -11,7 +11,7 @@ describe 'Publish', ->
     compress = sinon.stub(sdk, 'compress').callsArgWith(2, null)
     upload = sinon.stub(sdk, 'upload').callsArgWith(2, null)
 
-    sdk.create gadgetPath, ->
+    sdk.createGadget gadgetPath, ->
       sdk.publish gadgetPath, -> done()
 
   after ->
