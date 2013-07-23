@@ -11,7 +11,7 @@ fixturesPath = path.resolve './test/fixtures'
 
 describe 'Compile', ->
   before (done) ->
-    sdk.create "#{gadgetPath}/g5", ->
+    sdk.createGadget "#{gadgetPath}/g5", ->
       sdk.compile "#{gadgetPath}/g5", (err) ->
         done()
 

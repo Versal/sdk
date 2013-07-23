@@ -10,7 +10,7 @@ describe 'Preview', ->
 
   before (done) ->
     gadgets = ["#{gadgetPath}/preview_gadget_1", "#{gadgetPath}/preview_gadget_2"]
-    sdk.create gadgets, ->
+    sdk.createGadget gadgets, ->
       sdk.compile gadgets, ->
         sdk.preview gadgets, { bridge: bridge, test: true }, -> done()
 

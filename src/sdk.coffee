@@ -2,7 +2,8 @@ _ = require 'underscore'
 async = require 'async'
 
 module.exports = sdk =
-  create: -> sdk.execCommand('create').apply null, arguments
+  createGadget: -> sdk.execCommand(['create', 'gadget']).apply null, arguments
+  createCourse: -> sdk.execCommand(['create', 'course']).apply null, arguments
   docs: -> sdk.execCommand('docs').apply null, arguments
   compile: -> sdk.execCommand('compile').apply null, arguments
   compress: -> sdk.execCommand('compress').apply null, arguments
@@ -15,6 +16,11 @@ module.exports = sdk =
   # for the command: converts dirs to array and handles
   # the case, when callback is passed in second argument
   execCommand: (command, cmdOptions = {}) ->
+
+    # if command is a string, look for it in #{command}/#{command}.coffee
+    unless _.isArray command
+      command = [command, command]
+    
     (dirs, options, callback = ->) ->
       throw new Error 'dirs is required' unless dirs
 
@@ -26,8 +32,7 @@ module.exports = sdk =
         callback = options
         options = {}
 
-      # TODO: Replace with commands/#{command}
-      cmd = require "./#{command}/#{command}"
+      cmd = require "./#{command.join('/')}"
 
       if cmdOptions.passThrough
         # simply pass arguments to command

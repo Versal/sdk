@@ -54,7 +54,7 @@ describe 'Validate', ->
 
     before (done) ->
       gadgetPath = path.resolve "./temp/gadgets/validate_gadget"
-      sdk.create gadgetPath, =>
+      sdk.createGadget gadgetPath, =>
         sdk.validate gadgetPath, (err) =>
           callback(err)
           done()
