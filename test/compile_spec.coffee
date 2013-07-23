@@ -62,3 +62,13 @@ describe 'Compile', ->
 
     it 'should contain jquery and underscore', ->
       deps.should.eql ['underscore', 'jquery']
+
+  describe 'wrap', ->
+    code = result = null
+
+    before ->
+      code = 'jquery = require("jquery")'
+      result = compile.wrap code
+
+    it 'should add node dependencies to cdn.dependencies', ->
+      result.indexOf("define(['cdn.jquery']").should.eq 0

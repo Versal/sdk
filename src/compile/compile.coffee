@@ -52,7 +52,11 @@ module.exports =
     code = @wrapInAlmond code
     cdndeps = @extractCDNDeps code
     nodedeps = @extractNodeDeps code
-    
+    # request all the dependencies, required by node, from CDN
+    # e.g. if somewhere in the code you require('jquery')
+    # it will add 'cdn.jquery' to the root 'define' of the gadget
+    cdndeps = cdndeps.concat _.map nodedeps, (dep) -> "cdn.#{dep}"
+
     code = @wrapNodeDeps code, nodedeps
     code = @wrapCDNDeps code, cdndeps
     return code
