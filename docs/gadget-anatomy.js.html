@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Gadget Anatomy</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+  <style>
+    h1:after {
+      content: "";
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1>Gadget Anatomy</h1>
+
+          
+        
+
+      </div>
+
+      
+        
+        <p>In it&#39;s essence, gadget is a javascript component with css rules applied, described by a manifest and represented by an icon. Minimal set of files for a working gadget is this:</p>
+
+        
+          <div class='highlight'><pre>├── assets
+│   └── icon.png
+├── gadget.css
+├── gadget.js
+└── manifest.json</pre></div>
+        
+      
+        
+        <h2>Manifest.json</h2>
+
+        
+      
+        
+        <p>Gadget is described by it&#39;s manifest. Manifest is stored in manifest.json and is required for the gadget to work. Sample manifest:</p>
+
+        
+          <div class='highlight'><pre>{
+  <span class="string">"username"</span>: <span class="string">"versal"</span>,
+  <span class="string">"name"</span>: <span class="string">"image"</span>,
+  <span class="string">"version"</span>: <span class="string">"0.7.3"</span>,
+
+  <span class="string">"title"</span>: <span class="string">"Image"</span>,
+  <span class="string">"description"</span>: <span class="string">"Gadget to display an image."</span>,
+  <span class="string">"author"</span>: <span class="string">"Versal"</span>,
+
+  <span class="string">"defaultConfig"</span>: {
+  	...
+  },
+  <span class="string">"defaultUserState"</span>: {
+  	...
+  }
+}</pre></div>
+        
+      
+        
+        <p>Gadget manifest establish it&#39;s unique identifier on Versal platform. </p>
+<h3>Manifest fields</h3>
+<dl>
+<dt>
+<strong>username</strong>
+</dt>
+<dd><p>Unique username of the gadget developer on versal.com. This field is filled automatically with your username from SDK settings, when you run <code>versal create gadget</code>. Username is one of the key fields, identifying your gadget on the platform, and cannot be changed once the gadget has been published.</p>
+<p>Username should be either your username, or the name of the organization you represent. Every time you publish a gadget, your permissions to publish a gadget on the behalf of the specified username are validated by the platform.</p>
+<p>Username can contain latin letters, numbers and symbols &quot;-&quot; and &quot;_&quot;. All other characters are forbidden. &quot;super-dev&quot;, &quot;james&quot; and &quot;super8&quot; are valid usernames, &quot;Tyler Lannister&quot; and &quot;@gent $mith&quot; are not.</p>
+</dd>
+
+<dt>
+<strong>name</strong>
+</dt>
+<dd><p>Name of the gadget should be unique within the specified username. Different developers might have gadgets with the same name, thus &quot;versal/text&quot; and &quot;john-smith/text&quot; are different gadgets.</p>
+<p>Gadget name can contain latin letters, numbers and symbols &quot;-&quot; and &quot;_&quot;. All other characters are forbidden. &quot;text&quot;, &quot;image&quot;, &quot;physical-simulation&quot; are valid names, &quot;my gadget&quot; and &quot;$uper g@dget&quot; - are not.</p>
+</dd>
+
+<dt>
+<strong>version</strong>
+</dt>
+<dd>
+<p>Gadget version consists of three numbers, separated by dots. First number stands for major version, second stands for minor version, and third stands for revision. &quot;1.7.3&quot; is a valid version &quot;0.5a&quot; is not.</p>
+
+Course authors can specify version in different formats:
+<ul>
+<li><code>versal/text@1.0.5</code> - returns specific revision of the gadget</li>
+<li><code>versal/text@1.0</code> - returns latest revision within specified major/minor version</li>
+<li><code>versal/text@1</code> - returns latest version within specified major version</li>
+<li><code>versal/text</code> - returns latest version of the gadget</li>
+</ul>
+
+Versal conventions are:
+
+<ul>
+<li>Increase revision for bugfixes and cosmetic changes. Updated gadget must be compliant with existing config and userState format and should not break gadget or lose user data for in existing courses;</li>
+<li>Increase minor version if there are new features, that are not supported by the current version of the gadget, but are still backwards compliant;</li>
+<li>Increase major version in case of breaking changes;</li>
+</ul>
+</dd>
+
+<dt>
+<strong>title</strong>
+</dt>
+<dd>
+<p>
+Human-readable title. Will be displayed in gadget marketplace and in author sidebar. &quot;Image gadget&quot; and &quot;Motion simulation gadget (particles)&quot; are valid names. HTML formatting is not supported for this field.
+</p>
+</dd>
+
+<dt>
+<strong>description</strong>
+</dt>
+<dd>
+<p>Human-readable description. Will be displayed in gadget marketplace and in author sidebar. Any json-compliant text will do. HTML formatting is not supported.</p>
+</dd>
+
+<dt>
+<strong>author</strong>
+</dt>
+<dd>
+<p>Human-readable author name. &quot;Tyler Lannister (Lannisters always pay their debts!)&quot; is a valid name. Will be displayed in gadget marketplace and author sidebar.</p>
+</dd>
+
+<dt>
+<strong>defaultConfig</strong>
+</dt>
+<dd>
+<p>JSON object, representing default gadget configuration. Will be passed to the gadget constructor when gadget is dragged from author sidebar and dropped on the canvas.</p>
+</dd>
+
+<dt>
+<strong>defaultUserState</strong>
+</dt>
+<dd>
+<p>JSON object, representing default user state of the gadget. Will be passed to the gadget constructor when gadget is dragged from author sidebar and dropped on the canvas.</p>
+</dd>
+</dl>
+
+<h2>Gadget.css</h2>
+
+        
+      
+        
+        <p>Gadget styles should be written without any enclosing tags, as if there is nothing more on the page. Versal SDK will automatically prepend randomly generated class to each css rule, and set this class on gadget container. We advice against using CSS id selectors (<code>#some-id</code>) in gadget.css, because there might be multiple instances of the same gadget on the page.</p>
+<p>This sample stylesheet:</p>
+
+        
+          <div class='highlight'><pre>h1 { color: white; }
+p { background: blue;}
+.red { color: red; }</pre></div>
+        
+      
+        
+        <p>will be translated into this upon compilation:</p>
+
+        
+          <div class='highlight'><pre>.gadget-<span class="number">502073</span> h1 { color: white; }
+.gadget-<span class="number">502073</span> p { background: blue;}
+.gadget-<span class="number">502073</span> .red { color: red; }</pre></div>
+        
+      
+        
+        <h2>Gadget.js</h2>
+
+        
+      
+        
+        <p>Upon compilation, gadget is wrapped in AMD-compliant package. All the dependencies you used will be combined into one file, minified and uglified.</p>
+<h2>Assets/icon.png</h2>
+
+        
+      
+        
+        <p>Icon should be PNG file 52x52 pixels in size. Icon will be displayed in gadget marketplace and on author sidebar.</p>
+
+        
+      
+    </div>
+  </div>
+</body>
+</html>
