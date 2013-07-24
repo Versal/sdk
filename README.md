@@ -1,8 +1,16 @@
-Versal Gadget SDK
-===================
+# Versal Gadget SDK
 
-Installation
--------------------
+## Prerequisites
+
+* Node.js (we recommend [nvm](https://github.com/creationix/nvm) or [n](https://github.com/visionmedia/n))
+* git (if you're on a Mac we recommend using [Homebrew](http://brew.sh/))
+
+## Installation
+
+If you don't need to change SDK, install it with `npm` from github's private repository:
+```
+npm install -g git+ssh://git@github.com:Versal/sdk.git
+```
 
 If you want to make changes to the SDK install it from source:
 ```
@@ -13,12 +21,7 @@ npm install
 npm link
 ```
 
-If you don't need to change SDK, install it with `npm` from github's private repository:
-```
-npm install -g git+ssh://git@github.com:Versal/sdk.git
-```
-
-### Gadget Documention
+## Documention
 
 Run `docs` sub-command to view sdk and gadget documentation:
 
@@ -28,15 +31,15 @@ versal docs
 
 Now you can view gadget documentation at [http://localhost:4000/docs](http://localhost:4000/docs)
 
-### SDK Development
+## SDK Development
 
-#### Building docs
+### Building docs
 
 *Note: assumes you keep the `gadget-docs` repo in the same directory as the `sdk` repo
 
     grunt exec:build-docs
 
-#### Building player
+### Building player
 
 *Note: assumes you keep the `player` repo in the same directory as the `sdk` repo
 
