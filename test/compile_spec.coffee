@@ -78,7 +78,7 @@ describe 'Compile', ->
 
     before ->
       css = 'h1 { color: white; } .blue { color: blue; } p #red { color: red; }'
-      manifest = id: 1073
+      manifest = safeId: -> 1073
       result = compile.processCSS css, manifest
 
     it 'should prefix all css rules with gadget class name', ->

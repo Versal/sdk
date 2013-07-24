@@ -5,18 +5,14 @@ path = require 'path'
 requirejs = require 'requirejs'
 async = require 'async'
 stylus = require 'stylus'
+manifest = require '../manifest'
 
-module.exports = 
+module.exports =
   command: (dir, options = {}, callback = ->) ->
     src = path.resolve dir
     dest = if options.out then path.resolve(options.out) else "#{src}/dist"
-    manifest = JSON.parse fs.readFileSync "#{src}/manifest.json"
-
-    # TODO: !!! Generalize this !!!
-    unless manifest.id
-      id = "#{manifest.username}_#{manifest.name}_#{manifest.version}"
-      id = id.replace(/\./g, '').replace(/\//g, '-')
-      manifest.id = id
+    manifestData = JSON.parse fs.readFileSync "#{src}/manifest.json"
+    manifest = _.extend manifestData, manifest
 
     textPath = path.resolve "#{__dirname}/../../preview/plugins/text"
 
@@ -59,7 +55,7 @@ module.exports =
 
     # process css rules and prepend .gadget-id to every rule
     @writeCSS src, dest, manifest
-    
+
     # copy styles, manifest and assets and callback when its done
     @copyFiles src, dest, callback
 
@@ -99,7 +95,7 @@ module.exports =
       # set property on local cdn object
       # e.g.: cdn.backbone = arguments[0];
       start += "#{dep} = arguments[#{i}];\r\n"
-      
+
       # add define to the package
       # e.g.: define('cdn.backbone', [], function(){ return cdn.backbone; })
       end += "define('#{dep}', [], function(){ return #{dep} });\r\n"
@@ -127,7 +123,7 @@ module.exports =
 
   extractCDNDeps: (code) ->
     # find all dependencies in gadget code
-    # assumes, that dependency matches 
+    # assumes, that dependency matches
     # `cdn.<something>` wrapped in quotation marks:
     # e.g. 'cdn.backbone', "cdn.jquery"
     depFinder = /['"](cdn\.([^'"]+))['"]/g
@@ -142,18 +138,16 @@ module.exports =
     fs.writeFileSync "#{dest}/gadget.css", result
 
   processCSS: (css, manifest = {}) ->
-    throw new Error 'manifest.id is required for css processing' unless manifest.id 
-    
+    throw new Error 'manifest.safeId is required for css processing' unless manifest.safeId
     styl = stylus.convertCSS css
     # prepend gadget class and indent all lines by two spaces
-    lines = [".gadget-#{manifest.id}"].concat _.map styl.split('\n'), (line) -> "  #{line}"
-
+    lines = [".gadget-#{manifest.safeId()}"].concat _.map styl.split('\n'), (line) -> "  #{line}"
     return stylus(lines.join('\n'), { compress: true }).render()
 
   copyFiles: (src, dest, callback) ->
     # copy gadget.css, manifest.json and assets folder
     pathsToCopy = ['manifest.json', 'assets']
-    
+
     # create async copy request for each file
     funcs = _.map pathsToCopy, (path) ->
       (cb) -> ncp "#{src}/#{path}", "#{dest}/#{path}", cb
