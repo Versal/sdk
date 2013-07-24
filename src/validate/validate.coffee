@@ -19,6 +19,10 @@ module.exports =
 
   # validation rules for manifest fields
   manifestFields:
+    username:
+      required: true
+      regex: /^[A-Za-z0-9\-_]{2,}$/
+      message: 'manifest.json: username can contain only latin letters, numbers, dashes and underscores'
     name:
       required: true
       regex: /^[A-Za-z0-9-_]{2,}$/
