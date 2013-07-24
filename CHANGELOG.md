@@ -1,3 +1,10 @@
+# v0.2.8
+
+* Longer timeout for upload
+* Cleanup, refactoring & bugfixes
+* Changed 'create' command to 'create gadget'
+* Updated docs
+
 # v0.2.7
 
 * Fixed authentication
