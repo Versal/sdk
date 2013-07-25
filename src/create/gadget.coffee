@@ -7,10 +7,10 @@ async = require 'async'
 
 # Creates gadget from the template.
 # Uses 'static' template by default.
-defaults = 
+defaults =
   template: 'static'
 
-module.exports = 
+module.exports =
   command: (dest, options, callback = ->) ->
     unless dest
       return callback new Error("destination path must be provided")
@@ -34,6 +34,6 @@ module.exports =
     # creates all missing folders on the path
     fs.mkdirsSync dest
     # async copy all template files to the destination
-    ncp template, dest, (err) -> 
+    ncp template, dest, (err) ->
       if err then return callback(err)
       callback()
