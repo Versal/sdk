@@ -1,5 +1,6 @@
 _ = require 'underscore'
 async = require 'async'
+config = require './config'
 
 module.exports = sdk =
   createGadget: -> sdk.execCommand(['create', 'gadget']).apply null, arguments
@@ -11,8 +12,8 @@ module.exports = sdk =
   preview: -> sdk.execCommand('preview', passThrough: true).apply null, arguments
   validate: -> sdk.execCommand('validate').apply null, arguments
   publish: -> sdk.execCommand('publish').apply null, arguments
-  
-  # creates a wrapper over a command, that prepares arguments 
+
+  # creates a wrapper over a command, that prepares arguments
   # for the command: converts dirs to array and handles
   # the case, when callback is passed in second argument
   execCommand: (command, cmdOptions = {}) ->
@@ -20,9 +21,12 @@ module.exports = sdk =
     # if command is a string, look for it in #{command}/#{command}.coffee
     unless _.isArray command
       command = [command, command]
-    
-    (dirs, options, callback = ->) ->
+
+    (dirs, options = {}, callback = ->) ->
       throw new Error 'dirs is required' unless dirs
+
+      # init config for the specified environment
+      config.init env: options.env
 
       # TODO: add -r flag, that expands directories recursively
       dirs = [dirs] unless _.isArray dirs
@@ -42,5 +46,5 @@ module.exports = sdk =
         funcs = _.map dirs, (dir) -> (cb) ->
           cmd.command dir, options, cb
         # run all tasks sequentially
-        async.series funcs, (err) -> 
+        async.series funcs, (err) ->
           callback err

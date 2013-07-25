@@ -1,3 +1,3 @@
-module.exports = 
+module.exports =
   command: (dest, options, callback = ->) ->
-  	return callback new Error 'Not implemented yet'
+    return callback new Error 'Not implemented yet'

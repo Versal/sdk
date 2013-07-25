@@ -4,7 +4,7 @@ module.exports = (grunt) ->
 
   grunt.initConfig
     clean:
-      temp: 'temp/*'
+      temp: 'temp'
 
     mochaTest:
       test:
