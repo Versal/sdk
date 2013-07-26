@@ -46,6 +46,8 @@ module.exports =
       @watchGadgets options, dirs, callback
 
   watchGadgets: (options, dirs, callback) ->
+    bridge = @bridge
+
     filtered = (dir, file) ->
       dirPath = path.resolve(dir)
       filePath = path.resolve(file)
@@ -64,15 +66,15 @@ module.exports =
       require(manifestPath).name
 
     # TODO: Fix a bug when watch and coffee -cw are being run simultaneously
-    watchHandler = (dir) =>
-      (file, stat) =>
+    watchHandler = (dir) ->
+      (file, stat) ->
         return if filtered dir, file
         process.stdout.write "Recompiling #{gadgetNameFromDir(dir)}..."
-        sdk.compile dir, options, (err) =>
+        sdk.compile dir, options, (err) ->
           if err
             console.log "failed."
           else
-            @bridge.updateGadget dir
+            bridge.updateGadget dir
             console.log "done."
 
     _.each dirs, (dir) ->
