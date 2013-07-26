@@ -72,3 +72,14 @@ describe 'Compile', ->
 
     it 'should add node dependencies to cdn.dependencies', ->
       result.indexOf("define(['cdn.jquery']").should.eq 0
+
+  describe 'css processing', ->
+    css = result = manifest = null
+
+    before ->
+      css = 'h1 { color: white; } .blue { color: blue; } p #red { color: red; }'
+      manifest = safeId: -> 1073
+      result = compile.processCSS css, manifest
+
+    it 'should prefix all css rules with gadget class name', ->
+      result.should.eql '.gadget-1073 h1{color:#fff}\n.gadget-1073 .blue{color:#00f}\n.gadget-1073 p #red{color:#f00}\n'

@@ -1,11 +1,14 @@
 {
   "username": "default",
   "name": "new-gadget",
+  "version": "0.0.1",
+
   "title": "New gadget",
   "description": "A cool new gadget",
-  "version": "0.0.1",
   "author": "You",
+
   "defaultConfig": {
     "username" : "Bob"
-  }
+  },
+  "defaultUserState": {}
 }
