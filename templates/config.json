@@ -1,0 +1,6 @@
+{
+	"default": {
+  	"apiUrl": "https://stack.versal.com/api2",
+  	"authUrl": "https://versal.com/signin"
+	}
+}
