@@ -1,4 +1,4 @@
-_ = require('underscore')
+_ = require 'lodash'
 
 # Commands that are displayed in cli help
 commands = [
