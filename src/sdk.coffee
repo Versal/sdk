@@ -3,6 +3,7 @@ async = require 'async'
 config = require './config'
 
 module.exports = sdk =
+  signin: -> sdk.execCommand('signin').apply null, arguments
   createGadget: -> sdk.execCommand(['create', 'gadget']).apply null, arguments
   createCourse: -> sdk.execCommand(['create', 'course']).apply null, arguments
   docs: -> sdk.execCommand('docs').apply null, arguments
