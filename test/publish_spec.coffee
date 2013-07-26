@@ -6,7 +6,7 @@ publish = require '../src/publish/publish'
 config = require '../src/config'
 should = require('chai').should()
 
-describe.only 'Publish', ->
+describe 'Publish', ->
   gadgetPath = path.resolve './temp/gadgets/publish_gadget'
   validate = compress = upload = null
 

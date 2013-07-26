@@ -5,7 +5,7 @@ sinon = require 'sinon'
 should = require('chai').should()
 signin = require '../src/signin/signin'
 
-describe.only 'Sign in', ->
+describe 'Sign in', ->
   post = configGet = get = set = null
   validCredentials = { email: 'am@versal.com', password: '12345' }
 
