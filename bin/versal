@@ -8,7 +8,7 @@ var _ = require('underscore');
 // Commands that are displayed in cli help
 var commands = ["create", "preview", "publish", "docs"];
 // Debug commands are not displayed in cli help, but still runnable
-var debugCommands = ["validate", "compile", "compress", "upload"];
+var debugCommands = ["signin", "validate", "compile", "compress", "upload"];
 
 var usageMessage = "Versal Gadget SDK. Usage: versal (" + commands.join(" | ") + ") <dir> [--options] [--version]";
 
