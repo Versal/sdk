@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Concepts</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+  <style>
+    h1:after {
+      content: "";
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1>Concepts</h1>
+
+          
+        
+
+      </div>
+
+      
+        
+        <h2>Core ideas</h2>
+<dl>
+<dt>
+<strong>Interactive education</strong>
+</dt>
+<dd>
+At Versal, we believe in the power of interactivity to change education. Learning is not necessarily about passively consuming content from video lectures and old textbooks. Learning can be so much more engaging, and fun! In order to best serve the Versal platform as a developer, you must consider education as a very exploratory process where guided exploration is encouraged for learners. After all, everyone learns in a different way and at a different pace.
+</dd>
+
+<br>
+
+<dt>
+<strong>Building Blocks</strong>
+</dt>
+<dd>
+The building blocks from which Versal courses are constructed are <em>gadgets</em>. These gadgets are chunks of JavaScript code floating around, doing their thing in pretty containers. Gadgets appear in every single course a user can see. A gadget&#39;s functionality can range from holding text, images, or video, to explaining a very specific concept.
+</dd>
+
+<br>
+
+<dt>
+<strong>What should my gadget do?</strong>
+</dt>
+
+<dd>
+Well, that&#39;s largely up to you. Versal has built many gadgets that enable authors to use text, images, and video in their courses.
+You will also find gadgets that allow users to manipulate 3D models, write out mathematical expressions, as well as conduct surveys and explore interactive geometry.
+This is is just scratching the surface of what a gadget can, and should do. Your gadget should serve the purpose of helping a learner <em>understand</em> a concept in a way that static pictures in a textbook cannot.
+A gadget can offer the learner a playground in which they can explore concepts using mouse, keyboard, audio, and touch interactions.
+The key to designing a great gadget is to consider the learner&#39;s experience of interacting with your gadget.
+</dd>
+
+</dl>
+
+<h3>Some Considerations</h3>
+<dl>
+
+<dd>
+Consider the following design principles while creating your gadgets:
+</dd>
+
+</dl>
+
+<ul>
+<li>Intuitive controls for your simulation, game, or visualization should require little explanation for users to feel comfortable with them.</li>
+<li>Build an interface for author control into your gadget. While Versal provides external property sheets to allow authors to configure your gadget, a fluid interface between what an author sees and what a learner sees when viewing your gadget is something to strive for.</li>
+<li>Sometimes, the more control the learner has within your gadget, the more the learner will be encouraged to experiment while achieving a greater understanding of the material.</li>
+<li>Think outside the box, because gadgets that fill &#39;holes&#39; in the educational tapestry are sorely needed. You can fill these holes for current and future course authors.</li>
+<li>Conceptual gadgets can be used to test the learner&#39;s progress and understanding of course material. There is more to life than multiple-choice quizzes.</li>
+</ul>
+<h2>Roles</h2>
+<dl>
+<dt>
+<strong>Author</strong>
+</dt>
+<dd>
+The creator of Versal courses
+</dd>
+
+<br>
+
+<dt>
+<strong>Learner</strong>
+</dt>
+<dd>
+The end user of Versal courses
+</dd>
+
+<br>
+
+<dt>
+<strong>Developer</strong>
+</dt>
+<dd>
+<em>You!</em> (or any gadget developer)
+</dd>
+</dl>
+
+<h2>SDK</h2>
+<p>Command line tool for creating, previewing and publishing gadgets</p>
+<h2>Course player</h2>
+<p>The user interface that authors and learners use to interact with Versal courses</p>
+<h2>Course</h2>
+<p>A collection of lessons created by an author</p>
+<h2>Lesson</h2>
+<p>A collection of gadgets chosen and configured by a course author</p>
+<h2>Gadget</h2>
+<p>An browser application (JS/HTML/CSS/etc) that can be configured by an author and then presented in a course for teaching something to a learner. Gadgets can be simulations, flash cards, charts, visualizations, etc. Gadgets tend to be highly visual and interactive but can also be completely invisible and simply offer a service to other gadgets in the course.</p>
+<dl>
+<dt>
+<strong>Gadget project</strong>
+</dt>
+<dd>
+Source code (HTML, CSS, Javascript, etc) of a gadget
+</dd>
+
+<br>
+<strong>Gadget instance</strong>
+<dt>
+</dt>
+<dd>
+A gadget that has been added to a course&#39;s lesson by an author. Most gadgets will have an authoring mode for configuring the gadget instance for use by learners.
+</dd>
+</dl>
+
+<h2>Asset</h2>
+<p>A resource file used by a gadget project or instance (e.g. image, video, spreadsheet). Assets can be bundled with a gadget project and/or chosen by an author through a provided asset picking mechanism in the course player.</p>
+
+        
+      
+    </div>
+  </div>
+</body>
+</html>
