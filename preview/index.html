@@ -24,8 +24,8 @@
       <script>
         var data;
 
-        require(['shared-libs/config.js'], function (registerCdn) {
-          registerCdn('shared-libs');
+        require(['versal-shared-libs/config.js'], function (registerCdn) {
+          registerCdn('versal-shared-libs');
           //TODO: Shim?
           require(['cdn.marionette'], function () {
             require(['player.js']);

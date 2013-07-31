@@ -6,6 +6,7 @@ glob = require 'glob'
 shortid = require 'shortid'
 
 sdkSite = path.join __dirname, '../../preview'
+nodeModules = path.join __dirname, '../../node_modules'
 sdkFixtures = path.join __dirname, '../../preview/fixtures'
 
 module.exports = class Bridge
@@ -24,6 +25,7 @@ module.exports = class Bridge
 
     @site.get '/', (req, res) => res.send @loadIndex()
     @site.use express.static sdkSite
+    @site.use express.static nodeModules
     @site.use '/api', api
 
   setupAPI: (api) ->
