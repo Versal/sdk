@@ -23,11 +23,11 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "preinstall": "git submodule update -i -r",
     "test": "./bin/versal test"
   },
   "preferGlobal": true,
   "dependencies": {
+    "watch": "~0.7.0",
     "coffee-script": "~1.6.3",
     "optimist": "~0.3.5",
     "open": "~0.0.3",
@@ -39,8 +39,10 @@
     "glob": "~3.1.21",
     "needle": "~0.4.8",
     "lodash": "~1.0.1",
+    "underscore": "~1.5.1",
     "async": "~0.2.6",
     "ncp": "git+ssh://git@github.com:mereskin/ncp.git",
+    "shared-libs": "git+ssh://git@github.com:Versal/shared-libs.git#v0.0.1a",
     "express": "~3.2.6",
     "shortid": "~1.0.9",
     "archiver": "~0.4.4",
@@ -49,7 +51,6 @@
   },
   "devDependencies": {
     "grunt": "~0.4.0",
-    "watch": "~0.7.0",
     "mocha": "~1.8.1",
     "chai": "~1.5.0",
     "matchdep": "~0.1.2",
@@ -58,7 +59,6 @@
     "grunt-contrib-clean": "~0.4.1",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-mocha-test": "~0.4.0",
-    "underscore": "~1.4.4",
     "sinon": "~1.7.2",
     "superagent": "~0.14.9"
   }

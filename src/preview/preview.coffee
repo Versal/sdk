@@ -46,6 +46,8 @@ module.exports =
       @watchGadgets options, dirs, callback
 
   watchGadgets: (options, dirs, callback) ->
+    bridge = @bridge
+
     filtered = (dir, file) ->
       dirPath = path.resolve(dir)
       filePath = path.resolve(file)
@@ -72,7 +74,7 @@ module.exports =
           if err
             console.log "failed."
           else
-            @bridge.updateGadget dir
+            bridge.updateGadget dir
             console.log "done."
 
     _.each dirs, (dir) ->
