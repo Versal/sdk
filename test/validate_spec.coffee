@@ -10,9 +10,10 @@ describe 'Validate', ->
 
     before ->
       manifest =
-        name: 'foo-gadget'
+        username: 'foo-user'
+        name: 'bar-gadget'
         version: '0.1.2'
-        description: 'Foo gadget.'
+        description: 'Bar gadget.'
       errors = validate.validateManifest manifest
 
     it 'should return no errors', ->
@@ -28,7 +29,7 @@ describe 'Validate', ->
       errors = validate.validateManifest manifest
 
     it 'should return errors', ->
-      errors.length.should.equal 3
+      errors.length.should.equal 4
 
   describe 'valid files', ->
     errors = []
