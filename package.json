@@ -1,7 +1,7 @@
 {
   "name": "versal-sdk",
   "description": "Versal Gadget SDK with command-line interface.",
-  "version": "0.2.8",
+  "version": "0.2.81",
   "author": "Versal Team",
   "homepage": "http://versal.com/",
   "repository": {
@@ -33,7 +33,7 @@
     "open": "~0.0.3",
     "requirejs": "~2.1.5",
     "connect": "~2.7.3",
-    "fs-extra": "~0.5.0",
+    "fs-extra": "~0.6.3",
     "colors": "~0.6.0-1",
     "prompt": "~0.2.9",
     "glob": "~3.1.21",
