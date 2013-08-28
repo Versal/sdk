@@ -2,6 +2,8 @@ _ = require 'underscore'
 async = require 'async'
 
 module.exports = sdk =
+  signin: -> sdk.execCommand('signin').apply null, arguments
+  install: -> sdk.execCommand('install').apply null, arguments
   createGadget: -> sdk.execCommand(['create', 'gadget']).apply null, arguments
   createCourse: -> sdk.execCommand(['create', 'course']).apply null, arguments
   docs: -> sdk.execCommand('docs').apply null, arguments

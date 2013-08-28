@@ -38,6 +38,7 @@ module.exports =
       if err then return callback(err)
       @updateManifest dest, _.pick(options, 'name', 'version', 'username')
       callback()
+
   updateManifest: (dest, attrs) ->
     manifestPath = "#{dest}/manifest.json"
     manifest = fs.readJsonSync manifestPath
