@@ -1,0 +1,31 @@
+@import 'variables'
+
+$courseNavHeight = 57px
+
+.course .lessons
+  position relative
+  margin ($courseNavHeight + 5px) 0px 9px 0px
+  width $courseWidth
+  -webkit-user-select text
+  user-select text
+  font-family $secondaryFont
+  font-size 16px
+  line-height 28px
+
+  .gadgets
+    padding-bottom 30px
+
+.course.editable
+  .gadgets:empty:after
+    /* use unicode space here to circumvent cssmin -> begin,grab */
+    content "To begin,\00a0grab a gadget and drag it onto the canvas"
+    color $border
+    position absolute
+    font-size 24px
+    line-height 34px
+    font-family $primaryFont
+    width 340px
+    text-align center
+    top 80px
+    left 205px
+    cursor default

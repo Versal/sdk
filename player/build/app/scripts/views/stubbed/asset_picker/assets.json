@@ -1,0 +1,376 @@
+{
+  "image": [
+    {
+      "id": "fcbb5655-3b6b-4bde-b862-b8a1c89ccb67",
+      "title": "landscape",
+      "tags": [
+        "image"
+      ],
+      "representations": [
+        {
+          "location": "https://stack.versal.com:443/api2/assets/1c819e90-182e-4bce-bb93-b7d99b71c1c6",
+          "scale": "800x600",
+          "id": "1c819e90-182e-4bce-bb93-b7d99b71c1c6",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/99513b3c-4217-4d11-9ca2-2ba687d181bd",
+          "scale": "320x240",
+          "id": "99513b3c-4217-4d11-9ca2-2ba687d181bd",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/0d961751-e60d-4739-9ed3-ccbabdb55d39",
+          "id": "0d961751-e60d-4739-9ed3-ccbabdb55d39",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": true
+        }
+      ]
+    },
+    {
+      "id": "5f7b9964-7ea2-4b0f-b73a-661fbbe4b3a6",
+      "title": "portrait",
+      "tags": [
+        "image"
+      ],
+      "representations": [
+        {
+          "location": "https://stack.versal.com:443/api2/assets/6677b2ee-a1d3-45cd-b5f3-00b19c980a8a",
+          "scale": "800x600",
+          "id": "6677b2ee-a1d3-45cd-b5f3-00b19c980a8a",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/13c8cb56-652d-4066-9804-9b1ceac00692",
+          "scale": "320x240",
+          "id": "13c8cb56-652d-4066-9804-9b1ceac00692",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/2e72f92c-34c4-4874-ba07-69638d386466",
+          "id": "2e72f92c-34c4-4874-ba07-69638d386466",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": true
+        }
+      ]
+    },
+    {
+      "id": "88cdf191-e6f9-4024-b655-44cb2d6fb94f",
+      "title": "short and wide",
+      "tags": [
+        "image"
+      ],
+      "representations": [
+        {
+          "location": "https://stack.versal.com:443/api2/assets/56ef73e1-9892-4cb9-a766-7be46166e674",
+          "scale": "800x600",
+          "id": "56ef73e1-9892-4cb9-a766-7be46166e674",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/2d4c0539-19f7-44a2-a1cd-34593306870d",
+          "scale": "320x240",
+          "id": "2d4c0539-19f7-44a2-a1cd-34593306870d",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/ff1699c2-e59e-4f31-830a-6c637307f63a",
+          "id": "ff1699c2-e59e-4f31-830a-6c637307f63a",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": true
+        }
+      ]
+    },
+    {
+      "id": "404c5b22-5d1b-40b1-9f0d-f1a0818183cd",
+      "title": "tall and skinny",
+      "tags": [
+        "image"
+      ],
+      "representations": [
+        {
+          "location": "https://stack.versal.com:443/api2/assets/0f216e9d-f629-4c63-8071-c693ea7be898",
+          "scale": "800x600",
+          "id": "0f216e9d-f629-4c63-8071-c693ea7be898",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/d1fe4e13-4998-43eb-a83c-b0c854279493",
+          "scale": "320x240",
+          "id": "d1fe4e13-4998-43eb-a83c-b0c854279493",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/2a988087-4eb0-4321-a6e6-236883252d87",
+          "id": "2a988087-4eb0-4321-a6e6-236883252d87",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": true
+        }
+      ]
+    },
+    {
+      "id": "373c740d-faee-44dc-b820-756444870c0d",
+      "title": "small landscape",
+      "tags": [
+        "image"
+      ],
+      "representations": [
+        {
+          "location": "https://stack.versal.com:443/api2/assets/f40cde35-5b85-4c88-a8b8-dbaee3c92548",
+          "scale": "800x600",
+          "id": "f40cde35-5b85-4c88-a8b8-dbaee3c92548",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/a4a708dd-3653-48b5-8455-c082257f35e4",
+          "scale": "320x240",
+          "id": "a4a708dd-3653-48b5-8455-c082257f35e4",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/a214dab4-b750-4aac-b66f-633cc0d6e730",
+          "id": "a214dab4-b750-4aac-b66f-633cc0d6e730",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": true
+        }
+      ]
+    },
+    {
+      "id": "c36c576f-70c1-4bac-8a51-7d4795a2e8cf",
+      "title": "small portrait",
+      "tags": [
+        "image"
+      ],
+      "representations": [
+        {
+          "location": "https://stack.versal.com:443/api2/assets/f04a9cb1-f5a7-4f95-9a76-1acd3758d816",
+          "scale": "800x600",
+          "id": "f04a9cb1-f5a7-4f95-9a76-1acd3758d816",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/1f9c883a-1baf-4149-8baa-c4d1919b4d66",
+          "scale": "320x240",
+          "id": "1f9c883a-1baf-4149-8baa-c4d1919b4d66",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/76f90893-5b3b-4b37-9450-ce9a160e6c4b",
+          "id": "76f90893-5b3b-4b37-9450-ce9a160e6c4b",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": true
+        }
+      ]
+    },
+    {
+      "id": "3c13b740-ce29-453b-ab52-be02d3b45a36",
+      "title": "small square",
+      "tags": [
+        "image"
+      ],
+      "representations": [
+        {
+          "location": "https://stack.versal.com:443/api2/assets/7c14849c-0628-406f-8452-a4695b7f19bd",
+          "scale": "800x600",
+          "id": "7c14849c-0628-406f-8452-a4695b7f19bd",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/e451c126-713d-4e03-b9a8-3bcdce4bf531",
+          "scale": "320x240",
+          "id": "e451c126-713d-4e03-b9a8-3bcdce4bf531",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/87c668fc-3f70-4b67-8af0-e22a684131d1",
+          "id": "87c668fc-3f70-4b67-8af0-e22a684131d1",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": true
+        }
+      ]
+    },
+    {
+      "id": "fbe5f5c1-9fbd-4e62-83ba-62df30b421c5",
+      "title": "large square",
+      "tags": [
+        "image"
+      ],
+      "representations": [
+        {
+          "location": "https://stack.versal.com:443/api2/assets/fa444ef1-41d4-4141-802c-b5057551d78a",
+          "scale": "800x600",
+          "id": "fa444ef1-41d4-4141-802c-b5057551d78a",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/3590aede-4673-4eb8-bffa-a6fb8568ef13",
+          "scale": "320x240",
+          "id": "3590aede-4673-4eb8-bffa-a6fb8568ef13",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/0b4a69d9-54c0-4d66-860b-52ec9404d451",
+          "id": "0b4a69d9-54c0-4d66-860b-52ec9404d451",
+          "contentType": "image/jpeg",
+          "available": true,
+          "original": true
+        }
+      ]
+    }
+  ],
+  "video": [
+    {
+      "id": "bf45149a-eacb-4e83-9f2e-52125ee3e42c",
+      "title": "small video",
+      "tags": [
+        "video"
+      ],
+      "representations": [
+        {
+          "location": "https://stack.versal.com:443/api2/assets/58cff190-e414-461a-91dd-b51724595158",
+          "scale": "320x180",
+          "id": "58cff190-e414-461a-91dd-b51724595158",
+          "contentType": "image/png",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/6b0cd263-f56f-463b-952c-ac462b01ca71",
+          "id": "6b0cd263-f56f-463b-952c-ac462b01ca71",
+          "contentType": "video/mp4",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/1478d04d-04cd-40e6-bacc-7f3145549bfc",
+          "id": "1478d04d-04cd-40e6-bacc-7f3145549bfc",
+          "contentType": "video/webm",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/81d88583-bba4-4800-b264-a166e71bc46a",
+          "id": "81d88583-bba4-4800-b264-a166e71bc46a",
+          "contentType": "video/mp4",
+          "available": true,
+          "original": true
+        }
+      ]
+    },
+    {
+      "id": "890907c0-26b0-44f0-8b44-440f4708c698",
+      "title": "medium video",
+      "tags": [
+        "video"
+      ],
+      "representations": [
+        {
+          "location": "https://stack.versal.com:443/api2/assets/6258672a-1978-44e0-b580-faef5203aa8e",
+          "scale": "640x360",
+          "id": "6258672a-1978-44e0-b580-faef5203aa8e",
+          "contentType": "image/png",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/455dffe2-767a-489a-871a-54cc4e24f706",
+          "id": "455dffe2-767a-489a-871a-54cc4e24f706",
+          "contentType": "video/mp4",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/8eb100f6-4d3f-431c-a9a6-c90eb417eb66",
+          "id": "8eb100f6-4d3f-431c-a9a6-c90eb417eb66",
+          "contentType": "video/webm",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/fbdf52af-0e61-4043-aa16-d05752f380e5",
+          "id": "fbdf52af-0e61-4043-aa16-d05752f380e5",
+          "contentType": "video/mp4",
+          "available": true,
+          "original": true
+        }
+      ]
+    },
+    {
+      "id": "a5e94e1e-c6be-420e-88de-6a648428c1cf",
+      "title": "large video",
+      "tags": [
+        "video"
+      ],
+      "representations": [
+        {
+          "location": "https://stack.versal.com:443/api2/assets/796c381a-3b56-44a1-936c-5c0f0a298126",
+          "scale": "1280x720",
+          "id": "796c381a-3b56-44a1-936c-5c0f0a298126",
+          "contentType": "image/png",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/eb1576a7-7072-44a2-bbe0-5614ee1d5b21",
+          "id": "eb1576a7-7072-44a2-bbe0-5614ee1d5b21",
+          "contentType": "video/mp4",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/3a881b29-a51d-489d-8e5b-2aea544e4583",
+          "id": "3a881b29-a51d-489d-8e5b-2aea544e4583",
+          "contentType": "video/webm",
+          "available": true,
+          "original": false
+        },
+        {
+          "location": "https://stack.versal.com:443/api2/assets/a121055c-f884-4208-b920-50bd37915294",
+          "id": "a121055c-f884-4208-b920-50bd37915294",
+          "contentType": "video/mp4",
+          "available": true,
+          "original": true
+        }
+      ]
+    }
+  ]
+}

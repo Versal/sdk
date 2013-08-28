@@ -1,0 +1,9 @@
+{
+  "name": "image",
+  "title": "Image",
+  "description": "Gadget to display an image.",
+  "version": "0.7.3",
+  "author": "Versal",
+  "defaultConfig": {
+  }
+}

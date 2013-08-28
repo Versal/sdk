@@ -1,0 +1,227 @@
+@import 'nib'
+@import 'variables'
+
+$left = $sidebarWidth + 1px
+
+$navHeight = 56px
+
+.toc-icon
+  width 24px
+  height 24px
+  display block
+  position absolute
+  left 30px
+  top 15px
+  background url('../assets/img/toc.png') no-repeat
+  cursor pointer
+  opacity 0.7
+
+  &:hover, &.active
+    opacity 1
+
+.courseHeader
+  position fixed
+  width 100%
+  display block
+  width $courseWidth
+  height $navHeight
+  border-bottom: 1px solid $border
+  background white
+  z-index 500
+
+  .headerContent
+    margin-left 64px
+
+.course
+  position absolute
+  left $left
+  top 0
+
+  .bottomHalf
+    clear both
+    margin-top 22px
+    margin-bottom -4px !important
+    margin-left 0px
+    position relative
+    &:hover
+      .toolbar:not(.blocked) li:first-child
+        opacity 1
+
+  .courseTitleWrapper
+    min-width 13px
+    padding 2px 0
+    border 1px solid transparent
+    float left
+    height 11px
+    margin 6px 0 0 0
+
+    .title
+      color $gray4
+      line-height 11px
+      margin 1px 0 0 1px
+      font-size 11px
+      float left
+
+  &.editable
+    .lessonTitleWrapper, .courseTitleWrapper
+      user-select none
+
+      &.blocked:hover:not(.editing)
+        border 1px solid transparent
+      &:hover:not(.editing)
+        border 1px dashed $gray2
+      &.editing
+        border 1px dashed $gray3
+        user-select auto
+    &> .navbar-fixed-top
+      left $left
+
+  .lessonTitleWrapper, .courseTitleWrapper
+    padding 2px 0 1px 0
+    border 1px solid transparent
+    display inline-block
+    position relative
+
+    .fade-out
+      display block
+      position absolute
+      top 0
+      left 0
+      height 100%
+      width 700px
+      pointer-events none
+      box-shadow inset -25px 0 20px -10px white
+
+      html.no-pointerevents &
+        display none
+
+    .courseTitle
+      font 12px $primaryFont
+
+    .lessonTitle
+      font 18px $primaryFont
+
+      display inline-block
+
+    .lessonTitle, .courseTitle
+      color $gray4
+      margin 0
+      padding 0
+      overflow-x hidden
+      max-width 700px
+      white-space nowrap
+      min-width 20px
+      min-height 1em
+
+      &.placeholder:after
+        content attr(placeholder)
+        color $gray2
+        cursor default
+
+    .lessonTitleEditable
+      height 14px
+
+  .newLesson
+    margin-left 5px
+    margin-top 3px
+    cursor hand
+    cursor pointer
+    background rgb(214, 214, 214)
+    display inline-block
+    text-align center
+    vertical-align center
+    width 18px
+    height 18px
+    opacity 0
+  &.editable .newLesson
+      opacity 1
+
+  .lastSaved
+    float left
+    opacity 0
+
+  &.editable .lastSaved
+    opacity 1
+    font-size 13px
+    color $gray2
+    font-style italic
+    position absolute
+    top 0
+    right 20px
+    line-height 50px
+
+  .lessonControls
+    padding 0
+    margin 0
+    list-style-type none
+    float right
+
+    li
+      display inline-block
+      cursor pointer
+      width 25px
+      height 25px
+      background-position center
+      background-repeat no-repeat
+
+      &.disabled
+        cursor default
+        opacity 0.6
+
+      $baseUrl = '../assets/img/title_bar/icon_'
+
+      &.search
+        background-image: url($baseUrl + 'search_normal.png')
+      &.fav
+        background-image: url($baseUrl + 'fav_normal.png')
+      &.overview
+        background-image: url($baseUrl + 'icicles_normal.png')
+      &.more
+        background-image: url($baseUrl + 'more_normal.png')
+
+      &:hover:not(.disabled)
+        opacity 0.8
+
+      &.more
+        border-left 1px solid $gray2
+        padding-left 10px
+        margin-left 10px
+
+  .completion
+    display none
+    position absolute
+    right 0
+    top -5px
+
+    button
+      margin-left 10px
+      margin-top -4px
+
+@media (max-width: 1023px)
+  .course:not(.editable)
+    left 0
+
+
+@media (min-width: 1024px)
+  .course:not(.editable)
+
+    .headerContent
+      margin-left 21px !important
+
+    .toc-icon, .toc
+      display none !important
+
+*:focus
+  outline none
+
+.saveErrorMsg
+  display none
+  position absolute
+  left 49px
+  top 10px
+  background-color rgba(216, 226, 226, 0.88)
+  z-index 10000
+  width 660px
+  text-align center
+  padding 11px
+

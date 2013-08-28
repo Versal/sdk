@@ -37,13 +37,13 @@ Now you can view gadget documentation at [http://localhost:4000/docs](http://loc
 
 *Note: assumes you keep the `gadget-docs` repo in the same directory as the `sdk` repo
 
-    grunt exec:build-docs
+    grunt build-docs
 
 ### Building player
 
 *Note: assumes you keep the `player` repo in the same directory as the `sdk` repo
 
-    grunt exec:build-player
+    grunt build-player
 
 ### 3rd Party Developers
 

@@ -1,0 +1,126 @@
+@import 'nib'
+
+$previewHeight = 250px
+
+.assets-modal
+  transition all 200ms ease-in-out
+  width 500px
+  margin-left -250px
+  border-radius 0
+  font-size 15px
+  border 0
+
+  .header
+    background $gray1
+    font-size 16px
+    padding 11px 8px
+    position relative
+    z-index 200
+
+    .modal-title
+      float left
+
+    .modal-controls
+      float right
+
+      button
+        padding 3px 6px
+
+  .preview-region
+    height $previewHeight
+    overflow hidden
+    position relative
+    margin 10px
+
+    .hidden-uploader
+      display none
+
+    .uploading-overlay, .choose-overlay
+      position absolute
+      top 0
+      left 0
+      right 0
+      bottom 0
+      height auto
+      display none
+      padding 10px
+      z-index 1000
+
+    .uploading-overlay
+      background rgba(0,0,0,0.4)
+
+      .uploading-spinner
+        width 32px
+        height 32px
+        position absolute
+        top 40%
+        left 50%
+        margin-top -16px
+        margin-left -16px
+
+    .choose-overlay
+      border 1px dashed #ccc
+      box-sizing border-box
+      text-align center
+      cursor pointer
+      background rgba(255,255,255,0.9)
+
+      .dropzone
+        position absolute
+        top 0
+        left 0
+        width 100%
+        height 100%
+        background transparent
+
+      &:hover, &.dragenter
+        background rgba(230, 230, 230, 0.7)
+
+      .drop-image
+        height 115px
+        width 115px
+        background-image url('../assets/img/asset_upload.png')
+        position absolute
+        top 50%
+        left 50%
+        margin -70px auto auto -57px
+
+
+      .drop-blurb
+        position absolute
+        bottom 40px
+        left 0
+        color #cc
+        font-size 16px
+        width 100%
+
+      &.fromRegion
+        .click-blurb
+          display none
+
+    .file-preview
+      display inline-block
+      width 100%
+      height 100%
+      text-align center
+      line-height $previewHeight
+      overflow hidden
+
+      img, video
+        vertical-align middle
+        max-height 100%
+
+  .status-message
+    text-align center
+    font-size 14px
+    left 0px
+    position relative
+    margin-bottom 10px
+    width 100%
+
+    &.error
+      color darkred
+
+  .video-link
+    width 475px
+    margin 4px 10px 10px 10px

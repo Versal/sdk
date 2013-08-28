@@ -1,0 +1,33 @@
+@import 'variables'
+
+.authorSidebar, .learnerSidebar
+  width $sidebarWidth
+  position fixed
+  z-index 800
+  left 0
+  top 0
+  height 100%
+  background-color $sidebarBackground
+  color #37342f
+  font-size 12px
+  border-right 1px solid $sidebarBorder
+
+  .section
+    border-bottom 1px solid $sidebarBorder
+
+    &.first
+      height $navHeight
+
+    .sidebarHeader
+      float left
+      margin 10px 0 0 3px
+
+  .versal-logo
+    cursor pointer
+    display block
+    height 30px
+    width 30px
+    float left
+    margin 13px
+    background-image url('../assets/img/logo.png')
+    background-size 30px 30px
