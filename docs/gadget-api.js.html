@@ -79,12 +79,24 @@ A <a href="http://backbonejs.org/#Model">Backbone.Model</a> which can be used to
 
 <p><em>Note: Backbone is always available, but you don&#39;t need to use it for your gadget at all. It&#39;s just the library we use internally.</em></p>
 <p><a name="events" /></p>
-<h2>Events</h2>
+<h2>Player events</h2>
 
         
       
         
-        <dl>
+        <p>Player fires</p>
+<p><dl></p>
+<p><dt>
+<strong>domReady</strong>
+</dt></p>
+<dd>
+Fired by the player when it&#39;s ready to display the gadget. If the gadget is meant to be visible the method bound to this event should cause the gadget to render itself in its <code>$el.</code>
+
+Here&#39;s the snippet from the template gadget:
+  this.player.on(&#39;domReady&#39;, this.render, this);
+
+Again, we defer to Gadget.render() to handle the display.
+</dd>
 
 <p><dt>
 <strong>toggleEdit</strong> <em>(editing: boolean)</em>
@@ -108,21 +120,31 @@ Fired by the player when the gadget changes to and from edit mode. The <code>edi
       
         
         <p>Generally, you&#39;ll want to defer to the render() function, since the gadget will need to display differently if it is editable or not. If <code>editable</code> is true, then your gadget should show interface elements that allow the author to edit the configuration of your gadget. If <code>editable</code> is false, the editing interface should be hidden again.</p>
-<p></dd></p>
-<p><br></p>
+<p>It is safe to assume, that <code>toggleEdit</code> is called after <code>domReady</code>.</p>
+<p></dd>
+</dl></p>
+<p><a name="playerapi" /></p>
+<h2>Player API</h2>
+
+        
+      
+        
+        <p>Player provides some convenience methods for you to support standard behavior of Versal gadgets.</p>
+<p><dl></p>
 <p><dt>
-<strong>domReady</strong>
+<strong>configEmpty</strong>
 </dt></p>
-<dd>
-Fired by the player when it&#39;s ready to display the gadget. If the gadget is meant to be visible the method bound to this event should cause the gadget to render itself in its <code>$el.</code>
+<p><dd>
+If your gadget has no visible elements, unless config is set, prefer to display our standard message &quot;Double click to edit this gadget&quot; to the author. To display that message, call:</p>
 
-Here&#39;s the snippet from the template gadget:
-  this.player.on(&#39;domReady&#39;, this.render, this);
+        
+          <div class='highlight'><pre><span class="keyword">this</span>.player.trigger(<span class="string">'configEmpty'</span>);</pre></div>
+        
 
-Again, we defer to Gadget.render() to handle the display.
+
+        <p>Double clicking the gadget will cause the player to send <code>toggleEdit</code>, so you need to capture it and display editing interface again.
 </dd>
-
-<p></dl></p>
+</dl></p>
 <p><a name="configuration" /></p>
 <h2>Configuration</h2>
 
@@ -240,7 +262,8 @@ options.propertySheetSchema.set(&#39;Favorite Character&#39;,
 &nbsp;&nbsp;&nbsp;&nbsp;{val: 2, label: <span class = "string">&quot;Jon Snow&quot;</span>}, 
 &nbsp;&nbsp;&nbsp;&nbsp;{val:3, label:<span class = "string">&quot;Tyrion Lannister&quot;</span>}
 &nbsp;&nbsp;]
-});<br><br></pre>
+});<br>
+</pre>
 </div>
 
 <ul>
@@ -268,7 +291,8 @@ options.propertySheetSchema.set(&#39;Favorite Character&#39;,
 &nbsp;&nbsp;&nbsp;&nbsp;{val: 2, label: <span class = "string">&quot;Jon Snow&quot;</span>}, 
 &nbsp;&nbsp;&nbsp;&nbsp;{val:3, label:<span class = "string">&quot;Tyrion Lannister&quot;</span>}
 &nbsp;&nbsp;]
-});<br><br></pre>
+});<br>
+</pre>
 </div>
 
 <ul>
