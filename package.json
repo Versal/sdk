@@ -1,9 +1,10 @@
 {
   "name": "versal-sdk",
   "description": "Versal Gadget SDK with command-line interface.",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "author": "Versal Team",
   "homepage": "http://versal.com/",
+  "main": "lib/sdk.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/Versal/sdk.git"
@@ -33,7 +34,7 @@
     "open": "~0.0.3",
     "requirejs": "~2.1.5",
     "connect": "~2.7.3",
-    "fs-extra": "~0.5.0",
+    "fs-extra": "~0.6.3",
     "colors": "~0.6.0-1",
     "prompt": "~0.2.9",
     "glob": "~3.1.21",
@@ -46,9 +47,11 @@
     "express": "~3.2.6",
     "shortid": "~1.0.9",
     "archiver": "~0.4.4",
-    "almond": "~0.2.5"
+    "almond": "~0.2.6",
+    "stylus": "~0.37.0"
   },
   "devDependencies": {
+    "asset-stubs": "git+ssh://git@github.com:Versal/asset-stubs.git",
     "grunt": "~0.4.0",
     "mocha": "~1.8.1",
     "chai": "~1.5.0",

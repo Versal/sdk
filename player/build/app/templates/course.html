@@ -1,0 +1,36 @@
+<div class="courseHeader">
+  <div class="headerContent">
+    <i class="js-toggle-toc toc-icon"></i>
+    <div class="saveErrorMsg hide">Your connection has been lost, changes were not saved.</div>
+    <div class="courseTitleWrapper">
+      <h2 class="title courseTitle"><%- title %></h2>
+      <i class='fade-out'></i>
+    </div>
+
+    <div class="row bottomHalf">
+      <div class="lessonTitleWrapper">
+        <div class="lessonTitle" contenteditable="false" placeholder="Untitled lesson">
+          <%- firstLessonTitle %>
+        </div>
+        <i class='fade-out'></i>
+      </div>
+      <!-- Per #44573495, hide these until they're working
+      <ul class="lessonControls">
+        <li class="js-search search"></li>
+        <li class="js-fav fav"></li>
+        <li class="js-overview-disabled overview disabled"></li>
+        <li class="js-more more"></li>
+      </ul>
+      -->
+    </div>
+
+  </div>
+
+</div>
+
+<div class="lessons"></div>
+
+<div class="nav"></div>
+
+<div class="toc"></div>
+

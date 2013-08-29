@@ -4,7 +4,7 @@ module.exports = (grunt) ->
 
   grunt.initConfig
     clean:
-      temp: 'temp/*'
+      temp: 'temp'
 
     mochaTest:
       test:
@@ -20,29 +20,11 @@ module.exports = (grunt) ->
 
     exec:
       "build-docs":
-        command: 'cd ../gadget-docs && ' +
-                 'git checkout master && ' +
-                 'git pull && ' +
-                 'npm install && ' +
-                 'grunt && ' +
-                 'cd - && ' +
-                 'rm -rf ./docs &&' +
-                 'cp -r ../gadget-docs/dist ./docs && ' +
-                 'echo Done.'
+        command: './tasks/bin/build-docs.sh'
 
       "build-player":
-        command: 'cd ../player && ' +
-                 'git checkout master && ' +
-                 'git pull && ' +
-                 'npm install && ' +
-                 'grunt build && ' +
-                 'cd - && ' +
-                 'rm -rf ./preview/player.js ./preview/main.css ./preview/vendor ./preview/assets/font ./preview/assets/img && ' +
-                 'cp ../player/dist/scripts/player-bundle.js ./preview/player.js && ' +
-                 'cp -r ../player/dist/styles/main.css ./preview/main.css && ' +
-                 'cp -r ../player/dist/styles/vendor ./preview/vendor && ' +
-                 'cp -r ../player/dist/assets/img ./preview/assets/img && ' +
-                 'cp -r ../player/dist/assets/font ./preview/assets/font && ' +
-                 'echo Done.'
+        command: './tasks/bin/build-player.sh'
 
   grunt.registerTask 'default', ['clean', 'mochaTest']
+  grunt.registerTask 'build-docs', ['exec:build-docs']
+  grunt.registerTask 'build-player', ['exec:build-player']

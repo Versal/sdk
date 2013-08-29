@@ -6,23 +6,43 @@ _ = require 'underscore'
 sdk = require '../../src/sdk'
 async = require 'async'
 open = require 'open'
-Bridge = require './bridge'
-
-defaults =
-  port: 3000
+Bridge = require '../bridge/bridge'
+glob = require 'glob'
 
 module.exports =
   command: (dirs, options, callback = ->) ->
-    options = _.extend _.clone(defaults), options
+    defaults =
+      port: 3000
 
+    options = _.extend defaults, options
     @bridge = options.bridge || new Bridge
 
-    process.stdout.write "Compiling gadgets..."
+    if dirs.length == 1
+      dir = path.resolve dirs[0]
 
+      gadgetsPath = "#{dir}/versal_data/gadgets"
+      if fs.existsSync gadgetsPath then @addGadgets gadgetsPath
+
+      coursePath = "#{dir}/versal_data/course.json"
+      if fs.existsSync coursePath then @bridge.linkCourse coursePath
+
+    @previewGadgets dirs, options, callback
+
+  addGadgets: (path) ->
+    manifests = glob.sync "#{path}/*/*/*/manifest.json"
+    paths = _.map manifests, (m) -> m.replace '/manifest.json', ''
+    _.each paths, (path) => @bridge.addGadget path
+
+  previewCourse: (dir, options) ->
+
+  previewGadgets: (dirs, options, callback) ->
+    process.stdout.write "Compiling gadgets..."
     # TODO: handle situation when dir contains already compiled gadget
     # Add gadget from specified directories
     async.map dirs, (dir, cb) =>
       dir = path.resolve dir
+      return cb(null, false) unless fs.existsSync "#{dir}/manifest.json"
+
       sdk.compile dir, options, (err) =>
         if err then return cb(err)
         if fs.existsSync "#{dir}/dist"
@@ -74,7 +94,7 @@ module.exports =
           if err
             console.log "failed."
           else
-            bridge.updateGadget dir
+            #bridge.updateGadget dir
             console.log "done."
 
     _.each dirs, (dir) ->

@@ -11,10 +11,14 @@ describe 'Create', ->
 
   describe 'single gadget', ->
     before (done) ->
-      sdk.createGadget "#{gadgetPath}/g1", done
+      sdk.createGadget "#{gadgetPath}/g1", { username: 'test-user' }, done
 
     it 'should copy template files for g1', ->
       glob.sync('**/*.*', cwd: "#{gadgetPath}/g1").should.eql templateFiles
+
+    it 'should set username', ->
+      manifest = require "#{gadgetPath}/g1/manifest.json"
+      manifest.username.should.eq 'test-user'
 
   describe 'multiple gadgets', ->
     before (done) ->

@@ -1,0 +1,22 @@
+textarea {
+  width: 100%;
+  height: 20px;
+  overflow: hidden;
+  resize: none;
+  cursor: text;
+  outline: none;
+  border: none;
+  background: white;
+  font-size: 16px;
+  line-height: 28px;
+  font-family: inherit;
+  color: inherit;
+  padding: 0px;
+  box-shadow: none;
+}
+
+div {
+  white-space: pre-wrap;
+  font-size: 16px;
+  line-height: 28px;
+}

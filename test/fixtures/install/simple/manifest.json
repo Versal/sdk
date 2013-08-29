@@ -1,0 +1,12 @@
+{
+  "username": "versal",
+  "name": "test",
+  "version": "1.2.3",
+  "title": "Gadget to test installation",
+  "description": "A cool new gadget",
+  "author": "You",
+  "defaultConfig": {
+    "username": "Bob"
+  },
+  "defaultUserState": {}
+}

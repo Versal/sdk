@@ -1,0 +1,13 @@
+<ul class="table-of-contents">
+  <% _.each(lessons, function(lesson) { %>
+    <li data-cid="<%- lesson.cid %>" class="js-navigate-lesson <%- !lesson.isAccessible ? 'disabled-lesson' : '' %>">
+      <i class="js-handle handle" />
+      <input class="js-rename-lesson" value="<%- lesson.title %>" readonly="readonly" />
+      <i class="lesson-fade"></i>
+      <i class="js-destroy-lesson delete-icon"></i>
+    </li>
+  <%})%>
+</ul>
+<ul>
+<li class="js-create-lesson create-lesson">Add lesson</li>
+</ul>

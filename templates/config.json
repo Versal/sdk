@@ -1,0 +1,14 @@
+{
+	"default": {
+  	"apiUrl": "https://stack.versal.com/api2",
+  	"authUrl": "https://versal.com/signin"
+	},
+  "stage": {
+    "apiUrl": "https://stagingstack.versal.com/api2",
+    "authUrl": "https://versal.com/signin"
+  },
+  "local": {
+    "apiUrl": "http://localhost:3000/api",
+    "authUrl":"http://localhost:3000/signin"
+  }
+}

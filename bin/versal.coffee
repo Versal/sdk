@@ -2,24 +2,26 @@ _ = require 'lodash'
 
 # Commands that are displayed in cli help
 commands = [
-  "create"
-  "preview"
-  "publish"
-  "docs"
+  'create'
+  'preview'
+  'publish'
+  'docs'
+  'install'
 ]
 
 # Debug commands are not displayed in cli help, but still runnable
 debugCommands = [
-  "validate"
-  "compile"
-  "compress"
-  "upload"
+  'compile'
+  'compress'
+  'signin'
+  'upload'
+  'validate'
 ]
 
-commandsString = commands.join " | "
+commandsString = commands.join ' | '
 usageMessage = "Versal Gadget SDK. Usage: versal (#{commandsString}) <dir> [--options] [--version]"
 
-argv = require("optimist")
+argv = require('optimist')
   .usage(usageMessage)
   .check((argv) ->
     if argv.version

@@ -1,0 +1,151 @@
+/* TODO: That should be by default */
+button { padding: 3px 6px; }
+
+.unselectable {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.no-media {
+  display: block;
+  text-align: center;
+  background: #f2f1ed;
+  color: #c7c3be;
+  padding: 20px;
+  font: 17px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif
+}
+
+.replace-file {
+  position: absolute;
+  padding: 2px 7px;
+  top: 5px;
+  right: 5px;
+  z-index: 6;
+}
+
+.zoom {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background: rgba(255,255,255,0.5);
+  z-index: 5;
+}
+
+.zoom .notch {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 5px;
+  background: cyan;
+  opacity: 0.73;
+}
+
+.slider {
+  cursor: pointer;
+  margin: 16px;
+  margin-right: 112px;
+  height: 5px;
+  background-color: #789;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.crop {
+  position: relative;
+  max-width: 100%;
+  min-height: 75px;
+  min-width: 75px;
+}
+
+figure {
+  position: relative;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+figure img {
+  position: absolute;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Clean unwanted jQuery UI's styles */
+.ui-draggable {
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+.ui-draggable-disabled {
+  cursor: default;
+}
+
+.ui-icon {
+  background-image: none;
+}
+
+.ui-resizable figure {
+  border: 1px solid cyan;
+}
+
+.ui-resizable-resizing .ui-resizable-e,
+.ui-resizable-resizing .ui-resizable-s,
+.ui-resizable-resizing .ui-resizable-se,
+.ui-resizable-e:hover,
+.ui-resizable-s:hover,
+.ui-resizable-se:hover {
+  background: cyan;
+  opacity: 0.3
+}
+
+.ui-resizable-e { width: 30px; right: -1px !important; }
+.ui-resizable-s { height: 30px; bottom: -1px !important;}
+.ui-resizable-se { width: 30px; height: 30px; right: -1px !important; bottom: -1px !important; }
+
+.ui-resizable-disabled figure {
+  border: 1px solid transparent;
+}
+
+.ui-state-disabled {
+  opacity: 1 !important;
+}
+
+.ui-slider-handle {
+  width: 11px;
+  height: 11px;
+  margin-left: -5px;
+  overflow: visible;
+  outline: none;
+  cursor: pointer;
+  border: 1px solid #888;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3), inset 0px 1px 0px rgba(255, 255, 255, 0.8);
+  -moz-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3), inset 0px 1px 0px rgba(255, 255, 255, 0.8);
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3), inset 0px 1px 0px rgba(255, 255, 255, 0.8);
+  background-color: #c9c9c9;
+  background-image: -moz-linear-gradient(top, #dddddd, #aaaaaa);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#dddddd), to(#aaaaaa));
+  background-image: -webkit-linear-gradient(top, #dddddd, #aaaaaa);
+  background-image: -o-linear-gradient(top, #dddddd, #aaaaaa);
+  background-image: linear-gradient(to bottom, #dddddd, #aaaaaa);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdddddd', endColorstr='#ffaaaaaa', GradientType=0);
+}
+
+.ui-slider-range { background: transparent; }

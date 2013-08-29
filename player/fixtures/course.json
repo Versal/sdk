@@ -1,0 +1,17 @@
+{
+  "id": 1,
+  "title": "Course 1",
+  "isEditable": true,
+  "lessons": [
+    {
+      "id": 1,
+      "title": "Lesson 1",
+      "gadgets": []
+    },
+    {
+      "id": 2,
+      "title": "Lesson 2",
+      "gadgets": []
+    }
+  ]
+}

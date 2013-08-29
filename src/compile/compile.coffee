@@ -4,12 +4,18 @@ ncp = require 'ncp'
 path = require 'path'
 requirejs = require 'requirejs'
 async = require 'async'
+stylus = require 'stylus'
+jsapi = require 'js-api'
 
-module.exports = 
+module.exports =
+  # TODO: make compile command return compiled gadget manifest
   command: (dir, options = {}, callback = ->) ->
     src = path.resolve dir
-    bundlePath = if options.out then path.resolve(options.out) else "#{src}/dist"
-    textPath = path.resolve "#{__dirname}/../../preview/plugins/text"
+    dest = if options.out then path.resolve(options.out) else "#{src}/dist"
+    manifest = JSON.parse fs.readFileSync "#{src}/manifest.json"
+    gadget = new jsapi.GadgetProject manifest
+
+    textPath = path.resolve "#{__dirname}/../../lib/text"
 
     config =
       baseUrl: src
@@ -32,21 +38,31 @@ module.exports =
         'cdn.mathjax': 'empty:'
       stubModules: ['text']
       # output optimized code and create gadget bundle
-      out: (code) => @createBundle code, src, bundlePath, callback
+      out: (code) => @createBundle code, src, dest, gadget, callback
 
     requirejs.optimize config, (->), (err) -> callback err
 
-  createBundle: (code, src, bundlePath, callback) ->
-    if fs.existsSync bundlePath then fs.removeSync bundlePath
+  createBundle: (code, src, dest, gadget, callback) ->
+    if fs.existsSync dest then fs.removeSync dest
 
     # create "dist" directory
-    fs.mkdirsSync bundlePath
+    fs.mkdirsSync dest
 
-    # wrap and write gadget.js
-    fs.writeFileSync "#{bundlePath}/gadget.js", @wrap code
+    # TODO: add writeManifest and write processed manifest
+    # generate correct gadgetId from the manifest data
+
+    # write gadget.js
+    @writeJs code, dest
+
+    # process css rules and prepend .gadget-id to every rule
+    @writeCss src, dest, gadget
 
     # copy styles, manifest and assets and callback when its done
-    @copyFiles src, bundlePath, callback
+    @copyFiles src, dest, callback
+
+  writeJs: (code, dest) ->
+    # wrap and write gadget.js
+    fs.writeFileSync "#{dest}/gadget.js", @wrap code
 
   wrap: (code) ->
     code = @wrapInAlmond code
@@ -80,7 +96,7 @@ module.exports =
       # set property on local cdn object
       # e.g.: cdn.backbone = arguments[0];
       start += "#{dep} = arguments[#{i}];\r\n"
-      
+
       # add define to the package
       # e.g.: define('cdn.backbone', [], function(){ return cdn.backbone; })
       end += "define('#{dep}', [], function(){ return #{dep} });\r\n"
@@ -108,7 +124,7 @@ module.exports =
 
   extractCDNDeps: (code) ->
     # find all dependencies in gadget code
-    # assumes, that dependency matches 
+    # assumes, that dependency matches
     # `cdn.<something>` wrapped in quotation marks:
     # e.g. 'cdn.backbone', "cdn.jquery"
     depFinder = /['"](cdn\.([^'"]+))['"]/g
@@ -117,13 +133,26 @@ module.exports =
       deps.push match[1]
     return _.uniq deps
 
-  copyFiles: (src, bundlePath, callback) ->
-    # copy gadget.css, manifest.json and assets folder
-    pathsToCopy = ['gadget.css', 'manifest.json', 'assets']
-    
+  writeCss: (src, dest, gadget) ->
+    css = fs.readFileSync "#{src}/gadget.css", 'utf-8'
+    # Css processing is disabled for v 0.2.9
+    fs.writeFileSync "#{dest}/gadget.css", css #@processCss(css, gadget)
+
+  processCss: (css, gadget = {}) ->
+    throw new Error 'gadget.cssClassName is required for css processing' unless gadget.cssClassName
+    styl = stylus.convertCSS css
+    # prepend gadget class and indent all lines by two spaces
+    lines = [".#{gadget.cssClassName()}"].concat _.map styl.split('\n'), (line) -> "  #{line}"
+
+    return stylus(lines.join('\n'), { compress: true }).render()
+
+  copyFiles: (src, dest, callback) ->
+    # copy manifest.json and assets folder
+    pathsToCopy = ['manifest.json', 'assets']
+
     # create async copy request for each file
     funcs = _.map pathsToCopy, (path) ->
-      (cb) -> ncp "#{src}/#{path}", "#{bundlePath}/#{path}", cb
+      (cb) -> ncp "#{src}/#{path}", "#{dest}/#{path}", cb
 
     # callback when all files are copied
     async.series funcs, callback

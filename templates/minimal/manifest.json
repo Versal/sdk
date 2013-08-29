@@ -1,0 +1,12 @@
+{
+  "username": "default",
+  "name": "minimal",
+  "version": "0.0.1",
+
+  "title": "Empty gadget",
+  "description": "",
+  "author": "",
+
+  "defaultConfig": {},
+  "defaultUserState": {}
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>Versal</title>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width"/>
+    <link rel="stylesheet" href="styles/player-bundle.css"/>
+  </head>
+  <body>
+
+    <div class="player-container"></div>
+
+    <!-- build:js scripts/amd-app.js -->
+    <script>
+
+        // Pick property of object (if available) or fall back on alt
+        function _or (obj, key, alt) {
+          if (obj.hasOwnProperty(key) && obj[key] !== null) {
+            if(obj[key] === 'false') return false;
+            if(obj[key] === 'true') return true;
+            return obj[key];
+          }
+          return alt;
+        }
+
+        window.local = function () {
+          return window.location.href.match(/^(.+)\/iframe.html/)[1]
+        };
+
+        window.localPath = function (path) {
+          return local() + (path || '');
+        };
+
+        document.write('<script src="' + localPath('/scripts/libs/require.js') + '"><\/script>');
+    </script>
+    <script>
+
+      var w = window;
+
+      // Extract a list of options from the iframe location
+      function getOpts (params) {
+        return {
+          urlRoot: localPath() + '/scripts',
+          baseUrl: localPath() + '/scripts',
+          courseId: _or(params, 'course', null),
+          container: '.player-container',
+          whitelabel: _or(params, 'whitelabel', false),
+          noEditable: _or(params, 'noEditable', false),
+          embed: _or(params, 'embed', false),
+          api: {
+            apiUrl: _or(params, 'api', localPath('/api2')),
+            sessionId: _or(params, 'sid', '')
+          }
+        };
+      }
+
+      require([localPath('/scripts/shared-libs/config.js')], function (registerCdn) {
+        registerCdn(localPath('/scripts/shared-libs'));
+        require(['cdn.marionette'], function () {
+          require([localPath('/scripts/player-bundle.js')]);
+        });
+      });
+
+      w.addEventListener('message', function (e) {
+        var data = JSON.parse(e.data);
+        if (data.event === 'player:launch') {
+          delete data.event;
+          w.Player = new PlayerApplication(getOpts(data));
+        }
+      });
+
+      // Fire up the player with iframe location options set
+      w.onPlayerReady = function (PlayerApplication) {
+        w.parent.postMessage(JSON.stringify({ event: 'player:ready' }), '*');
+        w.PlayerApplication = PlayerApplication;
+      };
+
+    </script>
+    <!-- endbuild -->
+  </body>
+</html>
+

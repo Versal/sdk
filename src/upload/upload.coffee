@@ -3,158 +3,64 @@ fs = require 'fs'
 url = require 'url'
 prompt = require 'prompt'
 https = require 'https'
-sdk = require '../../src/sdk'
 path = require 'path'
-needle = require 'needle' #TODO: can we do better and upload it with API?
-
-defaults =
-  url: "https://stack.versal.com/api2"
-  authUrl: "https://versal.com/signin"
+needle = require 'needle'
+sdk = require '../sdk'
 
 module.exports =
-  command: (dest, options, callback = ->) ->
-    options = _.extend defaults, options
+  command: (bundlePath, options = {}, callback = ->) ->
+    unless bundlePath
+      return callback new Error 'provide a path to bundle.zip'
 
-    @verifySessionOrAuthenticate options, (err, sessionId) =>
-      return callback err if err
-      options.sessionId = sessionId
-      gadgetBundlePath = path.resolve "#{dest}/bundle.zip"
+    sessionId = options.sessionId || sdk.config.get 'sessionId', options
+    unless sessionId
+      return callback new Error 'sessionId is required to upload a gadget'
 
-      unless fs.existsSync gadgetBundlePath
-        callback new Error("Gadget bundle not found in #{gadgetBundlePath}. Did you run `versal compress`?")
+    url = options.apiUrl || sdk.config.get 'apiUrl', options
+    unless url
+      return callback new Error 'apiUrl is required to upload a gadget'
 
-      fileData = fs.readFileSync gadgetBundlePath
-      console.log "Uploading gadget from #{dest}..."
+    unless fs.existsSync path.resolve bundlePath
+      callback new Error "gadget not found in #{bundlePath}"
 
-      needle.post "#{options.url}/gadgets",
-        @requestData(fileData),
-        @requestOptions(options.sessionId),
-        (err, res, body) ->
-          if err then return callback(err)
-          # OK code
-          if res.statusCode >= 200 && res.statusCode < 300 then return callback()
-          # Error code
-          if res.statusCode >= 300
-            if _.isArray(body)
-              messages = _.map(body, (e)-> e.message).join(',')
-              return callback new Error "Following errors prevented the gadget from being uploaded: #{messages}"
-            else
-              return callback new Error "Gadget uploading failed. Error code: #{res.statusCode}"
+    unless bundlePath.match /\.zip$/
+      bundlePath = path.join bundlePath, '/bundle.zip'
 
-  requestData: (fileData) ->
+    fileData = fs.readFileSync bundlePath
+
+    needle.post "#{url}/gadgets",
+      @createRequestData(fileData),
+      @createRequestOptions(options.sessionId),
+      (err, res, body) ->
+        # Error sending the request
+        if err
+          if _.isFunction options.error then options.error err
+          return callback err
+
+        # OK code
+        if res.statusCode == 201
+          if _.isFunction options.success then options.success body
+          return callback()
+
+        # Error code
+        if res.statusCode >= 300 && !err
+          if _.isArray(body)
+            messages = _.map(body, (e)-> e.message).join(',')
+            err = new Error "Following errors prevented the gadget from being uploaded: #{messages}"
+          else
+            err = new Error "Gadget uploading failed. Error code: #{res.statusCode}"
+
+        # No status code
+        callback new Error 'Upload failed. No status code in response'
+
+  createRequestData: (fileData) ->
     content:
       buffer: fileData
       filename: 'bundle.zip'
       content_type: 'application/zip'
 
-  requestOptions: (sessionId) ->
+  createRequestOptions: (sessionId) ->
     multipart: true
     headers:
       session_id: sessionId
     timeout: 720000
-
-  verifySession: (options, callback) ->
-    return callback new Error("Could not verify session") unless options.sessionId
-
-    requestOptions =
-      headers:
-        session_id: options.sessionId
-
-    needle.get "#{options.url}/user", requestOptions, (err, res, body) ->
-      return callback() if res.statusCode == 200
-      return callback err if err
-      callback new Error("Could not verify session")
-
-  signIn: (options, callback) ->
-    querystring = require 'querystring'
-    credentials =
-      email: options.email
-      password: options.password
-
-    prompt = require 'prompt'
-    promptParams = [
-      {
-        name: "email"
-        message: "Email address:"
-        required: true
-      }
-      {
-        name: "password"
-        message: "Password at Versal.com:"
-        required: true
-        hidden: true
-      }
-    ]
-
-    prompt.message = ""
-    prompt.delimiter = ""
-
-    console.log "Enter your Versal credentials to sign in:"
-    prompt.get promptParams, (err, credentials) ->
-      _.extend(options, credentials)
-
-      data = querystring.stringify(credentials)
-      requestOptions = 'X-Requested-With': 'XMLHttpRequest'
-
-      needle.post options.authUrl, data, requestOptions, (err, res, body) ->
-        return callback err if err
-        return callback new Error("Authorization unsuccessful. Error code: " + res.statusCode) if res.statusCode != 200
-        sessionId = body.sessionId
-        callback null, sessionId
-
-  initConfig: ->
-    config = { sessionIds: {} }
-    fs.writeFileSync @configPath(), JSON.stringify(config)
-
-    config
-
-  readConfig: ->
-    if fs.existsSync @configPath()
-      rawConfig = fs.readFileSync @configPath(), 'utf-8'
-      try
-        config = JSON.parse rawConfig
-        throw new Error unless config.sessionIds
-      catch e
-        config = @upgradeConfig()
-    else
-      config = @initConfig()
-
-    config
-
-  upgradeConfig: (options) ->
-    # Upgrade means delete for now
-    if fs.existsSync @configPath()
-      fs.unlinkSync @configPath()
-    @initConfig()
-
-  configPath: ->
-    path.join @getHomeDirectory(), '.versal'
-
-  writeConfig: (contents) ->
-    fs.writeFileSync @configPath(), JSON.stringify(contents)
-
-  saveSessionIdToConfig: (options, sessionId) ->
-    config = @readConfig()
-    config.sessionIds[options.url] = sessionId
-    @writeConfig config
-
-  sessionIdFromConfig: (options) ->
-    config = @readConfig()
-    if config.sessionIds
-      config.sessionIds[options.url]
-
-  getHomeDirectory: ->
-    if process.platform == 'win32'
-      process.env.USERPROFILE
-    else
-      process.env.HOME
-
-  verifySessionOrAuthenticate: (options, callback) ->
-    options.sessionId = options.sessionId || @sessionIdFromConfig options
-    @verifySession options, (err) =>
-      if err
-        @signIn options, (err, sessionId) =>
-          unless err then @saveSessionIdToConfig(options, sessionId)
-          callback()
-      else
-        callback null, options.sessionId
