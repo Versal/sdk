@@ -139,10 +139,6 @@ module.exports =
     fs.writeFileSync "#{dest}/gadget.css", css #@processCss(css, gadget)
 
   processCss: (css, gadget = {}) ->
-    # To disable css processing specify 'skipCssProcessing' in manifest
-    # TODO: Remove this compatibility layer in October, 2013
-    if gadget.has 'skipCssProcessing' then return css
-
     throw new Error 'gadget.cssClassName is required for css processing' unless gadget.cssClassName
     styl = stylus.convertCSS css
     # prepend gadget class and indent all lines by two spaces
