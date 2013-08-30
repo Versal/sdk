@@ -43,7 +43,7 @@
     "underscore": "~1.5.1",
     "async": "~0.2.6",
     "ncp": "git+ssh://git@github.com:mereskin/ncp.git",
-    "shared-libs": "git+ssh://git@github.com:Versal/shared-libs.git#v0.0.1a",
+    "versal-shared-libs": "git+ssh://git@github.com:Versal/shared-libs.git#v0.0.1a",
     "express": "~3.2.6",
     "shortid": "~1.0.9",
     "archiver": "~0.4.4",
