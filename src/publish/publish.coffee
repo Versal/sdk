@@ -28,7 +28,7 @@ module.exports = publish =
 
     requestOptions =
       headers:
-        session_id: options.sessionId
+        SESSION_ID: options.sessionId
 
     needle.get "#{apiUrl}/user", requestOptions, (err, res, body) ->
       return callback() if res.statusCode == 200

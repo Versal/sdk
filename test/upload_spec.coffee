@@ -47,7 +47,7 @@ describe 'Upload', ->
       post.firstCall.args[1].content.filename.should.eq 'bundle.zip'
 
     it 'should set sessionId header', ->
-      post.firstCall.args[2].headers.session_id.should.eq 'X'
+      post.firstCall.args[2].headers.SESSION_ID.should.eq 'X'
 
     it 'should call options.success', ->
       success.called.should.be.true

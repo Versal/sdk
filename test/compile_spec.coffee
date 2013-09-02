@@ -74,7 +74,7 @@ describe 'Compile', ->
       result.indexOf("define(['cdn.jquery']").should.eq 0
 
   describe 'css processing', ->
-    css = result = legacyResult = project = legacyProject = null
+    css = result = project = null
 
     before ->
       css = 'h1 { color: white; } .blue { color: blue; } p #red { color: red; }'
@@ -84,12 +84,5 @@ describe 'Compile', ->
         has: -> false
       result = compile.processCss css, project
 
-      legacyProject =
-        has: (key) -> key == 'skipCssProcessing'
-      legacyResult = compile.processCss css, legacyProject
-
     it 'should prefix all css rules with gadget class name', ->
       result.should.eql '.gadget-am-test-001 h1{color:#fff}\n.gadget-am-test-001 .blue{color:#00f}\n.gadget-am-test-001 p #red{color:#f00}\n'
-
-    it 'should leave css intact if skipCssProcessing is specified', ->
-      legacyResult.should.eql css

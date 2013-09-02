@@ -30,7 +30,7 @@ module.exports =
 
     needle.post "#{url}/gadgets",
       @createRequestData(fileData),
-      @createRequestOptions(options.sessionId),
+      @createRequestOptions(sessionId),
       (err, res, body) ->
         # Error sending the request
         if err
@@ -62,5 +62,5 @@ module.exports =
   createRequestOptions: (sessionId) ->
     multipart: true
     headers:
-      session_id: sessionId
+      SESSION_ID: sessionId
     timeout: 720000
