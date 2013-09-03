@@ -122,23 +122,46 @@ describe 'Bridge', ->
         res.status.should.eq 404
         done()
 
-  describe 'assets', ->
+  describe.only 'assets', ->
+    status = asset = null
 
-    it 'approved catalog should be empty', (done) ->
-      params =
-        user: 'me'
-        catalog: 'approved'
-      request.get(helper.getApiUrl('gadgets')).send(params).end (res) ->
-        res.body.should.eql []
-        done()
+    describe 'POST', ->
+      fileSize = 0
 
-    it 'pending catalog should be empty', (done) ->
-      params =
-        user: 'me'
-        catalog: 'pending'
-      request.get(helper.getApiUrl('gadgets')).send(params).end (res) ->
-        res.body.should.eql []
-        done()
+      before (done) ->
+        filePath = path.resolve './test/fixtures/bridge/education.jpg'
+        fileSize = fs.statSync(filePath).size
+        request.post(helper.getApiUrl('assets'))
+          .attach('content', filePath)
+          .field('title', 'New file')
+          .send()
+          .end (res) ->
+            status = res.statusCode
+            asset = res.body
+            done()
+
+      it 'should respond with 201', ->
+        status.should.eq 201
+
+      it 'should have id', ->
+        asset.id.should.be.ok
+
+      it 'should have representations', ->
+        asset.representations.length.should.be.ok
+
+      it 'should be available for re-fetching', (done) ->
+        url = helper.getApiUrl "/assets/#{asset.id}"
+        request.get(url).end (res) ->
+          res.statusCode.should.eq 200
+          res.body.should.have.property 'representations'
+          done()
+
+      it 'should return representation when requested', (done) ->
+        url = helper.getApiUrl asset.representations[0].location
+        request.get(url).end (res) ->
+          res.statusCode.should.eq 200
+          res.header['content-length'].should.eq fileSize.toString()
+          done()
 
   describe 'gadgets', ->
     gadgets = addGadget = response = null

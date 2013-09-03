@@ -14,6 +14,7 @@ sdkFixtures = path.join __dirname, '../../player/fixtures'
 pkg = require '../../package.json'
 
 module.exports = class Bridge
+  assets: {}
   gadgets: []
   course: {}
   users: []
@@ -81,11 +82,17 @@ module.exports = class Bridge
       else
         res.send 400
 
-    api.get '/assets/:id', (req, res) ->
-      assetsPath = path.join sdkFixtures, 'assets.json'
-      assets = _.flatten _.values require(assetsPath)
-      asset = _.find assets, (asset) -> asset.id == req.params.id
-      res.send asset
+    api.post '/assets', @uploadAsset
+    # get representation
+    api.get '/assets/:id/:repId', (req, res) =>
+      id = req.param 'id'
+      repId = req.param 'repId'
+      res.sendfile @assets[id].representations[repId]._filePath
+
+    # get manifest
+    api.get '/assets/:id', (req, res) =>
+      id = req.param 'id'
+      res.send @assets[id]
 
     # Serve the asset fixtures
     api.use express.static sdkFixtures
@@ -169,6 +176,15 @@ module.exports = class Bridge
     @site.use "/api/gadgets/#{manifest.id}", express.static gadgetPath
 
     return manifest
+
+  uploadAsset: (req, res) =>
+    id = shortid.generate()
+    assetPath = req.files['content'].path
+    asset =
+      id: id
+      representations: [{ location: "/assets/#{id}/0", _filePath: assetPath }]
+    @assets[id] = asset
+    res.send 201, asset
 
   # Below is all legacy stuff. Remove, once player is updated
   # and all gadgets are recompiled
