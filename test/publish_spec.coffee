@@ -39,7 +39,7 @@ describe 'Publish', ->
 
     before ->
       get = sinon.stub(needle, 'get').callsArgWith(2, null, { statusCode: 401 })
-      get.withArgs('api/user', { headers: { session_id: 'X' }}).callsArgWith(2, null, { statusCode: 200 })
+      get.withArgs('api/user', { headers: { SESSION_ID: 'X' }}).callsArgWith(2, null, { statusCode: 200 })
 
     after ->
       get.restore()
@@ -50,12 +50,12 @@ describe 'Publish', ->
         done()
 
     it 'should return 200 for valid session', (done) ->
-      needle.get 'api/user', { headers: { session_id: 'X' }}, (err, res) ->
+      needle.get 'api/user', { headers: { SESSION_ID: 'X' }}, (err, res) ->
         res.statusCode.should.eq 200
         done()
 
     it 'should return 401 for invalid session', (done) ->
-      needle.get 'user', { headers: { session_id: 'Y' }}, (err, res) ->
+      needle.get 'user', { headers: { SESSION_ID: 'Y' }}, (err, res) ->
         res.statusCode.should.eq 401
         done()
 
