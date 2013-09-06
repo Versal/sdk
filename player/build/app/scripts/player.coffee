@@ -148,10 +148,23 @@ define [
       progressFetch = courseModel.progress.fetch()
       progressFetch.success @onProgressLoad
 
+      # Hacky fix for lack of revision endpoint.
+      # Allows us to fetch the last published
+      # version of a course
+      if @options.revision
+        courseBaseUrl = courseModel.url()
+        courseModel.url = =>
+          @baseUrl + 'catalogs/staged' + courseBaseUrl
+
       courseModel.fetch
         success: (model) =>
           $.when(progressFetch).then => @onCourseLoad model
         silent: true
+
+      # Hacky fix for lack of revision endpoint.
+      # Resets the course to use the correct URL
+      if @options.revision
+        courseModel.url = -> courseBaseUrl
 
       # Store reference to the current course inside the Player app
       @course = courseModel

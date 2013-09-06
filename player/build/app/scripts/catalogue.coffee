@@ -6,19 +6,19 @@ define [
   'plugins/backbone.prioritize'
 ], (GadgetCatalogue, SectionGadget, ColumnGadget, LipsumGadget) ->
 
-  localGadgets = new GadgetCatalogue [
-    {
-      author: "Versal"
-      catalog: "approved"
-      icon: "//s3-us-west-2.amazonaws.com/net.vrsl.stack.prod.static/player2/assets/img/authorSidebar/icon_header_gadget.png"
-      classDefinition: SectionGadget
-      id: "section"
-      title: "Header"
-      type: "gadget/section"
-      version: "0.1.0"
-      noToggleSwitch: true
-    }
-  ]
+  # TODO: Deprecate this when player#841 is complete
+  localSection = new vs.api.GadgetProject
+    author: "Versal"
+    catalog: "approved"
+    icon: "//s3-us-west-2.amazonaws.com/net.vrsl.stack.prod.static/player2/assets/img/authorSidebar/icon_header_gadget.png"
+    classDefinition: SectionGadget
+    id: "section"
+    title: "Header"
+    username: "versal"
+    name: "section"
+    version: "0.2.9"
+    noToggleSwitch: true
+    noCss: true
 
   class CombinedCatalogue extends GadgetCatalogue
     fetchAll: (opts = {}) ->
@@ -45,15 +45,13 @@ define [
           { title: 'Cellular automaton' }
           { title: 'Principle of superposition' }
         ]
-        # Reject invalid gadgets.
-        # TODO remove this at the point P2 doesn't return invalid gadgets
-        @add approved.reject (g) -> !g.isValid()
-        @add unapproved.reject((g) -> !g.isValid())
-        @add localGadgets.toJSON()
 
-        _.each @models, (model) ->
-          model.css ||= ''
-          model.main ||= ''
+        @add approved.models
+        @add unapproved.models
+
+        # TODO: Deprecate this when player#841 is complete
+        unless @find((g) -> g.type() == 'versal/section@0.2.9')
+          @add localSection
 
         @trigger 'reset'
         @trigger 'sync'

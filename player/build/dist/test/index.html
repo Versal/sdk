@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Mocha Spec Runner</title>
+  <link rel="stylesheet" href="lib/mocha/mocha.css">
+</head>
+<body>
+  <div id="mocha"></div>
+  <script src="lib/mocha/mocha.js"></script>
+  <script src="lib/sinon.js"></script>
+
+  <!-- define globals for mocha -->
+  <script>mocha.setup({ ui: 'bdd', ignoreLeaks: true, globals: ['_', 'Backbone', 'vs'] })</script>
+
+  <!-- assertion framework -->
+  <script src="lib/chai.js"></script>
+  <script>chai.should()</script>
+
+  <!-- Load test config -->
+
+  <script data-main="/test/config" src="/scripts/libs/require.js"></script>
+
+  <div class='authorSidebar'></div>
+
+</body>
+</html>

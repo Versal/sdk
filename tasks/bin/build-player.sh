@@ -3,7 +3,7 @@
 set -e
 
 rm -rf ./player/build
-git clone ../player-master ./player/build
+git clone ../player ./player/build
 cd ./player/build
 
 # Checkout a branch or ref

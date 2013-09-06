@@ -1,0 +1,4 @@
+<%= buttonIf(previousAvailable(), 'js-prev previous-button', 'previous lesson') %>
+<%= buttonIf(nextAvailable(), 'js-next next-button', 'next lesson') %>
+<%= buttonIf(isComplete() && !nextAvailable(), 'js-finish finish-button', 'finish course') %>
+<div class='clearfix'></div>

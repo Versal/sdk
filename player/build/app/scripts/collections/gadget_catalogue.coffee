@@ -17,11 +17,13 @@ define [
         @trigger 'ready'
 
     findGadgetByType: (type) ->
-      @find (gadget) -> gadget.get('type') == type
+      # TODO: Deprecate this when player#841 is complete
+      if type == 'gadget/section' then type = 'versal/section@0.2.9'
+      @find (gadget) -> gadget.type() == type
 
     buildInstanceOfType: (type, opts) ->
       unless gadget = @findGadgetByType type
-        throw new vs.api.errors.ApplicationError "Unknown gadget type #{type}"
+        throw new Error "Unknown gadget type #{type}"
       instance = new vs.api.GadgetInstance
       instance.gadgetProject = gadget
       instance.set type: type
