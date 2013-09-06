@@ -25,7 +25,7 @@ playerFrame = (el, url, className, fullscreen) ->
 
 extractData = (c) ->
   result = {}
-  for key in ['course', 'sid', 'api', 'whitelabel', 'embed', 'noEditable']
+  for key in ['course', 'sid', 'api', 'whitelabel', 'embed', 'noEditable', 'revision']
     val = c.getAttribute "data-#{key}"
     result[key] = val if val
 

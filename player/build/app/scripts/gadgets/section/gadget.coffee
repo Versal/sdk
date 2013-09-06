@@ -1,7 +1,8 @@
+# TODO: Deprecate this when versal/header is published and approved
 define ['text!./template.html'], (template) ->
 
   class SectionHeader
-    className: 'section-header'
+    className: 'section-header js-sticky-header'
 
     constructor: (options) ->
       @player = options.player

@@ -11,7 +11,9 @@ define [
       'click' : 'onClick'
 
     initialize: ->
-      @$el.attr 'data-type', @model.get('type')
+      # FIXME: There should be no need in this check, since all gadget projects
+      # must expose type. Currently, some tests are failing without this check.
+      if _.isFunction @model.type then @$el.attr 'data-type', @model.type()
       @model.set
         title: @model.get('title') || @model.get('name')
       , silent: true
@@ -24,8 +26,11 @@ define [
       title: '.title'
 
     onRender: ->
-      if @model.has 'icon'
+      # TODO: Deprecate this when player#841 is complete
+      if @model.type() == 'versal/section@0.2.9'
         @ui.icon.css "background-image", "url(#{@model.get('icon')})"
+      else
+        @ui.icon.css "background-image", "url(#{@model.icon()})"
 
     onClick: (e) ->
       e.preventDefault()

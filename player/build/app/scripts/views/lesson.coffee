@@ -26,16 +26,16 @@ define [
 
       return @onResolveError("Gadget Project not found: #{@get 'type'}") unless @gadgetProject
 
-      if @gadgetProject.css
+      if @gadgetProject.css()
         key = 'gadget-' + @gadgetProject.get 'id'
-        mediator.trigger 'style:register', { key, href: @gadgetProject.css, files: @gadgetProject.get('files') }
+        mediator.trigger 'style:register', { key, href: _.result(@gadgetProject, 'css'), files: @gadgetProject.get('files') }
 
       # Player-defined gadgets have a constructor already attached.
       if klass = @gadgetProject.get 'classDefinition'
         @onResolveSuccess klass
       else
         require.config baseUrl: 'scripts'
-        require [@gadgetProject.main], @onResolveSuccess, @onResolveError
+        require [_.result @gadgetProject, 'main'], @onResolveSuccess, @onResolveError
 
   class Lesson extends Marionette.CollectionView
     _.extend @::, tracker('Lesson')
@@ -200,9 +200,9 @@ define [
 
     stickHeaders: -> _.defer =>
       unless @sticky
-        @sticky = new VsSticky @$('.gadget-section'), @navBarHeight
+        @sticky = new VsSticky @$('.js-sticky-header'), @navBarHeight
         @sticky.listen()
-      @sticky.setEls @$('.gadget-section')
+      @sticky.setEls @$('.js-sticky-header')
       @sticky.updateEls()
 
     showHoverables: (bool = true) ->

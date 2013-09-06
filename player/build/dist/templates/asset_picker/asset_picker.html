@@ -1,0 +1,35 @@
+<div class="assets-modal modal">
+  <div class="header">
+    <div class="modal-title">file picker</div>
+    <div class="modal-controls">
+      <button class="cancel js-close">cancel</button>
+      <button class="action js-use-file js-upload">use file</button>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="content">
+    <div class="preview-region">
+      <div class="uploading-overlay">
+        <div class="uploading-spinner"></div>
+      </div>
+
+      <div class="choose-overlay">
+        <div class="drop-image"></div>
+        <div class="drop-blurb">
+          drag file here
+          <span class="click-blurb">or click to upload</span>
+        </div>
+        <div class="dropzone"></div>
+      </div>
+
+      <input class="hidden-uploader" type="file">
+      <div class="file-preview"></div>
+
+    </div>
+    <div class="status-message"></div>
+    <% if (getType() == "video") { %>
+      <input class="video-link" placeholder="or paste YouTube or Vimeo link" />
+    <% } %>
+  </div>
+</div>
+<div class="modal-backdrop"></div>

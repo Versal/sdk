@@ -1,0 +1,38 @@
+/*
+ * TODO: Remove this file when migrating completely to the player stylesheet from the "design-theme" repo.
+ */
+ 
+/*
+ * @ 04182659b933a3d0a19691c1509fbc2736af76b5
+ */
+
+.versal-tooltip{position:relative;display:inline-block;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;background-color:rgba(0,0,0,0.8);-webkit-box-shadow:0 0 15px rgba(0,0,0,0.2);box-shadow:0 0 15px rgba(0,0,0,0.2);color:#f4f4f4;font-family:Source Sans,sans-serif;font-size:10pt;min-height:18px;min-width:14px;-webkit-border-radius:2px;border-radius:2px;}
+.versal-tooltip .versal-tooltip-arrow{position:absolute}
+.versal-tooltip.versal-tooltip-text{padding:5px 10px}
+.versal-tooltip.versal-tooltip-offset{min-height:29px;min-width:29px}
+.versal-tooltip.versal-tooltip-left{margin-left:7px;}
+.versal-tooltip.versal-tooltip-left .versal-tooltip-arrow{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:7px solid rgba(0,0,0,0.8);left:-7px;top:50%;bottom:auto;margin-top:-7px;margin-bottom:-7px}
+.versal-tooltip.versal-tooltip-right{margin-right:7px;}
+.versal-tooltip.versal-tooltip-right .versal-tooltip-arrow{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:7px solid rgba(0,0,0,0.8);right:-7px;top:50%;bottom:auto;margin-top:-7px;margin-bottom:-7px}
+.versal-tooltip.versal-tooltip-top{margin-top:7px;}
+.versal-tooltip.versal-tooltip-top .versal-tooltip-arrow{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid rgba(0,0,0,0.8);top:-7px;left:50%;right:auto;margin-left:-7px;margin-right:-7px}
+.versal-tooltip.versal-tooltip-bottom{margin-bottom:7px;}
+.versal-tooltip.versal-tooltip-bottom .versal-tooltip-arrow{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid rgba(0,0,0,0.8);bottom:-7px;left:50%;right:auto;margin-left:-7px;margin-right:-7px}
+.versal-tooltip.versal-tooltip-align-left.versal-tooltip-offset{margin-left:-15px}
+.versal-tooltip.versal-tooltip-align-left .versal-tooltip-arrow{left:15px;right:auto}
+.versal-tooltip.versal-tooltip-align-right.versal-tooltip-offset{margin-right:-15px}
+.versal-tooltip.versal-tooltip-align-right .versal-tooltip-arrow{left:auto;right:15px}
+.versal-tooltip.versal-tooltip-align-top.versal-tooltip-offset{margin-top:-15px}
+.versal-tooltip.versal-tooltip-align-top .versal-tooltip-arrow{top:15px;bottom:auto}
+.versal-tooltip.versal-tooltip-align-bottom.versal-tooltip-offset{margin-bottom:-15px}
+.versal-tooltip.versal-tooltip-align-bottom .versal-tooltip-arrow{top:auto;bottom:15px}
+.versal-tooltip.versal-tooltip-white{background-color:#fff;color:#524e47;border:1px solid #b0b3b8;}
+.versal-tooltip.versal-tooltip-white .versal-tooltip-arrow:after{display:block;content:' ';position:absolute}
+.versal-tooltip.versal-tooltip-white.versal-tooltip-left .versal-tooltip-arrow{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:7px solid #b0b3b8;}
+.versal-tooltip.versal-tooltip-white.versal-tooltip-left .versal-tooltip-arrow:after{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:7px solid #fff;left:1px;top:-7px}
+.versal-tooltip.versal-tooltip-white.versal-tooltip-right .versal-tooltip-arrow{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:7px solid #b0b3b8;}
+.versal-tooltip.versal-tooltip-white.versal-tooltip-right .versal-tooltip-arrow:after{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:7px solid #fff;right:1px;top:-7px}
+.versal-tooltip.versal-tooltip-white.versal-tooltip-top .versal-tooltip-arrow{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid #b0b3b8;}
+.versal-tooltip.versal-tooltip-white.versal-tooltip-top .versal-tooltip-arrow:after{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid #fff;left:-7px;top:1px}
+.versal-tooltip.versal-tooltip-white.versal-tooltip-bottom .versal-tooltip-arrow{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid #b0b3b8;}
+.versal-tooltip.versal-tooltip-white.versal-tooltip-bottom .versal-tooltip-arrow:after{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid #fff;left:-7px;bottom:1px}
