@@ -98,6 +98,8 @@ module.exports =
             console.log "done."
 
     _.each dirs, (dir) ->
+      return unless fs.existsSync "#{dir}/manifest.json"
+
       watchOptions =
         ignoreDotFiles: true
 

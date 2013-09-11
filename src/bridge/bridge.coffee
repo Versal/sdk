@@ -14,18 +14,19 @@ sdkFixtures = path.join __dirname, '../../player/fixtures'
 pkg = require '../../package.json'
 
 module.exports = class Bridge
-  assets: {}
+  # FIXME: Maintain a jsapi collection of assets
   gadgets: []
-  course: {}
   users: []
   sessions: []
   progress: {}
 
-  constructor: ->
+  constructor: (options) ->
     @site = express()
     @api = express()
 
-    @setupAPI(@api)
+    @assets = new jsapi.Assets
+
+    @setupAPI @api, options
 
     @site.use (req, res, next) ->
       res.header 'Access-Control-Allow-Origin', '*'
@@ -39,10 +40,10 @@ module.exports = class Bridge
     @site.use express.static nodeModules
     @site.use '/api', @api
 
-    @linkCourse "#{sdkFixtures}/course.json"
+    @linkCourse "#{sdkFixtures}/course.json", readonly: true
 
-  setupAPI: (api) ->
-    api.use express.bodyParser()
+  setupAPI: (api, options) ->
+    api.use express.bodyParser options
 
     # send 200 for /version to indicate it is bridge
     api.get '/version', (req, res) ->
@@ -52,19 +53,23 @@ module.exports = class Bridge
     api.get '/courses/:course_id', (req, res) =>
       @findCourse req.params['course_id'], (course) ->
         res.send 404 unless course
-        res.send _.extend course, isEditable: true
+        res.send _.extend course.toJSON({ lessons: true, gadgets: true }), isEditable: true
+
+    api.put '/courses/:course_id', (req, res) =>
+      @course.set req.body
+      res.send 200, @course.toJSON()
 
     api.get '/courses/:course_id/lessons', (req, res) =>
       @findCourse req.params['course_id'], (course) ->
         return res.send 404 unless course
-        res.send course.lessons
+        res.send course.lessons.toJSON()
 
     api.get '/courses/:course_id/lessons/:lesson_id', (req, res) =>
       @findCourse req.params['course_id'], (course) ->
         return res.send 404 unless course
         lesson_id = req.params['lesson_id']
-        lesson = _.find course.lessons, (lesson) -> lesson.id.toString() == lesson_id
-        res.send lesson
+        lesson = course.lessons.get lesson_id
+        res.send lesson.toJSON()
 
     # Progress
     # GET - return nothing
@@ -87,12 +92,12 @@ module.exports = class Bridge
     api.get '/assets/:id/:repId', (req, res) =>
       id = req.param 'id'
       repId = req.param 'repId'
-      res.sendfile @assets[id].representations[repId]._filePath
+      res.sendfile @assets.get(id).representations.at(repId).get('_filePath')
 
     # get manifest
     api.get '/assets/:id', (req, res) =>
       id = req.param 'id'
-      res.send @assets[id]
+      res.send @assets.get(id).toJSON(representations: true)
 
     # Serve the asset fixtures
     api.use express.static sdkFixtures
@@ -101,15 +106,55 @@ module.exports = class Bridge
     # Do nothing
     api.put '/courses/:id/progress', (req, res) -> res.send {}
 
-    api.post '/courses/:id/lessons', (req, res) -> res.send 201, {}
-    api.put '/courses/:id/lessons/:lesson_id', (req, res) -> res.send {}
-    api.delete '/courses/:id/lessons/:lesson_id', (req, res) -> res.send {}
+    api.post '/courses/:course_id/lessons', (req, res) =>
+      attrs = _.extend { id: shortid.generate() }, req.body
+      lesson = new jsapi.Lesson attrs, course: @course
+      @course.lessons.add lesson
+      @saveCourse()
+      res.send 201, lesson.toJSON()
 
-    api.post '/courses/:id/lessons/:lesson_id/gadgets', (req, res) -> res.send 201, {}
-    api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id', (req, res) -> res.send {}
-    api.delete '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id', (req, res) -> res.send {}
-    api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/config', (req, res) -> res.send {}
-    api.put '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/userstate', (req, res) -> res.send {}
+    api.put '/courses/:course_id/lessons/:lesson_id', (req, res) =>
+      lesson = @course.lessons.get req.param 'lesson_id'
+      lesson.set req.body
+      @saveCourse()
+      res.send 200, lesson.toJSON()
+
+    api.delete '/courses/:course_id/lessons/:lesson_id', (req, res) =>
+      lesson = @course.lessons.get req.param 'lesson_id'
+      @course.lessons.remove lesson
+      @saveCourse()
+      res.send 200, {}
+
+    api.post '/courses/:course_id/lessons/:lesson_id/gadgets', (req, res) =>
+      lesson = @course.lessons.get req.param 'lesson_id'
+      data = _.extend { id: shortid.generate() }, req.body
+      gadget = new jsapi.Gadget data
+      lesson.gadgets.add gadget, { at: data.index }
+      @saveCourse()
+      res.send 201, gadget.toJSON()
+
+    api.put '/courses/:course_id/lessons/:lesson_id/gadgets/:gadget_id/config', (req, res) =>
+      lesson = @course.lessons.get req.param 'lesson_id'
+      gadget = lesson.gadgets.get req.param 'gadget_id'
+      gadget.config.set req.body
+      @saveCourse()
+      res.send 200, gadget.config.toJSON()
+
+    api.put '/courses/:course_id/lessons/:lesson_id/gadgets/:gadget_id/userstate', (req, res) =>
+      lesson = @course.lessons.get req.param 'lesson_id'
+      gadget = lesson.gadgets.get req.param 'gadget_id'
+      gadget.userState.set req.body
+      @saveCourse()
+      res.send 200, gadget.userState.toJSON()
+
+    api.delete '/courses/:course_id/lessons/:lesson_id/gadgets/:gadget_id', (req, res) =>
+      lesson = @course.lessons.get req.param 'lesson_id'
+      gadget = lesson.gadgets.get req.param 'gadget_id'
+      lesson.gadgets.remove gadget
+      @saveCourse()
+      res.send 200, {}
+
+    api.get '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/config', (req, res) -> res.send {}
     api.get '/courses/:id/lessons/:lesson_id/gadgets/:gadget_id/userstate', (req, res) -> res.send {}
 
     api.post '/users', (req, res) =>
@@ -140,9 +185,14 @@ module.exports = class Bridge
   stop: ->
     if @server then @server.close()
 
-  linkCourse: (coursePath) ->
+  linkCourse: (coursePath, options) ->
     return unless fs.existsSync coursePath
-    @course = fs.readJsonSync coursePath
+    @course = new jsapi.Course fs.readJsonSync coursePath
+    @course._coursePath = coursePath
+
+  # TODO: Maybe replace this with @course.save()?
+  saveCourse: ->
+    fs.writeJson @course._coursePath, @course.toJSON { lessons: true, gadgets: true }
 
   # Suport only single course for now
   # FIXME: return the appropriate course
@@ -178,13 +228,17 @@ module.exports = class Bridge
     return manifest
 
   uploadAsset: (req, res) =>
-    id = shortid.generate()
-    assetPath = req.files['content'].path
+    file = req.files['content']
+    id = path.basename file.path
     asset =
       id: id
-      representations: [{ location: "/assets/#{id}/0", _filePath: assetPath }]
-    @assets[id] = asset
-    res.send 201, asset
+      representations: [
+        location: "/assets/#{id}/0"
+        contentType: file.type
+        _filePath: file.path
+      ]
+    @assets.add asset
+    res.send 201, @assets.get(id).toJSON(representations: true)
 
   # Below is all legacy stuff. Remove, once player is updated
   # and all gadgets are recompiled
