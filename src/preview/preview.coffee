@@ -26,12 +26,16 @@ module.exports =
       coursePath = "#{dir}/versal_data/course.json"
       if fs.existsSync coursePath then @bridge.linkCourse coursePath
 
+    # Link default course in readonly mode
+    unless @bridge.data.courses.length
+      @bridge.linkCourse path.resolve(__dirname, '../../player/fixtures/course.json'), readonly: true
+
     @previewGadgets dirs, options, callback
 
   addGadgets: (path) ->
     manifests = glob.sync "#{path}/*/*/*/manifest.json"
     paths = _.map manifests, (m) -> m.replace '/manifest.json', ''
-    _.each paths, (path) => @bridge.addGadget path
+    _.each paths, (path) => @bridge.linkGadget path
 
   previewCourse: (dir, options) ->
 
@@ -46,7 +50,7 @@ module.exports =
       sdk.compile dir, options, (err) =>
         if err then return cb(err)
         if fs.existsSync "#{dir}/dist"
-          @bridge.addGadget "#{dir}/dist"
+          @bridge.linkGadget "#{dir}/dist"
           cb null, true
         else
           cb null, false
@@ -60,7 +64,12 @@ module.exports =
       console.log " #{successful} of #{total} done."
 
       unless options.test
-        @bridge.start options.port
+        console.log ''
+        console.log " \\ \\/ /  Starting web server on http://localhost:#{options.port}"
+        console.log "  \\/ /   Press Ctrl + C to exit..."
+        console.log ''
+
+        @bridge.start options
         if options.open then open "http://localhost:#{options.port}"
 
       @watchGadgets options, dirs, callback

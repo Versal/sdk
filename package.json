@@ -43,13 +43,14 @@
     "underscore": "~1.5.1",
     "async": "~0.2.6",
     "ncp": "git+ssh://git@github.com:mereskin/ncp.git",
-    "versal-shared-libs": "git+ssh://git@github.com:Versal/shared-libs.git#v0.0.1a",
-    "js-api": "git+ssh://git@github.com:Versal/js-api.git#v0.3.1",
     "express": "~3.2.6",
     "shortid": "~1.0.9",
     "archiver": "~0.4.4",
     "almond": "~0.2.6",
-    "stylus": "~0.37.0"
+    "stylus": "~0.37.0",
+    "express-resource": "~1.0.0",
+    "versal-shared-libs": "Versal/shared-libs#v0.0.1a",
+    "js-api": "Versal/js-api#v0.3.3"
   },
   "devDependencies": {
     "asset-stubs": "git+ssh://git@github.com:Versal/asset-stubs.git",
@@ -63,6 +64,7 @@
     "grunt-contrib-copy": "~0.4.1",
     "grunt-mocha-test": "~0.4.0",
     "sinon": "~1.7.2",
-    "superagent": "~0.14.9"
+    "superagent": "~0.14.9",
+    "supertest": "~0.7.1"
   }
 }

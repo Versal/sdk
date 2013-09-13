@@ -1,0 +1,40 @@
+{
+  "id": 1,
+  "title": "Test course",
+  "lessons": [
+    {
+      "id": 1,
+      "title": "Lesson 1",
+      "gadgets": [
+        {
+          "id": 1,
+          "type": "versal/text@0.1.0",
+          "config": { "content": "Hello world" }
+        },
+        {
+          "id": 2,
+          "type": "versal/quiz@0.1.0",
+          "config": { "content": "Hello world" },
+          "userstate": { "x": 1 }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Lesson 1",
+      "gadgets": [
+        {
+          "id": 3,
+          "type": "versal/text@0.1.0",
+          "config": { "content": "Hello world" }
+        },
+        {
+          "id": 4,
+          "type": "versal/quiz@0.1.0",
+          "config": { "content": "Hello world" },
+          "userstate": { "x": 1 }
+        }
+      ]
+    }
+  ]
+}
