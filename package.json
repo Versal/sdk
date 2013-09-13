@@ -1,7 +1,7 @@
 {
   "name": "versal-sdk",
   "description": "Versal Gadget SDK with command-line interface.",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "author": "Versal Team",
   "homepage": "http://versal.com/",
   "main": "lib/sdk.js",
@@ -9,22 +9,11 @@
     "type": "git",
     "url": "git://github.com/Versal/sdk.git"
   },
-  "bugs": {
-    "url": "http://github.com/Versal/sdk/issues"
-  },
-  "licenses": [
-    {
-      "url": "http://github.com/Versal/sdk/blob/master/LICENSE"
-    }
-  ],
   "bin": {
     "versal": "bin/versal"
   },
   "engines": {
     "node": ">= 0.8.0"
-  },
-  "scripts": {
-    "test": "./bin/versal test"
   },
   "preferGlobal": true,
   "dependencies": {
@@ -42,18 +31,18 @@
     "lodash": "~1.0.1",
     "underscore": "~1.5.1",
     "async": "~0.2.6",
-    "ncp": "git+ssh://git@github.com:mereskin/ncp.git",
+    "ncp": "mereskin/ncp.git",
     "express": "~3.2.6",
     "shortid": "~1.0.9",
     "archiver": "~0.4.4",
     "almond": "~0.2.6",
     "stylus": "~0.37.0",
     "express-resource": "~1.0.0",
-    "versal-shared-libs": "Versal/shared-libs#v0.0.1a",
+    "versal-shared-libs": "Versal/shared-libs#v0.0.3",
     "js-api": "Versal/js-api#v0.3.3"
   },
   "devDependencies": {
-    "asset-stubs": "git+ssh://git@github.com:Versal/asset-stubs.git",
+    "asset-stubs": "Versal/asset-stubs",
     "grunt": "~0.4.0",
     "mocha": "~1.8.1",
     "chai": "~1.5.0",
