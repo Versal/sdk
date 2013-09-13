@@ -16,7 +16,6 @@ If you want to make changes to the SDK install it from source:
 ```
 git clone git@github.com:Versal/sdk
 cd sdk
-git submodule update
 npm install
 npm link
 ```
@@ -29,7 +28,7 @@ Run `docs` sub-command to view sdk and gadget documentation:
 versal docs
 ```
 
-Now you can view gadget documentation at [http://localhost:4000/docs](http://localhost:4000/docs)
+Now you can view gadget documentation at [http://localhost:4000](http://localhost:4000)
 
 ## SDK Development
 
