@@ -13,7 +13,7 @@ module.exports = signin =
       @getUserDetails sessionId: sessionId, (err, user = {}) ->
         if err then return callback err
         unless user.username
-          return callback new Error 'unable to determine username by session id. Try signing in again.'
+          return callback new Error 'Warning: unable to determine username by session id'
 
         sdk.config.set 'username', user.username
         callback()
