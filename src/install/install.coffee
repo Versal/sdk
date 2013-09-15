@@ -65,6 +65,7 @@ module.exports = install =
       needle.get compiledUrl, (err, res, body) ->
         if err then return callback err
         target = install.getInstallPath target, manifest
+        if fs.existsSync target then fs.removeSync target
         fs.mkdirsSync target
         fs.writeFileSync "#{target}/compiled.zip", body
 
