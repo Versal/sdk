@@ -32,6 +32,9 @@ module.exports =
     req.course.save()
     res.send req.gadget.userState.toJSON()
 
+  showUserstate: (req, res) ->
+    res.send req.gadget.userState.toJSON()
+
   # We expect that req.lesson is set in `lessons.coffee/load`
   load: (req, id, fn) ->
     fn null, req.lesson.gadgets.get id

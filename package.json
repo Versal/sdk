@@ -39,7 +39,7 @@
     "stylus": "~0.37.0",
     "express-resource": "~1.0.0",
     "versal-shared-libs": "Versal/shared-libs#v0.0.3",
-    "js-api": "Versal/js-api#v0.3.3"
+    "js-api": "Versal/js-api#v0.3.4"
   },
   "devDependencies": {
     "asset-stubs": "Versal/asset-stubs",

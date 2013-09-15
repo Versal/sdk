@@ -74,6 +74,7 @@ module.exports = class Bridge
     gadgets = api.resource 'gadgets', gadgetController
     gadgets.map 'put', '/:gadget/config', gadgetController.updateConfig
     gadgets.map 'put', '/:gadget/userstate', gadgetController.updateUserstate
+    gadgets.map 'get', '/:gadget/userstate', gadgetController.showUserstate
     lessons.add gadgets
 
     assetController = require './assets'
