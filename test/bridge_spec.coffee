@@ -1,228 +1,310 @@
-require('chai').should()
-request = require 'superagent'
-fs = require 'fs'
-path = require 'path'
-sdk = require '../src/sdk'
-Bridge = require '../src/bridge/bridge'
+_ = require 'underscore'
+request = require 'supertest'
 sinon = require 'sinon'
-pkg = require '../package.json'
+fs = require 'fs-extra'
+path = require 'path'
 
-helper =
-  url: "http://localhost:3073"
-  port: 3073
+Bridge = require '../src/bridge/bridge'
+courseJson = require './fixtures/bridge/course.json'
+assetJson = require './fixtures/bridge/asset.json'
+gadgetPath = path.resolve './test/fixtures/bridge/gadget/dist'
 
-  getApiUrl: (endpoint) ->
-    if endpoint.indexOf('/') == 0 then endpoint = endpoint.slice 1
-    return "#{@url}/api/#{endpoint}"
+# run bridge on port 3073 for tests
+baseUrl = 'http://localhost:3073'
+baseDir = path.resolve './temp/bridge'
 
-  getFixture: (fixture) ->
-    return JSON.parse fs.readFileSync "./player/fixtures/#{fixture}.json", 'utf-8'
+# convenience wrapper over api urls
+apiUrl = (endpoint) ->
+  if endpoint.indexOf('/') == 0 then endpoint = endpoint.slice 1
+  return "#{baseUrl}/api/#{endpoint}"
 
-describe 'Bridge', ->
+describe 'Bridge internals', ->
+  bridge = null
+
+  describe 'link gadget', ->
+    project = null
+
+    before ->
+      bridge = new Bridge
+      project = bridge.linkGadget gadgetPath
+
+    it 'should assign id', ->
+      project.id.should.be.ok
+
+    it 'should add gadget project to datastore', ->
+      bridge.data.projects.length.should.eq 1
+
+describe 'Bridge HTTP API', ->
   bridge = null
 
   before ->
-    bridge = new Bridge
-    bridge.start helper.port
+    fs.mkdirsSync "#{baseDir}/versal_data/assets"
 
-  after ->
+  # get a clean copy of the bridge for each test
+  beforeEach ->
+    bridge = new Bridge { baseDir }
+    bridge.start port: 3073
+
+  afterEach ->
     bridge.stop()
 
-  it 'should set correct apiUrl', ->
-    helper.getApiUrl('whatever').should.eq "http://localhost:3073/api/whatever"
+  it 'index (empty bridge)', (done) ->
+    request(bridge.site).get('/').expect 404, done
 
-  it 'should return index', (done) ->
-    request.get(helper.url).end (res) ->
-      res.ok.should.be.ok
-      done()
+  it 'index (with course)', (done) ->
+    # course is required for index to work
+    bridge.data.courses.add { id: 1 }
+    request(bridge.site).get('/').expect 200, done
 
-  it 'should return empty progress', (done) ->
-    request.get(helper.getApiUrl('courses/1/progress')).end (res) ->
-      res.body.should.eql {}
-      done()
+  it 'rewrite styles/assets', (done) ->
+    request(bridge.site).get('/styles/assets/font/fontawesome-webfont.eot').expect 200, done
 
-  it 'should return version', (done) ->
-    request.get(helper.getApiUrl('version')).end (res) ->
-      res.statusCode.should.eq 200
-      res.text.should.eq "bridge-#{pkg.version}"
-      done()
+  it 'version', (done) ->
+    pkg = require '../package.json'
+    request(bridge.api).get('/version').expect(200, "bridge-#{pkg.version}", done)
 
-  describe 'users', ->
-    response = null
+  describe 'resources', ->
+    course = null
 
-    describe 'POST', ->
-      before (done) ->
-        user =
-          username: 'am'
-        request.post(helper.getApiUrl('users'))
-          .send(user)
-          .end (err, res) ->
-            response = res
+    beforeEach ->
+      bridge.data.courses.add _.clone courseJson
+      course = bridge.data.courses.get(1)
+      sinon.spy course, 'save'
+
+    afterEach ->
+      course.save.restore()
+
+    describe 'courses', ->
+      it '404', (done) ->
+        request(bridge.api).get('/courses/0').expect 404, done
+
+      it 'show', (done) ->
+        request(bridge.api).get('/courses/1').expect 200, course.toJSON(lessons: true, gadgets: true), done
+
+      it 'update', (done) ->
+        request(bridge.api).put('/courses/1').send(title: 'Updated title')
+          .expect 200, (err, res) ->
+            if err then return done err
+            res.body.title.should.eq 'Updated title'
+            res.body.should.eql course.toJSON()
+            course.save.called.should.be.true
             done()
 
-      it 'should return 201', ->
-        response.statusCode.should.eq 201
+    describe 'progress', ->
+      progress = null
 
-      it 'should return an id', ->
-        response.body.id.should.be.ok
+      beforeEach ->
+        progress = course.progress
 
-      it 'should add user to bridge.users', ->
-        bridge.users.length.should.eq 1
+      it 'show', (done) ->
+        request(bridge.api).get('/courses/1/progress').expect 200, progress.toJSON(), done
 
-    describe 'signin', ->
-      before (done) ->
-        userId = bridge.users[0].id
-        request.post(helper.getApiUrl("signin/#{userId}"))
-          .send(null)
-          .end (err, res) ->
-            response = res
+      it 'update', (done) ->
+        request(bridge.api).put('/courses/1/progress').send(lesson: 2)
+          .expect 200, (err, res) ->
+            if err then return done err
+            res.body.lesson.should.eq 2
+            res.body.should.eql progress.toJSON()
+            course.save.called.should.be.true
             done()
 
-      it 'should return 201', ->
-        response.statusCode.should.eq 201
+    describe 'lessons', ->
+      lessons = null
 
-      it 'should return sessionId', ->
-        response.body.sessionId.should.be.ok
+      beforeEach ->
+        # initial length of lessons in fixtures is 2
+        lessons = course.lessons
 
-      it 'should add session to bridge.sessions', ->
-        bridge.sessions.length.should.eq 1
+      it '404', (done) ->
+        request(bridge.api).get('/courses/1/lessons/0').expect 404, done
 
-  describe 'course', ->
-    it 'should serve course.json from player/fixtures folder', (done) ->
-      request.get(helper.getApiUrl('courses/1')).end (res) ->
-        res.body.should.eql helper.getFixture 'course'
-        done()
+      it 'index', (done) ->
+        request(bridge.api).get('/courses/1/lessons')
+          .expect 200, lessons.toJSON(gadgets: true), done
 
-    it 'should serve lessons', (done) ->
-      request.get(helper.getApiUrl('courses/1/lessons')).end (res) ->
-        res.body.length.should.eq 2
-        done()
+      it 'show', (done) ->
+        request(bridge.api).get('/courses/1/lessons/1')
+          .expect 200, lessons.get(1).toJSON(gadgets:true), done
 
-    it 'should serve lesson', (done) ->
-      request.get(helper.getApiUrl('courses/1/lessons/1')).end (res) ->
-        res.body.id.should.eq 1
-        done()
+      it 'create', (done) ->
+        request(bridge.api).post('/courses/1/lessons')
+          .send(title: 'Lesson 3')
+          .expect 201, (err) ->
+            if err then return done err
+            lessons.length.should.eq 3
+            course.save.called.should.be.true
+            done()
 
-  # Currently bridge allows only one linked coourse at a time
-  # It returns that course regardless of courseId
-  # TODO: Enable these tests when courseId is back to work
-  describe.skip 'non-existing course', ->
-    it 'should return 404', (done) ->
-      request.get(helper.getApiUrl('courses/unknown')).end (res) ->
-        res.status.should.eq 404
-        done()
+      it 'update', (done) ->
+        request(bridge.api).put('/courses/1/lessons/1')
+          .send(title: 'Updated lesson 1')
+          .expect 200, (err, res) ->
+            if err then return done err
+            res.body.title.should.eq 'Updated lesson 1'
+            res.body.should.eql lessons.get(1).toJSON(gadgets: true)
+            course.save.called.should.be.true
+            done()
 
-    it 'should return 404 for lessons', (done) ->
-      request.get(helper.getApiUrl('courses/unknown/lessons')).end (res) ->
-        res.status.should.eq 404
-        done()
+      it 'destroy', (done) ->
+        request(bridge.api).del('/courses/1/lessons/1')
+          .expect 200, (err, res) ->
+            if err then return done err
+            lessons.length.should.eq 1
+            course.save.called.should.be.true
+            done()
 
-    it 'should return 404 for lesson', (done) ->
-      request.get(helper.getApiUrl('courses/unknown/lessons/unknown')).end (res) ->
-        res.status.should.eq 404
-        done()
+    describe 'gadgets', ->
+      gadgets = null
+
+      beforeEach ->
+        # initial length of gadgets in fixtures is 2
+        gadgets = course.lessons.get(1).gadgets
+
+      it '404', (done) ->
+        request(bridge.api).get('/courses/1/lessons/1/gadgets/0')
+          .expect 404, done
+
+      it 'index', (done) ->
+        request(bridge.api).get('/courses/1/lessons/1/gadgets')
+          .expect 200, gadgets.toJSON(), done
+
+      it 'show', (done) ->
+        request(bridge.api).get('/courses/1/lessons/1/gadgets/1')
+          .expect 200, gadgets.get(1).toJSON(), done
+
+      it 'create', (done) ->
+        request(bridge.api).post('/courses/1/lessons/1/gadgets')
+          .send(type: 'versal/image@0.7.3')
+          .expect 201, (err, res) ->
+            if err then return done err
+            res.body.id.should.be.ok
+            gadgets.length.should.eq 3
+            course.save.called.should.be.true
+            done()
+
+      it 'destroy', (done) ->
+        request(bridge.api).del('/courses/1/lessons/1/gadgets/1')
+          .expect 200, (err, res) ->
+            if err then return done err
+            gadgets.length.should.eq 1
+            course.save.called.should.be.true
+            done()
+
+      it 'update config', (done) ->
+        request(bridge.api).put('/courses/1/lessons/1/gadgets/1/config')
+          .send(content: 'Updated content')
+          .expect 200, (err, res) ->
+            if err then return done err
+            res.body.content.should.eq 'Updated content'
+            res.body.should.eql gadgets.get(1).config.toJSON()
+            course.save.called.should.be.true
+            done()
+
+      it 'update userstate', (done) ->
+        request(bridge.api).put('/courses/1/lessons/1/gadgets/1/userstate')
+          .send(x: 73)
+          .expect 200, (err, res) ->
+            if err then return done err
+            res.body.x.should.eq 73
+            res.body.should.eql gadgets.get(1).userState.toJSON()
+            course.save.called.should.be.true
+            done()
 
   describe 'assets', ->
+    assets = filePath = fileSize = null
 
-    it 'approved catalog should be empty', (done) ->
-      params =
-        user: 'me'
-        catalog: 'approved'
-      request.get(helper.getApiUrl('gadgets')).send(params).end (res) ->
-        res.body.should.eql []
-        done()
+    before ->
+      filePath = './test/fixtures/bridge/education.jpg'
+      fileSize = fs.statSync(filePath).size
 
-    it 'pending catalog should be empty', (done) ->
-      params =
-        user: 'me'
-        catalog: 'pending'
-      request.get(helper.getApiUrl('gadgets')).send(params).end (res) ->
-        res.body.should.eql []
-        done()
+    beforeEach ->
+      bridge.data.assets.add _.clone assetJson
+      assets = bridge.data.assets
 
-  describe 'gadgets', ->
-    gadgets = addGadget = response = null
-    gadgetPath = path.resolve './test/fixtures/bridge/gadget/dist'
+    it 'index', (done) ->
+      request(bridge.api).get('/assets')
+        .expect 200, assets.toJSON(representations: true), done
 
-    describe 'POST', ->
-    before (done) ->
-        addGadget = sinon.spy bridge, 'addGadget'
-        request.post(helper.getApiUrl('gadgets')).send(path: gadgetPath).end (res) ->
-          response = res
+    # get asset metadata
+    it 'show', (done) ->
+      request(bridge.api).get('/assets/1')
+        .expect 200, assets.get(1).toJSON(representations: true), done
+
+    # get asset representation
+    it 'download', (done) ->
+      request(bridge.api).get('/assets/1/0')
+        .expect('content-length', fileSize.toString())
+        .expect 200, done
+
+    it 'create', (done) ->
+      request(bridge.api).post('/assets')
+        .attach('content', filePath)
+        .field('title', 'New asset')
+        .send()
+        .expect 201, (err, res) ->
+          if err then return done err
+          rep = assets.get(res.body.id).representations.at(0)
+          # had to violate "one assertion per test" principle, because
+          # "beforeEach" resets bridge before every assertion
+          rep.get('contentType').should.eq 'image/jpeg'
+          rep.get('location').should.eq "/assets/#{res.body.id}/0"
+          rep.get('_filePath').should.eq "#{baseDir}/versal_data/assets/#{res.body.id}"
+          fs.existsSync(rep.get('_filePath')).should.be.true
           done()
 
-      after ->
-        addGadget.restore()
+  describe 'gadget projects', ->
+    project = null
 
-      it 'should return 201', ->
-        response.statusCode.should.eq 201
+    beforeEach ->
+      project = bridge.linkGadget gadgetPath
 
-      it 'should call addGadget', ->
-        addGadget.firstCall.args[0].should.eq gadgetPath
+    describe 'paths', ->
+      it 'should serve gadget manifest', (done) ->
+        request(bridge.api).get(project.manifest())
+          .expect 200, project.toJSON(), done
 
-      it 'response should appear to be a gadget manifest', ->
-        response.body.should.have.property 'username'
-        response.body.should.have.property 'name'
-        response.body.should.have.property 'version'
+      it 'should serve gadget.js', (done) ->
+        request(bridge.api).get(project.main())
+          .expect('content-type', 'application/javascript')
+          .expect 200, done
+
+      it 'should serve gadget.css', (done) ->
+        request(bridge.api).get(project.css())
+          .expect('content-type', 'text/css; charset=UTF-8')
+          .expect 200, done
+
+      it 'should serve icon.png', (done) ->
+        request(bridge.api).get(project.icon())
+          .expect('content-length', '2696')
+          .expect('content-type', 'image/png')
+          .expect 200, done
+
+    describe 'legacy paths', ->
+      gadgetUrl = null
+      beforeEach ->
+        gadgetUrl = "/gadgets/#{project.id}"
+
+      it 'should serve gadget manifest', (done) ->
+        request(bridge.api).get("#{gadgetUrl}")
+          .expect 200, project.toJSON(), done
+
+      it 'should serve gadget.js', (done) ->
+        request(bridge.api).get("#{gadgetUrl}/gadget.js")
+          .expect('content-type', 'application/javascript')
+          .expect 200, done
+
+      it 'should serve gadget.css', (done) ->
+        request(bridge.api).get("#{gadgetUrl}/gadget.css")
+          .expect('content-type', 'text/css; charset=UTF-8')
+          .expect 200, done
+
+      it 'should serve icon.png', (done) ->
+        request(bridge.api).get("#{gadgetUrl}/assets/icon.png")
+          .expect('content-length', '2696')
+          .expect('content-type', 'image/png')
+          .expect 200, done
 
     describe 'sandbox', ->
       it 'should fetch gadgets', (done) ->
-        params =
-          user: 'me'
-          catalog: 'sandbox'
-        request.get(helper.getApiUrl('gadgets')).send(params).end (res) =>
-          res.statusCode.should.eq 200
-          res.body.length.should.eq 1
-          done()
-
-    describe 'paths', ->
-      gadgetUrl = gadget = null
-
-      before ->
-        gadget = bridge.gadgets[0]
-
-      it 'should serve gadget manifest', (done) ->
-        url = helper.getApiUrl gadget.manifest()
-        request.get(url).end (res) ->
-          res.status.should.eq 200
-          done()
-
-      it 'should serve gadget.js', (done) ->
-        url = helper.getApiUrl gadget.main()
-        request.get(url).end (res) ->
-          res.status.should.eq 200
-          done()
-
-      it 'should serve gadget.css', (done) ->
-        url = helper.getApiUrl gadget.css()
-        request.get(url).end (res) ->
-          res.status.should.eq 200
-          done()
-
-      it 'should serve icon.png', (done) ->
-        url = helper.getApiUrl gadget.icon()
-        request.get(url).end (res) ->
-          res.status.should.eq 200
-          done()
-
-    describe 'legacy paths', ->
-      gadgetUrl = manifest = null
-
-      before ->
-        manifest = bridge.gadgets[0]
-        gadgetUrl = "api/gadgets/#{manifest.id}"
-
-      it 'manifest should contain id', ->
-        manifest.id.should.be.ok
-
-      it 'should serve gadget files from /gadgets/:id folder', (done) ->
-        url = "#{helper.url}/#{gadgetUrl}/gadget.js"
-        request.get(url).end (res) ->
-          res.status.should.eq 200
-          done()
-
-      it 'should serve gadget assets from /gadgets/:id/assets', (done) ->
-        url = "#{helper.url}/#{gadgetUrl}/assets/icon.png"
-        request.get(url).end (res) ->
-          res.status.should.eq 200
-          done()
+        request(bridge.api).get("/gadgets").send({ user: 'me', catalog: 'sandbox' })
+          .expect 200, bridge.data.projects.toJSON(), done
