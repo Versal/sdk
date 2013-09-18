@@ -4,7 +4,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(['cdn.marionette', 'app/mediator', 'plugins/tracker', 'views/gadget_instance', 'views/inline_catalogue', 'app/catalogue', 'plugins/vs-sticky', 'cdn.jqueryui'], function(Marionette, mediator, tracker, GadgetInstanceView, InlineCatalogueView, gadgetCatalogue, VsSticky) {
-    var Lesson;
+    var Lesson, cacheStamp;
+    cacheStamp = (new Date).getTime();
     _.extend(vs.api.Gadget.prototype, {
       onResolveError: function(error) {
         console.error(error);
@@ -17,6 +18,9 @@
           noToggleSwitch: this.gadgetProject.get('noToggleSwitch')
         });
       },
+      nocache: function(url) {
+        return "" + url + "?_=" + cacheStamp;
+      },
       resolve: function(opts) {
         var key, klass;
         if (opts == null) {
@@ -27,10 +31,10 @@
           return this.onResolveError("Gadget Project not found: " + (this.get('type')));
         }
         if (this.gadgetProject.css()) {
-          key = 'gadget-' + this.gadgetProject.get('id');
+          key = this.gadgetProject.cssClassName();
           mediator.trigger('style:register', {
             key: key,
-            href: _.result(this.gadgetProject, 'css'),
+            href: this.nocache(_.result(this.gadgetProject, 'css')),
             files: this.gadgetProject.get('files')
           });
         }
@@ -40,7 +44,7 @@
           require.config({
             baseUrl: 'scripts'
           });
-          return require([_.result(this.gadgetProject, 'main')], this.onResolveSuccess, this.onResolveError);
+          return require([this.nocache(_.result(this.gadgetProject, 'main'))], this.onResolveSuccess, this.onResolveError);
         }
       }
     });

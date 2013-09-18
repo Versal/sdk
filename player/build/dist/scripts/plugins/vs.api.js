@@ -1,6 +1,6 @@
 /*!
  * js-api v0.3.2
- * lovingly baked from 8d765d6 on 06. September 2013
+ * lovingly baked from ad01c6c on 07. September 2013
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -925,10 +925,6 @@ define('models/gadget_userstate',['require','exports','module','backbone','under
       return _ref;
     }
 
-    GadgetUserstate.prototype.url = function() {
-      return this.gadget.url() + '/userstate';
-    };
-
     GadgetUserstate.prototype.isNew = function() {
       return false;
     };
@@ -938,15 +934,6 @@ define('models/gadget_userstate',['require','exports','module','backbone','under
         throw new Error('gadget should be provided to create a gadget state');
       }
       return this.gadget = options.gadget;
-    };
-
-    GadgetUserstate.prototype.debouncedSave = _.debounce(function() {
-      return Backbone.Model.prototype.save.apply(this, arguments);
-    }, 300);
-
-    GadgetUserstate.prototype.save = function() {
-      this.set.apply(this, arguments);
-      return this.debouncedSave.apply(this, arguments);
     };
 
     GadgetUserstate.prototype.setDefaults = function(vals) {
@@ -1018,10 +1005,6 @@ define('models/gadget_config',['require','exports','module','backbone','undersco
       return _ref;
     }
 
-    GadgetConfig.prototype.url = function() {
-      return this.gadget.url() + '/config';
-    };
-
     GadgetConfig.prototype.isNew = function() {
       return false;
     };
@@ -1031,15 +1014,6 @@ define('models/gadget_config',['require','exports','module','backbone','undersco
         throw new Error('gadget should be provided to create a gadget config');
       }
       return this.gadget = options.gadget;
-    };
-
-    GadgetConfig.prototype.debouncedSave = _.debounce(function() {
-      return Backbone.Model.prototype.save.apply(this, arguments);
-    }, 300);
-
-    GadgetConfig.prototype.save = function() {
-      this.set.apply(this, arguments);
-      return this.debouncedSave.apply(this, arguments);
     };
 
     GadgetConfig.prototype.setDefaults = function(vals) {
@@ -1081,6 +1055,7 @@ define('models/gadget',['require','exports','module','backbone','underscore','./
     __extends(Gadget, _super);
 
     function Gadget(attrs, options) {
+      var _this = this;
       if (attrs == null) {
         attrs = {};
       }
@@ -1090,9 +1065,15 @@ define('models/gadget',['require','exports','module','backbone','underscore','./
       this.config = new GadgetConfig({}, {
         gadget: this
       });
+      this.config.url = function() {
+        return _.result(_this, 'url') + '/config';
+      };
       this.userState = new GadgetUserstate({}, {
         gadget: this
       });
+      this.userState.url = function() {
+        return _.result(_this, 'url') + '/userstate';
+      };
       this.userStates = new GadgetUserstates([], {
         gadget: this
       });
@@ -1278,7 +1259,7 @@ define('collections/lessons',['require','exports','module','backbone','underscor
 
     Lessons.prototype.url = function() {
       if (this.course) {
-        return this.course.url() + '/lessons';
+        return _.result(this.course, 'url') + '/lessons';
       }
     };
 
@@ -1665,7 +1646,7 @@ define('models/course',['require','exports','module','backbone','underscore','..
       if (options == null) {
         options = {};
       }
-      options.url = this.url() + '/start';
+      options.url = _.result(this, 'url') + '/start';
       return this.sync('create', this, options);
     };
 
@@ -1673,7 +1654,7 @@ define('models/course',['require','exports','module','backbone','underscore','..
       if (options == null) {
         options = {};
       }
-      options.url = this.url() + '/completion';
+      options.url = _.result(this, 'url') + '/completion';
       return this.sync('update', this, options);
     };
 

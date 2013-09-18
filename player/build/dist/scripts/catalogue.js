@@ -12,7 +12,7 @@
       id: "section",
       title: "Header",
       username: "versal",
-      name: "section",
+      name: "header",
       version: "0.2.9",
       noToggleSwitch: true,
       noCss: true
@@ -77,7 +77,7 @@
           _this.add(approved.models);
           _this.add(unapproved.models);
           if (!_this.find(function(g) {
-            return g.type() === 'versal/section@0.2.9';
+            return g.type() === 'versal/header@0.2.9';
           })) {
             _this.add(localSection);
           }

@@ -222,11 +222,6 @@
           },
           silent: true
         });
-        if (this.options.revision) {
-          courseModel.url = function() {
-            return courseBaseUrl;
-          };
-        }
         return this.course = courseModel;
       };
 
