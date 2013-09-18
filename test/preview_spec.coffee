@@ -24,19 +24,21 @@ describe 'Preview', ->
       linkGadget.callCount.should.eq 2
 
   describe 'versal_data', ->
-    bridge = linkGadget = linkCourse = null
+    bridge = linkGadget = linkCourse = linkAssets = null
     previewPath = path.resolve './test/fixtures/preview'
 
     before (done) ->
       bridge = new Bridge
       linkGadget = sinon.stub bridge, 'linkGadget'
       linkCourse = sinon.stub bridge, 'linkCourse'
+      linkAssets = sinon.stub bridge, 'linkAssets'
 
       sdk.preview previewPath, { bridge: bridge, test: true }, -> done()
 
     after ->
       linkGadget.restore()
       linkCourse.restore()
+      linkAssets.restore()
 
     it 'should link gadgets', ->
       linkGadget.callCount.should.eq 2
@@ -45,3 +47,6 @@ describe 'Preview', ->
       linkCourse.called.should.be.true
       linkCourse.firstCall.args[0].should.eq "#{previewPath}/versal_data/course.json"
 
+    it 'should link assets', ->
+      linkAssets.called.should.be.true
+      linkAssets.firstCall.args[0].should.eq "#{previewPath}/versal_data/assets.json"

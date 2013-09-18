@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "title": "Test asset",
+    "_path": "./test/fixtures/bridge/education.jpg",
+    "representations": [
+      {
+        "contentType": "image/jpeg",
+        "location": "/assets/1/0"
+      }
+    ]
+  }
+]

@@ -6,8 +6,9 @@ path = require 'path'
 
 Bridge = require '../src/bridge/bridge'
 courseJson = require './fixtures/bridge/course.json'
-assetJson = require './fixtures/bridge/asset.json'
 gadgetPath = path.resolve './test/fixtures/bridge/gadget/dist'
+assetsPath = path.resolve './test/fixtures/bridge/assets.json'
+assetsJson = require assetsPath
 
 # run bridge on port 3073 for tests
 baseUrl = 'http://localhost:3073'
@@ -33,6 +34,14 @@ describe 'Bridge internals', ->
 
     it 'should add gadget project to datastore', ->
       bridge.data.projects.length.should.eq 1
+
+  describe 'link assets', ->
+    before ->
+      bridge = new Bridge
+      bridge.linkAssets assetsPath
+
+    it 'should add asset to datastore', ->
+      bridge.data.assets.length.should.eq 1
 
 describe 'Bridge HTTP API', ->
   bridge = null
@@ -218,8 +227,12 @@ describe 'Bridge HTTP API', ->
       fileSize = fs.statSync(filePath).size
 
     beforeEach ->
-      bridge.data.assets.add _.clone assetJson
+      bridge.data.assets.add _.clone assetsJson
       assets = bridge.data.assets
+      sinon.stub assets, 'save'
+
+    afterEach ->
+      assets.save.restore()
 
     it 'index', (done) ->
       request(bridge.api).get('/assets')
@@ -243,13 +256,15 @@ describe 'Bridge HTTP API', ->
         .send()
         .expect 201, (err, res) ->
           if err then return done err
-          rep = assets.get(res.body.id).representations.at(0)
+          asset = assets.get(res.body.id)
+          rep = asset.representations.at(0)
           # had to violate "one assertion per test" principle, because
           # "beforeEach" resets bridge before every assertion
           rep.get('contentType').should.eq 'image/jpeg'
           rep.get('location').should.eq "/assets/#{res.body.id}/0"
-          rep.get('_filePath').should.eq "#{baseDir}/versal_data/assets/#{res.body.id}"
-          fs.existsSync(rep.get('_filePath')).should.be.true
+          asset.get('_path').should.eq "#{baseDir}/versal_data/assets/#{res.body.id}"
+          fs.existsSync(asset.get('_path')).should.be.true
+          assets.save.called.should.be.true
           done()
 
   describe 'gadget projects', ->
