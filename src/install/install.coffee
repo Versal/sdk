@@ -31,6 +31,7 @@ module.exports = install =
         return callback new Error 'Gadget manifest is missing one of the required fields: username, name or version.'
 
       target = install.getInstallPath target, manifest
+      if fs.existsSync target then fs.removeSync target
       fs.mkdirsSync target
       ncp distPath, target, callback
 
