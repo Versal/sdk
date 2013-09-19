@@ -4,34 +4,69 @@ url = require 'url'
 prompt = require 'prompt'
 https = require 'https'
 path = require 'path'
-needle = require 'needle'
 sdk = require '../sdk'
+mime = require 'mime'
+needle = require 'needle'
 
 module.exports =
-  command: (bundlePath, options = {}, callback = ->) ->
-    unless bundlePath
-      return callback new Error 'provide a path to bundle.zip'
+  command: (filepath, options = {}, callback = ->) ->
+    unless filepath
+      return callback new Error 'filepath argument is required'
 
-    sessionId = options.sessionId || sdk.config.get 'sessionId', options
-    unless sessionId
+    filepath = path.resolve filepath
+    unless fs.existsSync filepath
+      return callback new Error "nothing to upload in #{filepath}"
+
+    # if provided path is directory, look up for bundle.zip inside
+    if fs.statSync(filepath).isDirectory()
+      filepath = path.join filepath, 'bundle.zip'
+      unless fs.existsSync filepath
+        return callback new Error "bundle.zip not found in #{filepath}"
+
+    unless options.sessionId
+      options.sessionId = sdk.config.get 'sessionId', options
+
+    unless options.apiUrl
+      options.apiUrl = sdk.config.get 'apiUrl', options
+
+    unless options.endpoint
+      options.endpoint = if filepath.match /bundle\.zip$/ then 'gadgets' else 'assets'
+
+    @uploadFile filepath, options, callback
+
+  uploadFile: (filepath, options = {}, callback = ->) ->
+    unless options.sessionId
       return callback new Error 'sessionId is required to upload a gadget'
-
-    url = options.apiUrl || sdk.config.get 'apiUrl', options
-    unless url
+    unless options.apiUrl
       return callback new Error 'apiUrl is required to upload a gadget'
+    unless fs.existsSync filepath
+      return callback new Error "nothing to upload in #{filepath}"
 
-    unless fs.existsSync path.resolve bundlePath
-      callback new Error "gadget not found in #{bundlePath}"
+    url = "#{options.apiUrl}/#{options.endpoint}"
 
-    unless bundlePath.match /\.zip$/
-      bundlePath = path.join bundlePath, '/bundle.zip'
+    # Needle requires that kind of naming for the keys of content object
+    filename = path.basename filepath
+    content_type = mime.lookup filename
+    buffer = fs.readFileSync filepath
 
-    fileData = fs.readFileSync bundlePath
+    # This is not the best idea, to read file sync into buffer, but thats how
+    # REST API works now. (https://github.com/Versal/rest-api/issues/494)
+    requestData =
+      content: { filename, buffer, content_type }
+      contentType: content_type
 
-    needle.post "#{url}/gadgets",
-      @createRequestData(fileData),
-      @createRequestOptions(sessionId),
+    # In case we are uploading an asset, set "title" and "tags"
+    if options.endpoint == 'assets'
+      requestData.title = options.title || filename
+      requestData.tags = JSON.stringify(options.tags || [])
+
+    needle.post url,
+      requestData,
+      @createRequestOptions(options.sessionId),
       (err, res, body) ->
+        # Error code
+        if !err && res.statusCode >= 300 then err = new Error body.message
+
         # Error sending the request
         if err
           if _.isFunction options.error then options.error err
@@ -39,25 +74,9 @@ module.exports =
 
         # OK code
         if res.statusCode == 201
+          if options.verbose then console.log body
           if _.isFunction options.success then options.success body
-          return callback()
-
-        # Error code
-        if res.statusCode >= 300 && !err
-          if _.isArray(body)
-            messages = _.map(body, (e)-> e.message).join(',')
-            err = new Error "Following errors prevented the gadget from being uploaded: #{messages}"
-          else
-            err = new Error "Gadget uploading failed. Error code: #{res.statusCode}"
-
-        # No status code
-        callback new Error 'Upload failed. No status code in response'
-
-  createRequestData: (fileData) ->
-    content:
-      buffer: fileData
-      filename: 'bundle.zip'
-      content_type: 'application/zip'
+          return callback null, body
 
   createRequestOptions: (sessionId) ->
     multipart: true
