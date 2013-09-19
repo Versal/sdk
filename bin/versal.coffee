@@ -5,7 +5,7 @@ commands = [
   'create'
   'preview'
   'publish'
-  'docs'
+  'help'
   'install'
 ]
 
@@ -16,22 +16,34 @@ debugCommands = [
   'signin'
   'upload'
   'validate'
+  'docs'
 ]
 
 commandsString = commands.join ' | '
-usageMessage = "Versal Gadget SDK. Usage: versal (#{commandsString}) <dir> [--options] [--version]"
+usageMessage = [
+  'Versal SDK. Supported commands:'
+  '  versal create gadget <name> - creates a gadget'
+  '  versal preview (<dir>) - previews gadget in <dir> or current directory'
+  '  versal publish (<dir>) - publishes gadget in <dir> or current directory'
+  '  versal help - starts web server with documentation on port 4000'
+].join '\n'
 
 argv = require('optimist')
   .usage(usageMessage)
+  .demand(0)
   .check((argv) ->
     if argv.version
       packageInfo = require('../package.json')
       console.log packageInfo.version
       process.exit()
-    if argv._.length == 0
+
+    if !argv._.length
       throw new Error 'command has not been specified'
 
     command = argv._[0]
+    # alias 'help' -> 'docs'
+    if command == 'help' then argv._[0] = 'docs'
+
     if !_.contains(commands.concat(debugCommands), command)
       throw new Error "invalid command: #{command}"
 
@@ -40,7 +52,7 @@ argv = require('optimist')
     if command == 'create'
       if not (argv._.length > 1 && _.contains(['gadget','course'], argv._[1]))
         # show usage information
-        throw new Error '"create" command requires second argument.\nUsage: "versal create (gadget|course) <dir> [--options]\nExamples:\n\tversal create gadget chemistry-gadget\n\tversal create course chemistry-course\n'
+        throw new Error '"create" command requires second argument: "versal create (gadget|course) <dir> [--options]\nExamples:\n\tversal create gadget chemistry-gadget\n\tversal create course chemistry-course\n'
 
     return true
   ).argv
