@@ -14,6 +14,7 @@ describe 'Validate', ->
         name: 'bar-gadget'
         version: '0.1.2'
         description: 'Bar gadget.'
+        author: 'am'
       errors = validate.validateManifest manifest
 
     it 'should return no errors', ->
@@ -29,7 +30,7 @@ describe 'Validate', ->
       errors = validate.validateManifest manifest
 
     it 'should return errors', ->
-      errors.length.should.equal 4
+      errors.length.should.equal 5
 
   describe 'valid files', ->
     errors = []
