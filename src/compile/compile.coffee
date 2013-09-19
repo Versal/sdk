@@ -15,7 +15,7 @@ module.exports =
     manifest = JSON.parse fs.readFileSync "#{src}/manifest.json"
     gadget = new jsapi.GadgetProject manifest
 
-    textPath = path.resolve "#{__dirname}/../../lib/text"
+    options = _.extend _.clone(options), { src, dest, gadget }
 
     config =
       baseUrl: src
@@ -23,7 +23,7 @@ module.exports =
       optimize: 'none'
       cjsTranslate: true
       paths:
-        text: textPath,
+        text: path.resolve("#{__dirname}/../../lib/text"),
         jquery: 'empty:',
         backbone: 'empty:',
         underscore: 'empty:',
@@ -37,28 +37,32 @@ module.exports =
         'cdn.jqueryui': 'empty:',
         'cdn.mathjax': 'empty:'
       stubModules: ['text']
-      # output optimized code and create gadget bundle
-      out: (code) => @createBundle code, src, dest, gadget, callback
+      out: (code) =>
+        options.code = code
+        @createBundle options, callback
+
+    unless options.raw
+      config = _.extend config,
+        optimize: 'uglify2'
+        uglify2:
+          mangle:
+            except: 'require,define,cdn'
 
     requirejs.optimize config, (->), (err) -> callback err
 
-  createBundle: (code, src, dest, gadget, callback) ->
-    if fs.existsSync dest then fs.removeSync dest
-
+  createBundle: (options, callback) ->
     # create "dist" directory
-    fs.mkdirsSync dest
-
-    # TODO: add writeManifest and write processed manifest
-    # generate correct gadgetId from the manifest data
+    if fs.existsSync options.dest then fs.removeSync options.dest
+    fs.mkdirsSync options.dest
 
     # write gadget.js
-    @writeJs code, dest
+    @writeJs options.code, options.dest
 
     # process css rules and prepend .gadget-id to every rule
-    @writeCss src, dest, gadget
+    @writeCss options.src, options.dest, options.gadget
 
     # copy styles, manifest and assets and callback when its done
-    @copyFiles src, dest, callback
+    @copyFiles options.src, options.dest, callback
 
   writeJs: (code, dest) ->
     # wrap and write gadget.js
@@ -68,18 +72,21 @@ module.exports =
     code = @wrapInAlmond code
     cdndeps = @extractCDNDeps code
     nodedeps = @extractNodeDeps code
+
     # request all the dependencies, required by node, from CDN
     # e.g. if somewhere in the code you require('jquery')
     # it will add 'cdn.jquery' to the root 'define' of the gadget
     cdndeps = cdndeps.concat _.map nodedeps, (dep) -> "cdn.#{dep}"
+    cdndeps = _.uniq cdndeps
 
     code = @wrapNodeDeps code, nodedeps
     code = @wrapCDNDeps code, cdndeps
+
     return code
 
   wrapInAlmond: (code) ->
     # almond is in node_modules folder
-    almondPath = path.resolve "#{__dirname}/../../node_modules/almond/almond.js"
+    almondPath = path.resolve "#{__dirname}/../../lib/almond.min.js"
     almondCode = fs.readFileSync almondPath, 'utf-8'
     return almondCode + code
 
