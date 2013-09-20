@@ -1,7 +1,7 @@
 should = require('chai').should()
 sdk = require '../src/sdk'
 
-describe.only 'SDK', ->
+describe 'SDK', ->
   it 'should detect gadget', ->
     sdk.detect('./test/fixtures/detect/gadget').should.eq 'gadget'
 
