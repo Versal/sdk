@@ -2,7 +2,6 @@ require('chai').should()
 path = require 'path'
 glob = require 'glob'
 fs = require 'fs'
-
 sdk = require '../src/sdk'
 compile = require '../src/compile/compile'
 
@@ -29,14 +28,14 @@ describe 'Compile', ->
 
   describe 'code', ->
     it 'should equal standard gadget', ->
-      standardPath = path.resolve './test/fixtures/compile/static_compiled.js'
+      standardPath = path.resolve './test/fixtures/compile/static_compiled.min.js'
       standardCode = fs.readFileSync standardPath, 'utf-8'
       fs.readFileSync("#{gadgetPath}/g5/dist/gadget.js", 'utf-8').should.eql standardCode
 
   describe 'text! dependencies', ->
     before (done) ->
       # if compilation is successful, then text! references were successfully resolved
-      sdk.compile "#{fixturesPath}/compile/text-gadget", out: "#{gadgetPath}/text-gadget", ->
+      sdk.compile "#{fixturesPath}/compile/text-gadget", { out: "#{gadgetPath}/text-gadget", raw: true }, ->
         done()
 
     it 'should inline template', ->
@@ -67,7 +66,7 @@ describe 'Compile', ->
     code = result = null
 
     before ->
-      code = 'jquery = require("jquery")'
+      code = 'var jquery = require("jquery");'
       result = compile.wrap code
 
     it 'should add node dependencies to cdn.dependencies', ->

@@ -1,9 +1,8 @@
 {
   "name": "versal-sdk",
   "description": "Versal Gadget SDK with command-line interface.",
-  "version": "0.2.12",
+  "version": "0.2.15",
   "author": "Versal Team",
-  "homepage": "http://versal.com/",
   "main": "lib/sdk.js",
   "repository": {
     "type": "git",
@@ -31,11 +30,9 @@
     "lodash": "~1.0.1",
     "underscore": "~1.5.1",
     "async": "~0.2.6",
-    "ncp": "mereskin/ncp.git",
+    "ncp": "mereskin/ncp",
     "express": "~3.2.6",
     "shortid": "~1.0.9",
-    "archiver": "~0.4.4",
-    "almond": "~0.2.6",
     "stylus": "~0.37.0",
     "express-resource": "~1.0.0",
     "versal-shared-libs": "Versal/shared-libs#v0.0.3",
