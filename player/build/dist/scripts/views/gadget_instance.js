@@ -77,7 +77,7 @@
 
       GadgetInstanceView.prototype.onInstanceAvailable = function() {
         var key;
-        key = 'gadget-' + this.model.gadgetProject.get('id');
+        key = this.model.gadgetProject.cssClassName();
         this.ui.gadgetContent.addClass(key);
         this.passEvent('domReady');
         this.passEvent('render');

@@ -107,13 +107,12 @@
             api: {}
           });
         });
-        return it('should create LINK tag in document head', function(done) {
-          var links;
-          links = document.head.getElementsByTagName('link').length;
-          return this.player.registerStylesheet('some/file.css', function() {
-            document.head.getElementsByTagName('link').length.should.equal(links + 1);
-            return done();
+        return it('should create LINK tag in document head', function() {
+          this.player.registerStylesheet({
+            key: 'k1',
+            url: 'some/file.css'
           });
+          return $('link.k1').attr('href').should.eq('some/file.css');
         });
       });
     });

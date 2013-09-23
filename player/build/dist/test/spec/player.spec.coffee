@@ -89,8 +89,6 @@ define [
       beforeEach ->
         @player = new PlayerApplication api: {}
 
-      it 'should create LINK tag in document head', (done) ->
-        links = document.head.getElementsByTagName('link').length
-        @player.registerStylesheet 'some/file.css', ->
-          document.head.getElementsByTagName('link').length.should.equal links + 1
-          done()
+      it 'should create LINK tag in document head', ->
+        @player.registerStylesheet { key: 'k1', url: 'some/file.css' }
+        $('link.k1').attr('href').should.eq 'some/file.css'

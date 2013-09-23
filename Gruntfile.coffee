@@ -30,4 +30,4 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'default', ['clean', 'mochaTest']
   grunt.registerTask 'build-docs', ['exec:build-docs']
-  grunt.registerTask 'build-player', ['exec:build-player']
+  grunt.registerTask 'build-player', ['exec:build-player', 'exec:copy-player']

@@ -1146,7 +1146,7 @@ define("libs/jquery.nicescroll.min", function(){});
     return Scroll = (function() {
 
       function Scroll($el, options) {
-        var opts;
+        var opts, _ref, _ref1;
         this.$el = $el;
         if (options == null) {
           options = {};
@@ -1157,10 +1157,17 @@ define("libs/jquery.nicescroll.min", function(){});
             return false;
           }
         }
+        if ((_ref = options.horizontal) == null) {
+          options.horizontal = true;
+        }
+        if ((_ref1 = options.zindex) == null) {
+          options.zindex = 9000;
+        }
         opts = {
           cursorcolor: 'rgba(0,0,0,0.5)',
           cursorwidth: '8px',
-          zindex: 10000
+          zindex: options.zindex,
+          horizrailenabled: options.horizontal
         };
         this.nice = this.$el.niceScroll(opts);
       }

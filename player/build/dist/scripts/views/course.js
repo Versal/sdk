@@ -280,7 +280,9 @@
       };
 
       Course.prototype.customScroller = function() {
-        return this.scroller = new vs.ui.Scroll($('html'));
+        return this.scroller = new vs.ui.Scroll($('html'), {
+          horizontal: false
+        });
       };
 
       Course.prototype.onShow = function() {
@@ -303,8 +305,9 @@
 
       Course.prototype.showLesson = function(lessonIndex) {
         var lesson;
-        lesson = this.model.lessons.at(lessonIndex - 1);
-        return this.activateLesson(lesson);
+        if (lesson = this.model.lessons.at(lessonIndex - 1)) {
+          return this.activateLesson(lesson);
+        }
       };
 
       Course.prototype.showGadget = function(lessonIndex, gadgetIndex) {
