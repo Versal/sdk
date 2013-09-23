@@ -1,10 +1,11 @@
 require('chai').should()
-fs = require 'fs'
+fs = require 'fs-extra'
 path = require 'path'
 upload = require '../src/upload/upload'
 sdk = require '../src/sdk'
 sinon = require 'sinon'
 needle = require 'needle'
+
 gadgetPath = path.resolve './test/fixtures/upload/bundle.zip'
 
 describe 'Upload', ->
@@ -55,6 +56,25 @@ describe 'Upload', ->
         err.should.match /filepath argument is required/
         done()
 
+  describe 'output', ->
+    beforeEach ->
+      sinon.spy upload, 'outputJson'
+
+    afterEach ->
+      upload.outputJson.restore()
+
+    it 'should not call outputJson by default', (done) ->
+      upload.command './test/fixtures/bridge/education.jpg', null, (err) ->
+        upload.outputJson.called.should.be.false
+        done()
+
+    it 'should store result in outputJson', (done) ->
+      filepath = './test/fixtures/bridge/education.jpg'
+      upload.command filepath, { output: './temp/upload/assets.json' }, (err, body) ->
+        upload.outputJson.called.should.be.true
+        fs.readJsonSync('./temp/upload/assets.json')[filepath].should.eql body
+        done()
+
   describe 'post', ->
     post = null
     success = sinon.spy()
@@ -66,6 +86,9 @@ describe 'Upload', ->
         apiUrl: 'url'
         success: success
       upload.command gadgetPath, options, done
+
+    after ->
+      post.restore()
 
     it 'should post gadget', ->
       post.called.should.be.true

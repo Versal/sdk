@@ -1,5 +1,5 @@
 _ = require 'underscore'
-fs = require 'fs'
+fs = require 'fs-extra'
 url = require 'url'
 prompt = require 'prompt'
 https = require 'https'
@@ -13,9 +13,8 @@ module.exports =
     unless filepath
       return callback new Error 'filepath argument is required'
 
-    filepath = path.resolve filepath
     unless fs.existsSync filepath
-      return callback new Error "nothing to upload in #{filepath}"
+      return callback new Error "nothing to upload in #{path.resolve filepath}"
 
     # if provided path is directory, look up for bundle.zip inside
     if fs.statSync(filepath).isDirectory()
@@ -31,6 +30,13 @@ module.exports =
 
     unless options.endpoint
       options.endpoint = if filepath.match /bundle\.zip$/ then 'gadgets' else 'assets'
+
+    if options.output
+      cb = callback
+      callback = (err, body) =>
+        unless err
+          @outputJson options.output, filepath, body
+        cb err, body
 
     @uploadFile filepath, options, callback
 
@@ -60,6 +66,7 @@ module.exports =
       requestData.title = options.title || filename
       requestData.tags = JSON.stringify(options.tags || [])
 
+    # TODO: I want superagent instead of needle once platform supports that.
     needle.post url,
       requestData,
       @createRequestOptions(options.sessionId),
@@ -77,6 +84,13 @@ module.exports =
           if options.verbose then console.log body
           if _.isFunction options.success then options.success body
           return callback null, body
+
+  outputJson: (outputPath, filepath, body) ->
+    assets = {}
+    if fs.existsSync outputPath
+      assets = fs.readJsonSync outputPath
+    assets[filepath] = body
+    fs.outputJsonSync outputPath, assets
 
   createRequestOptions: (sessionId) ->
     multipart: true
