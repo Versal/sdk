@@ -31,10 +31,10 @@
 
       GadgetCatalogue.prototype.findGadgetByType = function(type) {
         if (type === 'gadget/section') {
-          type = 'versal/section@0.2.9';
+          type = 'versal/header@0.2.9';
         }
         return this.find(function(gadget) {
-          return gadget.type() === type;
+          return gadget.type() === type || gadget.get('type') === type;
         });
       };
 

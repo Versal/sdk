@@ -49,9 +49,13 @@
       };
 
       Facade.prototype.assetUrl = function(file) {
-        var files;
-        files = this._model.gadgetProject.get('files');
-        return files[file];
+        if (!file) {
+          return;
+        }
+        if (file.indexOf('assets/') !== 0) {
+          file = 'assets/' + file;
+        }
+        return this._model.gadgetProject.path(file);
       };
 
       return Facade;

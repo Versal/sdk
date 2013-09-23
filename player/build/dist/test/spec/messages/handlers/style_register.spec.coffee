@@ -1,7 +1,7 @@
 define [
   'messages/handlers/style_register'
 ], (styleRegisterHandler) ->
-
+  # TODO: Deprecate this when all gadgets are migrated to new handler
   describe 'styleRegisterHandler', ->
 
     namespace = '.bloop'

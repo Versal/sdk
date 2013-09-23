@@ -69,6 +69,10 @@
 
       LearnerSidebar.prototype.itemViewContainer = '.lesson-list';
 
+      LearnerSidebar.prototype.ui = {
+        lessonList: '.lesson-list'
+      };
+
       LearnerSidebar.prototype.className = 'learnerSidebar';
 
       LearnerSidebar.prototype.template = _.template(template);
@@ -109,8 +113,9 @@
 
       LearnerSidebar.prototype.onRender = function() {
         if (this.activeView) {
-          return this.updateActiveLesson(this.activeView);
+          this.updateActiveLesson(this.activeView);
         }
+        return this.scroll = new vs.ui.Scroll(this.ui.lessonList);
       };
 
       return LearnerSidebar;

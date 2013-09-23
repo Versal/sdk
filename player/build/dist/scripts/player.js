@@ -166,20 +166,11 @@
         return this.isLearner = true;
       };
 
-      PlayerApplication.prototype.registerStylesheet = function(url, errorCallback) {
-        var img, link;
-        url = this.baseUrl + url;
-        link = document.createElement('link');
-        link.setAttribute('rel', 'stylesheet');
-        link.setAttribute('href', url);
-        document.head.appendChild(link);
-        if (errorCallback) {
-          img = document.createElement('img');
-          img.onerror = function() {
-            return errorCallback();
-          };
-          return img.src = url;
+      PlayerApplication.prototype.registerStylesheet = function(options) {
+        if ($("head link." + options.key).length) {
+          return;
         }
+        return $('<link rel="stylesheet" type="text/css" />').attr('href', options.url).addClass(options.key).appendTo('head');
       };
 
       PlayerApplication.prototype.buildCourse = function() {
@@ -222,11 +213,6 @@
           },
           silent: true
         });
-        if (this.options.revision) {
-          courseModel.url = function() {
-            return courseBaseUrl;
-          };
-        }
         return this.course = courseModel;
       };
 

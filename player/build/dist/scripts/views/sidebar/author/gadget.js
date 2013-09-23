@@ -43,7 +43,7 @@
       };
 
       SidebarGadget.prototype.onRender = function() {
-        if (this.model.type() === 'versal/section@0.2.9') {
+        if (this.model.type() === 'versal/header@0.2.9' && this.model.has('icon')) {
           return this.ui.icon.css("background-image", "url(" + (this.model.get('icon')) + ")");
         } else {
           return this.ui.icon.css("background-image", "url(" + (this.model.icon()) + ")");
