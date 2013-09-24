@@ -1,6 +1,7 @@
 require('chai').should()
 path = require 'path'
 glob = require 'glob'
+sinon = require 'sinon'
 fs = require 'fs'
 sdk = require '../src/sdk'
 compile = require '../src/compile/compile'
@@ -77,11 +78,30 @@ describe 'Compile', ->
 
     before ->
       css = 'h1 { color: white; } .blue { color: blue; } p #red { color: red; }'
-
       project =
         cssClassName: -> 'gadget-am-test-001'
-        has: -> false
-      result = compile.processCss css, project
+      result = compile.processCss css, project.cssClassName()
 
     it 'should prefix all css rules with gadget class name', ->
       result.should.eql '.gadget-am-test-001 h1{color:#fff}\n.gadget-am-test-001 .blue{color:#00f}\n.gadget-am-test-001 p #red{color:#f00}\n'
+
+  describe 'writeCss', ->
+    options =
+      src: "#{fixturesPath}/compile"
+      dest: "#{gadgetPath}"
+      gadget: { cssClassName: -> 'gadget-am-test-001' }
+
+    beforeEach ->
+      sinon.stub compile, 'processCss'
+
+    afterEach ->
+      compile.processCss.restore()
+
+    it 'should call processCss', ->
+      compile.writeCss options
+      compile.processCss.called.should.be.true
+
+    it 'should not call processCss if --oldcss is specified', ->
+      options.oldcss = true
+      compile.writeCss options
+      compile.processCss.called.should.be.false

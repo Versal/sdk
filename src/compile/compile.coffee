@@ -15,7 +15,7 @@ module.exports =
     manifest = JSON.parse fs.readFileSync "#{src}/manifest.json"
     gadget = new jsapi.GadgetProject manifest
 
-    options = _.extend _.clone(options), { src, dest, gadget }
+    options = _.extend _.clone(options), { src, dest, manifest, gadget }
 
     config =
       baseUrl: src
@@ -51,22 +51,26 @@ module.exports =
     requirejs.optimize config, (->), (err) -> callback err
 
   createBundle: (options, callback) ->
-    # create "dist" directory
     if fs.existsSync options.dest then fs.removeSync options.dest
+    # create "dist" directory
     fs.mkdirsSync options.dest
 
-    # write gadget.js
-    @writeJs options.code, options.dest
+    @writeManifest options
+    @writeJs options
+    @writeCss options
 
-    # process css rules and prepend .gadget-id to every rule
-    @writeCss options.src, options.dest, options.gadget
-
-    # copy styles, manifest and assets and callback when its done
+    # copy assets and callback when its done
     @copyFiles options.src, options.dest, callback
 
-  writeJs: (code, dest) ->
+  writeManifest: (options) ->
+    manifest = _.clone options.manifest
+    unless options.oldcss
+      manifest._newCss = true
+    fs.writeJsonSync "#{options.dest}/manifest.json", manifest
+
+  writeJs: (options) ->
     # wrap and write gadget.js
-    fs.writeFileSync "#{dest}/gadget.js", @wrap code
+    fs.writeFileSync "#{options.dest}/gadget.js", @wrap options.code
 
   wrap: (code) ->
     code = @wrapInAlmond code
@@ -140,22 +144,22 @@ module.exports =
       deps.push match[1]
     return _.uniq deps
 
-  writeCss: (src, dest, gadget) ->
-    css = fs.readFileSync "#{src}/gadget.css", 'utf-8'
-    # Css processing is disabled for v 0.2.9
-    fs.writeFileSync "#{dest}/gadget.css", css #@processCss(css, gadget)
+  writeCss: (options) ->
+    css = fs.readFileSync "#{options.src}/gadget.css", 'utf-8'
+    # to disable css processing, use --oldcss
+    unless options.oldcss
+      css = @processCss(css, options.gadget.cssClassName())
+    fs.writeFileSync "#{options.dest}/gadget.css", css
 
-  processCss: (css, gadget = {}) ->
-    throw new Error 'gadget.cssClassName is required for css processing' unless gadget.cssClassName
+  processCss: (css, className) ->
     styl = stylus.convertCSS css
     # prepend gadget class and indent all lines by two spaces
-    lines = [".#{gadget.cssClassName()}"].concat _.map styl.split('\n'), (line) -> "  #{line}"
-
+    lines = [".#{className}"].concat _.map styl.split('\n'), (line) -> "  #{line}"
     return stylus(lines.join('\n'), { compress: true }).render()
 
   copyFiles: (src, dest, callback) ->
-    # copy manifest.json and assets folder
-    pathsToCopy = ['manifest.json', 'assets']
+    # copy assets
+    pathsToCopy = ['assets']
 
     # create async copy request for each file
     funcs = _.map pathsToCopy, (path) ->
