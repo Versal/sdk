@@ -41,9 +41,13 @@ module.exports = class Bridge
     @site.use '/api', @api
 
   datastore: ->
-    courses: new jsapi.Courses
-    assets: new jsapi.Assets
-    projects: new jsapi.GadgetProjects
+    data =
+      courses: new jsapi.Courses
+      assets: new jsapi.Assets
+      projects: new jsapi.GadgetProjects
+    # By default, set assets save to noop. It might get overriden by linkAssets.
+    data.assets.save = ->
+    data
 
   setupAPI: (api, datastore) ->
     # setup datastore for each api request
@@ -124,6 +128,18 @@ module.exports = class Bridge
         return promise
 
     @data.courses.add course
+
+  linkAssets: (assetsPath, options) ->
+    assetsJson = require assetsPath
+    return unless assetsJson
+    assets = @data.assets
+    unless options?.readonly
+      @data.assets.save = ->
+        promise = jsapi.Backbone.$.Deferred()
+        fs.writeJson assetsPath, assets.toJSON(representations: true), (err) ->
+          if err then promise.reject err
+          promise.resolve()
+    assets.add assetsJson
 
   linkGadget: (gadgetPath) ->
     id = shortid.generate()

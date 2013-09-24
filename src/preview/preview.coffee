@@ -26,6 +26,9 @@ module.exports =
       coursePath = "#{dir}/versal_data/course.json"
       if fs.existsSync coursePath then @bridge.linkCourse coursePath
 
+      assetsPath = "#{dir}/versal_data/assets.json"
+      if fs.existsSync assetsPath then @bridge.linkAssets assetsPath
+
     # Link default course in readonly mode
     unless @bridge.data.courses.length
       @bridge.linkCourse path.resolve(__dirname, '../../player/fixtures/course.json'), readonly: true
