@@ -1,5 +1,7 @@
 _ = require 'underscore'
 async = require 'async'
+path = require 'path'
+fs = require 'fs'
 
 module.exports = sdk =
   signin: -> sdk.execCommand('signin').apply null, arguments
@@ -52,3 +54,13 @@ module.exports = sdk =
         # run all tasks sequentially
         async.series funcs, (err) ->
           callback err
+
+  # Detect type of the folder by its content
+  # /manifest.json - it is a gadget
+  # /versal_data/course.json - it is a course
+  # otherwise - return null
+  detect: (dir) ->
+    dir = path.resolve dir
+    if fs.existsSync "#{dir}/manifest.json" then return 'gadget'
+    if fs.existsSync "#{dir}/versal_data/course.json" then return 'course'
+    return null
