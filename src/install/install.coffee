@@ -36,14 +36,14 @@ module.exports = install =
       ncp distPath, target, callback
 
   installFromApi: (type, options, callback) ->
+    unless type = @parseType type
+      return callback new Error 'Invalid gadget type. Type should be specified as "username/gadget@version"'
+
     unless sessionId = (options.sessionId || sdk.config.get 'sessionId')
       return callback new Error 'sessionId is required to upload a gadget'
 
     unless url = (options.apiUrl || sdk.config.get 'apiUrl')
       return callback new Error 'apiUrl is required to upload a gadget'
-
-    unless type = @parseType type
-      return callback new Error 'Invalid gadget type. Type should be specified as "username/gadget@version"'
 
     target = options.cwd || path.resolve '.'
 
