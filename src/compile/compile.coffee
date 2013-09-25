@@ -41,7 +41,7 @@ module.exports =
         options.code = code
         @createBundle options, callback
 
-    unless options.raw
+    if manifest.uglify
       config = _.extend config,
         optimize: 'uglify2'
 
