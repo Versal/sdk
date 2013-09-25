@@ -44,9 +44,6 @@ module.exports =
     unless options.raw
       config = _.extend config,
         optimize: 'uglify2'
-        uglify2:
-          mangle:
-            except: 'require,define,cdn'
 
     requirejs.optimize config, (->), (err) -> callback err
 
