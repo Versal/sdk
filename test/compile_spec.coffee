@@ -70,8 +70,17 @@ describe 'Compile', ->
       code = 'var jquery = require("jquery");'
       result = compile.wrap code
 
-    it 'should add node dependencies to cdn.dependencies', ->
-      result.indexOf("define(['cdn.jquery']").should.eq 0
+    it 'should request cdn.dependencies from the player', ->
+      result.should.match /^define\(\['cdn\.jquery'\]/
+
+    it 'should define cdn dependencies', ->
+      result.should.match /define\('cdn\.jquery'/
+
+    it 'should define node dependencies', ->
+      result.should.match /define\('jquery'/
+
+    it 'should require gadget', ->
+      result.should.match /return require\('gadget'\);\s*}\);$/
 
   describe 'css processing', ->
     css = result = project = null

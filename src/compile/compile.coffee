@@ -70,7 +70,6 @@ module.exports =
     fs.writeFileSync "#{options.dest}/gadget.js", @wrap options.code
 
   wrap: (code) ->
-    code = @wrapInAlmond code
     cdndeps = @extractCDNDeps code
     nodedeps = @extractNodeDeps code
 
@@ -80,45 +79,42 @@ module.exports =
     cdndeps = cdndeps.concat _.map nodedeps, (dep) -> "cdn.#{dep}"
     cdndeps = _.uniq cdndeps
 
-    code = @wrapNodeDeps code, nodedeps
-    code = @wrapCDNDeps code, cdndeps
+    return [
+      @rootDefine(cdndeps)
+      @almondCode()
+      @defineDeps(cdndeps)
+      @defineDeps(nodedeps)
+      code
+      @requireGadget()
+    ].join('\r\n')
 
-    return code
-
-  wrapInAlmond: (code) ->
-    # almond is in node_modules folder
-    almondPath = path.resolve "#{__dirname}/../../lib/almond.min.js"
-    almondCode = fs.readFileSync almondPath, 'utf-8'
-    return almondCode + code
-
-  wrapCDNDeps: (code, deps) ->
+  rootDefine: (deps) ->
     # Inject list of cdn.deps into root-level call of define
     # e.g.: define(['cdn.jquery', 'cdn.backbone'])
     commaSeparatedDeps = _.map(deps, (dep) -> "'#{dep}'").join ','
-    start = "define([#{commaSeparatedDeps}], function(){\r\n"
-    if deps then start += "var cdn = {};\r\n"
-    end = ''
+    result = "define([#{commaSeparatedDeps}], function(){\r\n"
+    if deps
+      result += "var cdn = {};\r\n"
+      for dep, i in deps
+        # set property on local cdn object
+        # e.g.: cdn.backbone = arguments[0];
+        result += "#{dep} = arguments[#{i}];\r\n"
+    return result
 
-    # Insert defines for cdn dependencies
-    for dep, i in deps
-      # set property on local cdn object
-      # e.g.: cdn.backbone = arguments[0];
-      start += "#{dep} = arguments[#{i}];\r\n"
+  almondCode: ->
+    fs.readFileSync path.resolve("#{__dirname}/../../lib/almond.min.js"), 'utf-8'
 
-      # add define to the package
-      # e.g.: define('cdn.backbone', [], function(){ return cdn.backbone; })
-      end += "define('#{dep}', [], function(){ return #{dep} });\r\n"
-
-    end += 'return require(\'gadget\');'
-    end += '});'
-
-    return start + code + end
-
-  wrapNodeDeps: (code, deps) ->
-    end = ''
+  defineDeps: (deps) ->
+    # add define to the package
+    # e.g.: define('cdn.backbone', [], function(){ return cdn.backbone; })
+    result = ''
     for dep in deps
-      end += "define('#{dep}', [], function(){ return cdn.#{dep}; });\r\n"
-    return code + end
+      raw_dep = dep.replace /^cdn\./, ''
+      result += "define('#{dep}', [], function(){ return cdn.#{raw_dep} });\r\n"
+    return result
+
+  requireGadget: ->
+    'return require(\'gadget\'); \r\n });'
 
   extractNodeDeps: (code) ->
     # find dependencies on underscore, backbone, jquery
