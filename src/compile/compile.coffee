@@ -86,19 +86,19 @@ module.exports =
       @defineDeps(nodedeps)
       code
       @requireGadget()
-    ].join('\r\n')
+    ].join('\n')
 
   rootDefine: (deps) ->
     # Inject list of cdn.deps into root-level call of define
     # e.g.: define(['cdn.jquery', 'cdn.backbone'])
     commaSeparatedDeps = _.map(deps, (dep) -> "'#{dep}'").join ','
-    result = "define([#{commaSeparatedDeps}], function(){\r\n"
+    result = "define([#{commaSeparatedDeps}], function(){\n"
     if deps
-      result += "var cdn = {};\r\n"
+      result += "var cdn = {};\n"
       for dep, i in deps
         # set property on local cdn object
         # e.g.: cdn.backbone = arguments[0];
-        result += "#{dep} = arguments[#{i}];\r\n"
+        result += "#{dep} = arguments[#{i}];\n"
     return result
 
   almondCode: ->
@@ -110,11 +110,11 @@ module.exports =
     result = ''
     for dep in deps
       raw_dep = dep.replace /^cdn\./, ''
-      result += "define('#{dep}', [], function(){ return cdn.#{raw_dep} });\r\n"
+      result += "define('#{dep}', [], function(){ return cdn.#{raw_dep} });\n"
     return result
 
   requireGadget: ->
-    'return require(\'gadget\'); \r\n });'
+    'return require(\'gadget\'); \n });'
 
   extractNodeDeps: (code) ->
     # find dependencies on underscore, backbone, jquery
