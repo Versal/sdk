@@ -24,7 +24,7 @@ module.exports =
       if fs.existsSync gadgetsPath then @addGadgets gadgetsPath
 
       coursePath = "#{dir}/versal_data/course.json"
-      if fs.existsSync coursePath then @bridge.linkCourse coursePath
+      if fs.existsSync coursePath then @bridge.linkCourse coursePath, options
 
       assetsPath = "#{dir}/versal_data/assets.json"
       if fs.existsSync assetsPath then @bridge.linkAssets assetsPath
