@@ -7,7 +7,7 @@ path = require 'path'
 Bridge = require '../src/bridge/bridge'
 courseJson = require './fixtures/bridge/course.json'
 gadgetPath = path.resolve './test/fixtures/bridge/gadget/dist'
-assetsPath = path.resolve './test/fixtures/bridge/assets.json'
+assetsPath = path.resolve './test/fixtures/bridge/local_assets.json'
 assetsJson = require assetsPath
 
 # run bridge on port 3073 for tests

@@ -26,7 +26,7 @@ module.exports =
       coursePath = "#{dir}/versal_data/course.json"
       if fs.existsSync coursePath then @bridge.linkCourse coursePath, options
 
-      assetsPath = "#{dir}/versal_data/assets.json"
+      assetsPath = "#{dir}/versal_data/local_assets.json"
       if fs.existsSync assetsPath then @bridge.linkAssets assetsPath
 
     # Link default course in readonly mode
