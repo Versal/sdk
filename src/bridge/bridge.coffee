@@ -119,6 +119,8 @@ module.exports = class Bridge
     return unless courseJson
 
     course = new jsapi.Course courseJson
+    unless options?.learn
+      course.set 'isEditable', true
     unless options?.readonly
       course.sync = (method, model) ->
         promise = jsapi.Backbone.$.Deferred()

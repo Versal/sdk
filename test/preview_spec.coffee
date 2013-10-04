@@ -49,4 +49,4 @@ describe 'Preview', ->
 
     it 'should link assets', ->
       linkAssets.called.should.be.true
-      linkAssets.firstCall.args[0].should.eq "#{previewPath}/versal_data/assets.json"
+      linkAssets.firstCall.args[0].should.eq "#{previewPath}/versal_data/local_assets.json"
