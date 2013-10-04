@@ -13,6 +13,8 @@
         this.onToggleTOC = __bind(this.onToggleTOC, this);
 
         this.customScroller = __bind(this.customScroller, this);
+
+        this.onClick = __bind(this.onClick, this);
         return Course.__super__.constructor.apply(this, arguments);
       }
 
@@ -44,7 +46,8 @@
         courseTitleWrapper: '.courseTitleWrapper',
         title: '.title',
         tocIcon: '.toc-icon',
-        errorMsg: '.saveErrorMsg'
+        saveErrorMsg: '.saveErrorMsg',
+        collabErrorMsg: '.collabErrorMsg'
       };
 
       Course.prototype.regions = {
@@ -114,6 +117,8 @@
       };
 
       Course.prototype.displayLesson = function(lesson) {
+        var lastActiveLesson;
+        lastActiveLesson = this._activeLesson;
         this._activeLesson = lesson;
         this.model.progress.save({
           lessonIndex: this.activeLessonIndex() + 1
@@ -135,6 +140,10 @@
           this.renderingLesson.resolve();
         }
         mediator.trigger('lesson:rendered', this._lessonView);
+        if (lastActiveLesson) {
+          mediator.trigger('lesson:closed', lastActiveLesson);
+        }
+        mediator.trigger('lesson:opened', this._activeLesson);
         this.updateTitle();
         return _.delay((function() {
           return window.scrollTo(0, 0);
@@ -265,8 +274,17 @@
         this.nav.show(new NavButtonsView({
           model: this.model
         }));
-        mediator.on('api:xhr:error', this.showSaveErrorMsg, this);
-        return mediator.on('api:xhr:success', this.hideSaveErrorMsg, this);
+        mediator.on('course:save:error', this.showSaveErrorMsg, this);
+        mediator.on('course:save:success', this.hideSaveErrorMsg, this);
+        mediator.on('course:collab:ready', this.onEnableCollab, this);
+        mediator.on('course:collab:close', this.onDisableCollab, this);
+        return $(window).on('click', this.onClick);
+      };
+
+      Course.prototype.onClick = function(e) {
+        if (!this.isModalOpen()) {
+          return mediator.trigger('course:click', e);
+        }
       };
 
       Course.prototype.scrollWidth = function() {
@@ -296,6 +314,10 @@
         });
       };
 
+      Course.prototype.isModalOpen = function() {
+        return !!$('.modal').length;
+      };
+
       Course.prototype.updateTitle = function() {
         if (!this._rendered) {
           return;
@@ -319,16 +341,28 @@
       };
 
       Course.prototype.showSaveErrorMsg = function() {
-        if (!(this.errorShowing || !this.model.get('isEditable'))) {
-          this.ui.errorMsg.slideDown(50);
-          return this.errorShowing = true;
+        if (!(this.saveErrorShowing || !this.model.get('isEditable'))) {
+          this.ui.saveErrorMsg.slideDown(50);
+          return this.saveErrorShowing = true;
         }
       };
 
       Course.prototype.hideSaveErrorMsg = function() {
-        if (this.errorShowing) {
-          this.errorShowing = false;
-          return this.ui.errorMsg.slideUp(50);
+        if (this.saveErrorShowing) {
+          this.saveErrorShowing = false;
+          return this.ui.saveErrorMsg.slideUp(50);
+        }
+      };
+
+      Course.prototype.onEnableCollab = function() {
+        this.collabErrorShowing = false;
+        return this.ui.collabErrorMsg.slideUp(50);
+      };
+
+      Course.prototype.onDisableCollab = function() {
+        if (!(this.collabErrorShowing || !this.model.get('isEditable'))) {
+          this.ui.collabErrorMsg.slideDown(50);
+          return this.collabErrorShowing = true;
         }
       };
 

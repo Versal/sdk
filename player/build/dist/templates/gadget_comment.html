@@ -1,0 +1,17 @@
+<% if (deleted) { %>
+  <div class="deleted_comment">
+    <p>Comment has been deleted</p>
+  </div>
+<% } else { %>
+  <div class="comment-inner">
+    <img src="<%- profileImage() %>"></img>
+    <div class="commentInfo">
+      <p class="commentAuthor"><%- user.firstName %></p><br/>
+      <p class="commentDate"><span class="timestamp">seconds</span> ago</p>
+    </div>
+    <p><%- body %></p>
+    <% if (editable) { %>
+      <span class="js-delete-comment">delete</span>
+    <% } %>
+  </div>
+<% } %>

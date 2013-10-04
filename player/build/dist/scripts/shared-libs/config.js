@@ -11,7 +11,7 @@
           'cdn.backbone': "backbone-1.0.0",
           'cdn.marionette': "backbone.marionette-1.0.2",
           'cdn.jquery': "jquery-1.9.1",
-          'cdn.lodash': "lodash-1.1.1",
+          'cdn.lodash': "lodash-2.2.1",
           'cdn.processing': "processing-1.4.1",
           'cdn.raphael': "raphael-2.1.0",
           'cdn.underscore': "underscore-1.4.4",
@@ -53,9 +53,9 @@
         config.paths[k] = "" + path + "/lib/" + v;
       }
       if (typeof window !== "undefined" && window.location.protocol === "https:") {
-        path = "https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=AM_HTMLorMML-full.js";
+        path = "https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML.js";
       } else {
-        path = "http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=AM_HTMLorMML-full.js";
+        path = "http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-MML-AM_HTMLorMML.js";
       }
       config.paths['cdn.mathjax'] = path;
       if (require.config) {

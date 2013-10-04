@@ -24,6 +24,9 @@
       'plugins/vs.api': {
         deps: ['cdn.jquery', 'cdn.lodash', 'cdn.backbone']
       },
+      'plugins/vs.collab': {
+        deps: ['cdn.lodash', 'cdn.backbone']
+      },
       'plugins/backbone.filter': {
         deps: ['cdn.backbone']
       },

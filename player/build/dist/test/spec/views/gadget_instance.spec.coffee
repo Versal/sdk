@@ -2,12 +2,13 @@ define [
   'helpers/helpers'
   'helpers/fixtures'
   'views/gadget_instance'
-], (Helpers, Fixtures, GadgetInstanceView) ->
+  'app/mediator'
+], (Helpers, Fixtures, GadgetInstanceView, mediator) ->
 
   class BundledGadgetStub
     _.extend @::, Backbone.Events
-    constructor: (facade) ->
-      facade.on 'render', @onRender, @
+    constructor: ({ @el, @player, @config }) ->
+      @player.on 'render', @onRender, @
     start: ->
     onRender: ->
     onConfigure: ->
@@ -71,15 +72,36 @@ define [
         stub.called.should.be.true
         stub.restore()
 
+      describe 'when a gadget is dropped', ->
+
+        describe 'and gadget is in an editing state', ->
+
+          it 'should notify other views', ->
+            dropSpy = sinon.spy()
+            mediator.on 'gadget:drop', dropSpy
+
+            @view.isEditable = true
+            @model.dropped = true
+
+            bundle = BundledGadgetStub
+            @view.onFetchSuccess bundle
+
+            dropSpy.called.should.be.true
+
+          it 'should move to a non-editing state', ->
+            @otherView = new GadgetInstanceView model: new vs.api.Gadget
+
+            @view.toggleEdit true
+            @view.$el.hasClass('editing').should.be.true
+            @view.onGadgetDrop @otherView
+            @view.$el.hasClass('editing').should.be.false
+
     describe 'After rendering', ->
       it 'should have class', ->
-        @view.render()
         @view.onFetchSuccess BundledGadgetStub
         @view.$el.hasClass('gadget').should.be.true
 
     describe 'When bundle fails to load', ->
-      beforeEach ->
-        @view.render()
 
       it 'stops loading', ->
         spy = sinon.spy @view, 'showCouldNotLoad'
@@ -88,10 +110,9 @@ define [
 
     describe 'After bundle is ready', ->
       beforeEach ->
-        @view.render()
         @view.onFetchSuccess BundledGadgetStub
 
-      describe 'Clicking .js-delete', ->
+      describe 'Clicking delete', ->
         clickDelete = (view) ->
           view.$('.js-trash').click()
           view.$('.js-delete').click()
@@ -116,7 +137,7 @@ define [
           clickDelete @view
           spy.called.should.be.true
 
-      describe 'Clicking .js-edit', ->
+      describe 'Clicking edit', ->
         it 'should toggle the .editing class', ->
           @view.toggleEdit false
           @view.$('.js-edit').click()
@@ -132,3 +153,37 @@ define [
           @view.toggleEdit false
           @view.$('.js-edit').click()
           @view._configVisible.should.be.true
+
+      describe 'Clicking outside gadget', ->
+
+        describe 'when the gadget is in an editing state', ->
+
+          it 'should move gadget to a non-editing state', ->
+            @view.toggleEdit true
+            @view.$el.hasClass('editing').should.be.true
+            @view.onCourseClick target: $(document).get(0)
+            @view.$el.hasClass('editing').should.be.false
+
+      describe 'Clicking inside gadget', ->
+
+        describe 'when the gadget is in an editing state', ->
+
+          it 'should stay in an editing state', ->
+            @view.toggleEdit true
+            @view.$el.hasClass('editing').should.be.true
+            @view.onCourseClick target: @view.$el.find(':last').get(0)
+            @view.$el.hasClass('editing').should.be.true
+
+    describe 'Dropping', ->
+
+      describe 'when another gadget is dropped', ->
+
+        describe 'and the current gadget is in an editing state', ->
+
+          it 'should move current gadget to a non-editing state', ->
+            @otherView = new GadgetInstanceView model: new vs.api.Gadget
+
+            @view.toggleEdit true
+            @view.$el.hasClass('editing').should.be.true
+            @view.onGadgetDrop @otherView
+            @view.$el.hasClass('editing').should.be.false
