@@ -9,39 +9,39 @@ needle = require 'needle'
 gadgetPath = path.resolve './test/fixtures/upload/bundle.zip'
 
 describe 'Upload', ->
-  get = null
+  get = post = null
 
   beforeEach ->
-    sinon.stub(upload, 'uploadFile').callsArgWith 2, null, { id: '1' }
+    post = sinon.stub(needle, 'post').callsArgWith(3, null, { statusCode: 201 }, { id: '123X' })
     get = sinon.stub(sdk.config, 'get')
     get.withArgs('apiUrl').returns 'http://api/'
     get.withArgs('sessionId').returns 'A1B2'
 
   afterEach ->
-    upload.uploadFile.restore()
+    post.restore()
     get.restore()
 
   describe 'existing file', ->
     it 'should post bundle.zip to gadgets', (done) ->
       upload.command path.resolve('./test/fixtures/upload/bundle.zip'), null, (err) ->
-        upload.uploadFile.getCall(0).args[1].endpoint.should.eq 'gadgets'
+        post.getCall(0).args[0].should.match /\/gadgets$/
         done()
 
     it 'should post any other file to assets', (done) ->
       upload.command path.resolve('./test/fixtures/bridge/education.jpg'), null, (err) ->
-        upload.uploadFile.getCall(0).args[1].endpoint.should.eq 'assets'
+        post.getCall(0).args[0].should.match /\/assets$/
         done()
 
     it 'should get sessionId and apiUrl from config', (done) ->
       upload.command path.resolve('./test/fixtures/upload/bundle.zip'), null, (err) ->
-        upload.uploadFile.getCall(0).args[1].apiUrl.should.eq 'http://api/'
-        upload.uploadFile.getCall(0).args[1].sessionId.should.eq 'A1B2'
+        post.getCall(0).args[0].should.match /http:\/\/api\//
+        post.getCall(0).args[2].headers.SESSION_ID.should.eq 'A1B2'
         done()
 
   describe 'existing folder', ->
     it 'should look up for bundle.zip', (done) ->
       upload.command path.resolve('./test/fixtures/upload'), null, (err) ->
-        upload.uploadFile.called.should.be.true
+        post.getCall(0).args[0].should.match /\/gadgets$/
         done()
 
   describe 'non-existing file', ->
@@ -53,58 +53,67 @@ describe 'Upload', ->
   describe 'without filePath', ->
     it 'should callback with error', (done) ->
       upload.command null, null, (err) ->
-        err.should.match /filepath argument is required/
+        err.should.match /specify paths for the files you want to upload/
         done()
 
+  # Three tests in this suite are interdependent and must be run together
   describe 'output', ->
+    filepath = './test/fixtures/bridge/education.jpg'
+    assetsPath = path.resolve './test/fixtures/upload/assets.json'
+
     beforeEach ->
-      sinon.spy upload, 'outputJson'
+      sinon.stub upload, 'outputJson'
 
     afterEach ->
       upload.outputJson.restore()
 
     it 'should not call outputJson by default', (done) ->
-      upload.command './test/fixtures/bridge/education.jpg', null, (err) ->
+      upload.command filepath, null, (err) ->
         upload.outputJson.called.should.be.false
         done()
 
     it 'should store result in outputJson', (done) ->
-      filepath = './test/fixtures/bridge/education.jpg'
-      upload.command filepath, { output: './temp/upload/assets.json' }, (err, body) ->
+      upload.command filepath, { output: assetsPath }, (err, body) ->
+        upload.outputJson.firstCall.args[1].should.eq body
+        done()
+
+    it 'should not call post, if asset already exists in output', (done) ->
+      upload.command "/some/existing/file", { output: assetsPath }, (err, body) ->
+        post.callCount.should.eq 0
+        upload.outputJson.called.should.be.false
+        done()
+
+    it 'should call post, if asset already exists in output and --force is specified', (done) ->
+      upload.command filepath, { output: assetsPath, force: true }, (err, body) ->
+        post.callCount.should.eq 1
         upload.outputJson.called.should.be.true
-        fs.readJsonSync('./temp/upload/assets.json')[filepath].should.eql body
         done()
 
   describe 'post', ->
-    post = null
     success = sinon.spy()
 
-    before (done) ->
-      post = sinon.stub(needle, 'post').callsArgWith(3, null, { statusCode: 201 }, { sessionId: 'A1B2' })
+    beforeEach (done) ->
       options =
         sessionId: 'X'
         apiUrl: 'url'
         success: success
       upload.command gadgetPath, options, done
 
-    after ->
-      post.restore()
-
     it 'should post gadget', ->
       post.called.should.be.true
 
     it 'should set buffer', ->
       bundleBuffer = fs.readFileSync gadgetPath
-      post.firstCall.args[1].content.buffer.should.eql bundleBuffer
+      post.getCall(0).args[1].content.buffer.should.eql bundleBuffer
 
     it 'should set content-type', ->
-      post.firstCall.args[1].content.content_type.should.eq 'application/zip'
+      post.getCall(0).args[1].content.content_type.should.eq 'application/zip'
 
     it 'should set filename', ->
-      post.firstCall.args[1].content.filename.should.eq 'bundle.zip'
+      post.getCall(0).args[1].content.filename.should.eq 'bundle.zip'
 
     it 'should set sessionId header', ->
-      post.firstCall.args[2].headers.SESSION_ID.should.eq 'X'
+      post.getCall(0).args[2].headers.SESSION_ID.should.eq 'X'
 
     it 'should call options.success', ->
       success.called.should.be.true

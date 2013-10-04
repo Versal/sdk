@@ -11,7 +11,7 @@ module.exports = sdk =
   docs: -> sdk.execCommand('docs').apply null, arguments
   compile: -> sdk.execCommand('compile').apply null, arguments
   compress: -> sdk.execCommand('compress').apply null, arguments
-  upload: -> sdk.execCommand('upload').apply null, arguments
+  upload: -> sdk.execCommand('upload', passThrough: true).apply null, arguments
   preview: -> sdk.execCommand('preview', passThrough: true).apply null, arguments
   validate: -> sdk.execCommand('validate').apply null, arguments
   publish: -> sdk.execCommand('publish').apply null, arguments
