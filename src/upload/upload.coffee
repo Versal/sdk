@@ -47,7 +47,7 @@ module.exports =
         if options.output then @outputJson options.output, assets
         return callback null, assets
 
-  # The only reason it exists as stand-alone method is tests
+  # The only reason it exists as a stand-alone method is tests
   outputJson: (outputPath, assets) ->
     fs.outputJsonSync outputPath, assets
 

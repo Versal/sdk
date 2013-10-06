@@ -56,7 +56,6 @@ describe 'Upload', ->
         err.should.match /specify paths for the files you want to upload/
         done()
 
-  # Three tests in this suite are interdependent and must be run together
   describe 'output', ->
     filepath = './test/fixtures/bridge/education.jpg'
     assetsPath = path.resolve './test/fixtures/upload/assets.json'
