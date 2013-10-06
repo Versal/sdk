@@ -74,7 +74,7 @@
           return progressStub.restore();
         });
       });
-      return describe('Displaying lessons', function() {
+      describe('Displaying lessons', function() {
         beforeEach(function() {
           return this.lesson = this.model.lessons.last();
         });
@@ -88,6 +88,54 @@
           this.view.displayLesson(this.lesson);
           spy.called.should.be["true"];
           return spy.restore();
+        });
+      });
+      describe('Clicking', function() {
+        return describe('When a user clicks on the course', function() {
+          it('should notify other views', function() {
+            var name;
+            sinon.stub(CourseView.prototype, 'isModalOpen', function() {
+              return false;
+            });
+            sinon.stub(mediator, 'trigger');
+            this.view.render();
+            $('body').click();
+            name = mediator.trigger.lastCall.args[0];
+            name.should.eq('course:click');
+            CourseView.prototype.isModalOpen.restore();
+            return mediator.trigger.restore();
+          });
+          return describe('and a modal is open', function() {
+            return it('should not notify other views', function() {
+              var name;
+              sinon.stub(CourseView.prototype, 'isModalOpen', function() {
+                return true;
+              });
+              sinon.stub(mediator, 'trigger');
+              this.view.render();
+              $('body').click();
+              name = mediator.trigger.lastCall.args[0];
+              name.should.not.eq('course:click');
+              CourseView.prototype.isModalOpen.restore();
+              return mediator.trigger.restore();
+            });
+          });
+        });
+      });
+      return describe('Modal', function() {
+        describe('when open', function() {
+          return it('should be detectable', function() {
+            this.view.render();
+            $('body').append($('<div class="modal"></div>'));
+            return this.view.isModalOpen().should.be["true"];
+          });
+        });
+        return describe('when closed', function() {
+          return it('should be detectable', function() {
+            this.view.render();
+            $('.modal').remove();
+            return this.view.isModalOpen().should.be["false"];
+          });
         });
       });
     });

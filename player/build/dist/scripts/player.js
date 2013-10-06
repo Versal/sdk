@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  define(['cdn.marionette', 'views/course', 'views/sidebar/author/author', 'views/sidebar/learner', 'app/catalogue', 'text!templates/player.html', 'views/loading', 'app/mediator', 'plugins/tracker', 'messages/decorate', 'modernizr', 'plugins/vs.ui', 'models/video'], function(Marionette, CourseView, AuthorSidebarView, LearnerSidebarView, gadgetCatalogue, template, LoadingView, mediator, tracker) {
+  define(['cdn.marionette', 'views/course', 'views/sidebar/author/author', 'views/sidebar/learner', 'app/catalogue', 'text!templates/player.html', 'views/loading', 'app/mediator', 'plugins/tracker', 'messages/decorate', 'modernizr', 'plugins/vs.ui', 'plugins/vs.collab', 'models/video'], function(Marionette, CourseView, AuthorSidebarView, LearnerSidebarView, gadgetCatalogue, template, LoadingView, mediator, tracker) {
     var PlayerApplication, PlayerLayout, PlayerRouter;
     PlayerLayout = (function(_super) {
 
@@ -100,14 +100,27 @@
           _this.endTimer(xhr.requestUrl, {
             status: 'error'
           });
-          return mediator.trigger('api:xhr:error');
+          return mediator.trigger('course:save:error');
         });
         vs.api.on('xhr:success', function(opts, e, xhr) {
           _this.endTimer(xhr.requestUrl, {
             status: 'success'
           });
-          return mediator.trigger('api:xhr:success');
+          return mediator.trigger('course:save:success');
         });
+        if (options.collabUrl) {
+          vs.collab._enabled = true;
+          vs.collab.init(options, mediator);
+          vs.collab.on('ws:open', function() {
+            return mediator.trigger('course:collab:open');
+          });
+          vs.collab.on('ws:close', function() {
+            return mediator.trigger('course:collab:close');
+          });
+          vs.collab.on('ws:error', function(error) {
+            return mediator.trigger('course:collab:error', error);
+          });
+        }
         this.baseUrl = options && options.requireRoot ? options.requireRoot : '/';
         if (!this.baseUrl.match(/\/$/)) {
           this.baseUrl += '/';

@@ -4,8 +4,7 @@ define [
   'helpers/fixtures'
   'views/lesson'
   'collections/gadget_catalogue'
-  'views/inline_catalogue'
-], (mediator, Helpers, Fixtures, LessonView, GadgetCatalogue, InlineCatalogueView) ->
+], (mediator, Helpers, Fixtures, LessonView, GadgetCatalogue) ->
 
   getCatalogue = ->
     catalogue = new GadgetCatalogue
@@ -232,44 +231,3 @@ define [
         model = @view.collection.first()
         @view.collection.move model, 0
         @syncStub.called.should.be.true
-
-    describe 'Picking a child gadget', ->
-      beforeEach ->
-        @view.render()
-        @parentModel = @model.gadgets.first()
-        @parentView = @view.children.first()
-
-      it 'should create a gadget catalogue', ->
-        el = $('<div>')
-
-        @view.pickChild { el: el, name: 'test' }, { gadgetId: @parentModel.id }
-
-        mediator.trigger.withArgs('inlineCatalogue:show').called.should.be.true
-
-      it 'should insert a gadget when one is chosen', ->
-        el = $('<div>')
-
-        addChildStub = sinon.stub @view, 'addChildGadget'
-
-        @view.pickChild { el: el, name: 'test' }, { gadgetId: @parentModel.id }
-        successCb = mediator.trigger.withArgs('inlineCatalogue:show').getCall(0).args[2]
-
-        cv = new InlineCatalogueView
-        successCb cv
-        cv.trigger 'selectGadget'
-
-        addChildStub.called.should.be.true
-
-        addChildStub.restore()
-
-      it 'should call the error method when none are chosen', ->
-        el = $('<div>')
-
-        errorMethod = sinon.stub()
-        @view.pickChild { el: el, name: 'test', error: errorMethod }, { gadgetId: @parentModel.id }
-        cancelledCb = mediator.trigger.withArgs('inlineCatalogue:show').getCall(0).args[3]
-
-        cancelledCb()
-
-        errorMethod.called.should.be.true
-

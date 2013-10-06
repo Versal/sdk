@@ -1,6 +1,6 @@
 (function() {
 
-  define(['app/mediator', 'helpers/helpers', 'helpers/fixtures', 'views/lesson', 'collections/gadget_catalogue', 'views/inline_catalogue'], function(mediator, Helpers, Fixtures, LessonView, GadgetCatalogue, InlineCatalogueView) {
+  define(['app/mediator', 'helpers/helpers', 'helpers/fixtures', 'views/lesson', 'collections/gadget_catalogue'], function(mediator, Helpers, Fixtures, LessonView, GadgetCatalogue) {
     var getCatalogue, getSortableItem;
     getCatalogue = function() {
       var catalogue;
@@ -261,7 +261,7 @@
           });
         });
       });
-      describe('When gadget collection is sorted', function() {
+      return describe('When gadget collection is sorted', function() {
         beforeEach(function() {
           return this.view.render();
         });
@@ -273,56 +273,6 @@
           model = this.view.collection.first();
           this.view.collection.move(model, 0);
           return this.syncStub.called.should.be["true"];
-        });
-      });
-      return describe('Picking a child gadget', function() {
-        beforeEach(function() {
-          this.view.render();
-          this.parentModel = this.model.gadgets.first();
-          return this.parentView = this.view.children.first();
-        });
-        it('should create a gadget catalogue', function() {
-          var el;
-          el = $('<div>');
-          this.view.pickChild({
-            el: el,
-            name: 'test'
-          }, {
-            gadgetId: this.parentModel.id
-          });
-          return mediator.trigger.withArgs('inlineCatalogue:show').called.should.be["true"];
-        });
-        it('should insert a gadget when one is chosen', function() {
-          var addChildStub, cv, el, successCb;
-          el = $('<div>');
-          addChildStub = sinon.stub(this.view, 'addChildGadget');
-          this.view.pickChild({
-            el: el,
-            name: 'test'
-          }, {
-            gadgetId: this.parentModel.id
-          });
-          successCb = mediator.trigger.withArgs('inlineCatalogue:show').getCall(0).args[2];
-          cv = new InlineCatalogueView;
-          successCb(cv);
-          cv.trigger('selectGadget');
-          addChildStub.called.should.be["true"];
-          return addChildStub.restore();
-        });
-        return it('should call the error method when none are chosen', function() {
-          var cancelledCb, el, errorMethod;
-          el = $('<div>');
-          errorMethod = sinon.stub();
-          this.view.pickChild({
-            el: el,
-            name: 'test',
-            error: errorMethod
-          }, {
-            gadgetId: this.parentModel.id
-          });
-          cancelledCb = mediator.trigger.withArgs('inlineCatalogue:show').getCall(0).args[3];
-          cancelledCb();
-          return errorMethod.called.should.be["true"];
         });
       });
     });

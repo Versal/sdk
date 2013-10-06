@@ -35,10 +35,12 @@
       };
 
       VsSticky.prototype.listen = function() {
-        var _this = this;
+        var throttledScroll,
+          _this = this;
+        this.scroll();
+        throttledScroll = _.throttle(this.scroll, this.interval);
         return $(window).on('scroll', function() {
-          _.throttle(_this.scroll, _this.interval);
-          return _.throttle(_this.updateEls(), 1000);
+          return throttledScroll();
         });
       };
 

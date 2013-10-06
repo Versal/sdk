@@ -1,0 +1,6 @@
+<% if (isLocked()) { %>
+  <% if (profileImage()) { %>
+    <img class="js-lock avatar" src="<%- profileImage() %>"></img>
+  <% } %>
+  <i class="icon-lock"></i>
+<% } %>

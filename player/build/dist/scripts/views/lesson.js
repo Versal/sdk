@@ -3,7 +3,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['cdn.marionette', 'app/mediator', 'plugins/tracker', 'views/gadget_instance', 'views/inline_catalogue', 'app/catalogue', 'plugins/vs-sticky', 'cdn.jqueryui'], function(Marionette, mediator, tracker, GadgetInstanceView, InlineCatalogueView, gadgetCatalogue, VsSticky) {
+  define(['cdn.marionette', 'app/mediator', 'plugins/tracker', 'views/gadget_instance', 'app/catalogue', 'plugins/vs-sticky', 'cdn.jqueryui'], function(Marionette, mediator, tracker, GadgetInstanceView, gadgetCatalogue, VsSticky) {
     var Lesson, cacheStamp;
     cacheStamp = (new Date).getTime();
     _.extend(vs.api.Gadget.prototype, {
@@ -60,12 +60,6 @@
       __extends(Lesson, _super);
 
       function Lesson() {
-        this.showChild = __bind(this.showChild, this);
-
-        this.addChildGadget = __bind(this.addChildGadget, this);
-
-        this.pickChild = __bind(this.pickChild, this);
-
         this.onSortStop = __bind(this.onSortStop, this);
 
         this.onSortStart = __bind(this.onSortStart, this);
@@ -96,23 +90,9 @@
           return _this.trigger('userStateSync');
         });
         this.listenTo(this.catalogue, 'ready', this.onCatalogueReady, this);
-        $(window).click(function(e) {
-          var _ref;
-          if ($('.gadget.editing').length && !$(e.target).parents('.gadget.editing, .modal').not('.noToggleEdit').length) {
-            return (_ref = _this.activeView) != null ? _ref.toggleEdit(false) : void 0;
-          }
-        });
-        $(window).on('resize', function() {
+        return $(window).on('resize', function() {
           return _this.fixSizing();
         });
-        mediator.on('gadget:pickChild', this.pickChild);
-        return mediator.on('gadget:showChild', this.showChild);
-      };
-
-      Lesson.prototype.remove = function() {
-        mediator.off('gadget:pickChild', this.pickChild);
-        mediator.off('gadget:showChild', this.showChild);
-        return Lesson.__super__.remove.apply(this, arguments);
       };
 
       Lesson.prototype.className = 'gadgets';
@@ -121,17 +101,22 @@
 
       Lesson.prototype.itemViewOptions = function() {
         return {
-          'isEditable': this.isEditable
+          isEditable: this.isEditable,
+          currentLesson: this
         };
       };
 
-      Lesson.prototype.insertGadgetTypeAt = function(type, index) {
+      Lesson.prototype.insertGadgetTypeAt = function(type, index, initialConfig) {
         var instance;
+        if (initialConfig == null) {
+          initialConfig = {};
+        }
         if (instance = this.catalogue.buildInstanceOfType(type)) {
           instance.dropped = true;
           instance.set({
             index: index
           });
+          instance.config.set(initialConfig);
           this.collection.create(instance, {
             at: index
           });
@@ -241,34 +226,11 @@
         }
         this.navBarHeight = $('.courseHeader').height();
         this.fixSizing();
-        this.removeOrphans();
         if (this.children.length === 0) {
           mediator.trigger('gadget:rendered', null, true);
         }
         return this.track('Render', {
           lesson: this.model.id
-        });
-      };
-
-      Lesson.prototype.removeOrphans = function() {
-        var childGadgets,
-          _this = this;
-        childGadgets = [];
-        this.model.gadgets.each(function(gadget) {
-          var children;
-          if (children = gadget.config.get('_children')) {
-            return childGadgets = childGadgets.concat(_.values(children));
-          }
-        });
-        return this.model.gadgets.each(function(gadget) {
-          if (!gadget) {
-            return;
-          }
-          if (gadget.config.get('_hidden') && !_.contains(childGadgets, gadget.id)) {
-            return gadget.destroy({
-              queue: true
-            });
-          }
         });
       };
 
@@ -342,69 +304,6 @@
             return window.scrollTo(0, gadget.$el.offset().top - _this.navBarHeight);
           });
         });
-      };
-
-      Lesson.prototype.pickChild = function(options, source) {
-        var el, error, name, onCancelled, onShown, parent, success,
-          _this = this;
-        el = options.el, name = options.name, success = options.success, error = options.error;
-        parent = this.collection.get(source.gadgetId);
-        onShown = function(inlineCatalogue) {
-          return inlineCatalogue.on('selectGadget', function(type) {
-            return _this.addChildGadget(parent, type, options);
-          });
-        };
-        onCancelled = function() {
-          return typeof error === "function" ? error("Gadget selection canceled") : void 0;
-        };
-        return mediator.trigger('inlineCatalogue:show', el, onShown, onCancelled);
-      };
-
-      Lesson.prototype.addChildGadget = function(parent, type, _arg) {
-        var el, gadget, name, success,
-          _this = this;
-        name = _arg.name, el = _arg.el, success = _arg.success;
-        gadget = this.insertGadgetTypeAt(type, this.children.length);
-        gadget.once('sync', function() {
-          var facade, _children;
-          gadget.config.save({
-            _hidden: true
-          });
-          _children = parent.config.get('_children') || {};
-          _children[name] = gadget.id;
-          parent.config.save({
-            _children: _children
-          });
-          facade = _this.children.findByModel(gadget)._facade;
-          return typeof success === "function" ? success(facade) : void 0;
-        });
-        return this.renderElsewhere(gadget, el);
-      };
-
-      Lesson.prototype.showChild = function(_arg, source) {
-        var el, error, facade, gadget, id, name, parent, success, _children;
-        el = _arg.el, name = _arg.name, success = _arg.success, error = _arg.error;
-        parent = this.collection.get(source.gadgetId);
-        _children = parent.config.get('_children') || {};
-        id = _children[name];
-        if (!id) {
-          return typeof error === "function" ? error("Child " + name + " not found") : void 0;
-        }
-        gadget = this.collection.get(id);
-        if (!gadget) {
-          return typeof error === "function" ? error("Gadget with ID " + id + " not found") : void 0;
-        }
-        this.renderElsewhere(gadget, el);
-        facade = this.children.findByModel(gadget)._facade;
-        return typeof success === "function" ? success(facade) : void 0;
-      };
-
-      Lesson.prototype.renderElsewhere = function(gadget, destination) {
-        var view;
-        view = this.children.findByModel(gadget);
-        view.$el.remove();
-        view.$el = destination;
-        return view.render();
       };
 
       Lesson.prototype.isComplete = function() {

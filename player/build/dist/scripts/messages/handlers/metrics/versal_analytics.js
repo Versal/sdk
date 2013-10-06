@@ -12,7 +12,9 @@
         data: JSON.stringify(queue)
       });
       return queue = [];
-    }, 20000);
+    }, 20000, {
+      leading: false
+    });
     return function(category, action, data, eventType) {
       if (eventType == null) {
         eventType = 'counter';

@@ -112,6 +112,7 @@ module.exports = class Bridge
       apiUrl: "http://localhost:#{@port}/api"
       sessionId: ''
       courseId: @data.courses.at(0).id
+      collabUrl: null
     res.send _.template template, config
 
   linkCourse: (coursePath, options) ->

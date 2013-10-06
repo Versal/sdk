@@ -42,6 +42,9 @@ require.config
     'plugins/vs.api':
       deps: ['cdn.lodash', 'cdn.backbone']
 
+    'plugins/vs.collab':
+      deps: ['cdn.lodash', 'cdn.backbone']
+
     'libs/backbone-forms':
       deps: ['cdn.backbone']
 

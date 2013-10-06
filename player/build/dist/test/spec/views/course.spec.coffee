@@ -78,3 +78,50 @@ define [
         spy.called.should.be.true
         spy.restore()
 
+    describe 'Clicking', ->
+
+      describe 'When a user clicks on the course', ->
+
+        it 'should notify other views', ->
+          sinon.stub CourseView::, 'isModalOpen', -> false
+          sinon.stub mediator, 'trigger'
+
+          @view.render()
+
+          $('body').click()
+          [name] =  mediator.trigger.lastCall.args
+          name.should.eq 'course:click'
+
+          CourseView::isModalOpen.restore()
+          mediator.trigger.restore()
+
+        describe 'and a modal is open', ->
+
+          it 'should not notify other views', ->
+            sinon.stub CourseView::, 'isModalOpen', -> true
+            sinon.stub mediator, 'trigger'
+
+            @view.render()
+
+            $('body').click()
+            [name] =  mediator.trigger.lastCall.args
+            name.should.not.eq 'course:click'
+
+            CourseView::isModalOpen.restore()
+            mediator.trigger.restore()
+
+    describe 'Modal', ->
+
+      describe 'when open', ->
+
+        it 'should be detectable', ->
+          @view.render()
+          $('body').append $('<div class="modal"></div>')
+          @view.isModalOpen().should.be.true
+
+      describe 'when closed', ->
+
+        it 'should be detectable', ->
+          @view.render()
+          $('.modal').remove()
+          @view.isModalOpen().should.be.false

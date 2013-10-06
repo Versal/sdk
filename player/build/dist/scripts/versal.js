@@ -28,7 +28,7 @@
   extractData = function(c) {
     var key, result, val, _i, _len, _ref;
     result = {};
-    _ref = ['course', 'sid', 'api', 'whitelabel', 'embed', 'noEditable', 'revision'];
+    _ref = ['course', 'sid', 'api', 'collabUrl', 'whitelabel', 'embed', 'noEditable', 'revision'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       key = _ref[_i];
       val = c.getAttribute("data-" + key);

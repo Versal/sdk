@@ -4,7 +4,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __slice = [].slice;
 
-  define(['cdn.marionette', 'app/mediator', 'plugins/tracker', 'messages/facade', 'views/property_sheet', 'models/property_sheet_schema', 'text!templates/gadget_instance.html', 'text!templates/gadget_instance_error.html', 'text!templates/gadget_delete_warn.html', 'cdn.lodash'], function(Marionette, mediator, tracker, Facade, PropertySheetView, PropertySheetSchema, template, error_template, warn_template, _) {
+  define(['cdn.marionette', 'app/mediator', 'plugins/tracker', 'messages/facade', 'views/gadget_lock', 'views/gadget_comments', 'views/property_sheet', 'models/property_sheet_schema', 'models/children', 'text!templates/gadget_instance.html', 'text!templates/gadget_instance_error.html', 'text!templates/gadget_delete_warn.html', 'cdn.lodash'], function(Marionette, mediator, tracker, Facade, GadgetLockView, GadgetCommentsView, PropertySheetView, PropertySheetSchema, Children, template, error_template, warn_template, _) {
     var GadgetInstanceView;
     return GadgetInstanceView = (function(_super) {
 
@@ -19,12 +19,16 @@
 
       _.extend(GadgetInstanceView.prototype, tracker('Gadget'));
 
+      GadgetInstanceView.prototype.reportActivityEveryMs = 60 * 1000;
+
       GadgetInstanceView.prototype.template = _.template(template);
 
       GadgetInstanceView.prototype.className = 'gadget';
 
       GadgetInstanceView.prototype.regions = {
-        propertySheetRegion: '.js-property-dialog'
+        propertySheetRegion: '.js-property-dialog',
+        lockRegion: '.lock',
+        commentsRegion: '.comments'
       };
 
       GadgetInstanceView.prototype.events = {
@@ -35,6 +39,7 @@
         'click .js-delete': 'onDeleteClick',
         'click .js-undo-delete': 'onUndoDelete',
         'dblclick': 'onDblClick',
+        'click .gadgetContent': 'onClick',
         'selectstart .js-placeholder': _.identity(false)
       };
 
@@ -50,6 +55,8 @@
           options = {};
         }
         this.isEditable = options.isEditable;
+        this.currentLesson = options.currentLesson;
+        this.comments = new vs.collab.GadgetComments;
         this.listenTo(this.model, 'resolve:success', this.onFetchSuccess, this);
         this.listenTo(this.model, 'resolve:error', this.onFetchError, this);
         this._facade = new Facade({
@@ -66,13 +73,20 @@
         this.listenTo(this.model.config, 'change', this.onGadgetConfigChange, this);
         this.listenTo(this.model, 'destroy', this.onModelDestroy);
         this._propertySheetSchema = new PropertySheetSchema;
+        this.children = new Children(this.model.config.get('_children'), {
+          parent: this,
+          lesson: this.currentLesson
+        });
         this.gadgetRendering = $.Deferred();
         this.once('gadgetRendered', function() {
           return _this.gadgetRendering.resolve();
         });
-        return this.model.userState.on('sync', function() {
+        this.model.userState.on('sync', function() {
           return _this.trigger('userStateSync');
         });
+        this.model.on('lock', this.toggleToolbar, this);
+        this.model.on('unlock', this.toggleToolbar, this);
+        return mediator.on('course:click', this.onCourseClick, this);
       };
 
       GadgetInstanceView.prototype.onInstanceAvailable = function() {
@@ -128,12 +142,24 @@
       };
 
       GadgetInstanceView.prototype.onDblClick = function(e) {
-        if (!this.isEditable) {
+        if (!this.isEditable || this.noToggleSwitch || this.model.config.get('_hidden')) {
           return;
         }
         this.trigger('dblclick');
         if (!this._isEditing) {
           return this.onEditClick(e);
+        }
+      };
+
+      GadgetInstanceView.prototype.onClick = function(e) {
+        if (!(this.noToggleSwitch && !this._isEditing)) {
+          return;
+        }
+        if (this.model.lock && !this.model.lock.isLockedByMe()) {
+          this.onAlreadyLocked();
+          return $(e.target).blur();
+        } else {
+          return this.toggleEdit();
         }
       };
 
@@ -164,10 +190,12 @@
         var options;
         options = this._facade;
         options.player = this._facade;
-        options.el = this.$('.gadgetContent')[0];
+        options.$el = this.$('.gadgetContent');
+        options.el = options.$el[0];
         options.propertySheetSchema = this._propertySheetSchema;
         options.config = this.model.config;
         options.userState = this.model.userState;
+        options.children = this.children;
         options.userStates = this.model.userStates;
         options.model = this.model.config;
         options.facade = this._facade;
@@ -178,13 +206,13 @@
       };
 
       GadgetInstanceView.prototype.instantiateGadget = function(klass, options) {
-        var defaultConfig, defaultUserState, gadget, noToggleSwitch;
+        var defaultConfig, defaultUserState, gadget;
         if (options == null) {
           options = {};
         }
         defaultConfig = options.defaultConfig || {};
         defaultUserState = options.defaultUserState || {};
-        noToggleSwitch = options.noToggleSwitch || false;
+        this.noToggleSwitch = options.noToggleSwitch || false;
         this.model._gadgetKlass = klass;
         this.model.config.setDefaults(_.cloneDeep(defaultConfig));
         this.model.userState.setDefaults(defaultUserState);
@@ -193,15 +221,17 @@
           gadget = new klass(options, options.config.toJSON(), options.$el);
           this.onInstanceAvailable();
           if (this.isEditable) {
-            if (noToggleSwitch) {
+            if (this.noToggleSwitch) {
               this.passEvent('toggleEdit', true, {
                 onLoad: !this.model.dropped
               });
               this.$el.addClass('noToggleEdit').addClass('editing');
               this.trigger('gadgetRendered');
-              return this.toggleEdit = (function() {});
             } else if (this.model.dropped) {
-              return this.toggleEdit(true);
+              this.toggleEdit(true);
+            }
+            if (this.model.dropped) {
+              return mediator.trigger('gadget:drop', this);
             }
           }
         } catch (e) {
@@ -212,8 +242,34 @@
 
       GadgetInstanceView.prototype.onRender = function() {
         if (this.model._gadgetKlass) {
-          return this.instantiateGadget(this.model._gadgetKlass);
+          this.instantiateGadget(this.model._gadgetKlass);
         }
+        if (vs.collab._enabled) {
+          return this.initializeCollab();
+        }
+      };
+
+      GadgetInstanceView.prototype.initializeCollab = function() {
+        this._lockView = new GadgetLockView({
+          model: this.model
+        });
+        this.lockRegion.show(this._lockView);
+        this._commentsView = new GadgetCommentsView({
+          model: this.model,
+          collection: this.comments
+        });
+        this.commentsRegion.show(this._commentsView);
+        return this.startReportingActivity();
+      };
+
+      GadgetInstanceView.prototype.startReportingActivity = function() {
+        var events, triggerActivity, triggerActivityDebounced;
+        triggerActivity = function() {
+          return mediator.trigger('gadget:activity');
+        };
+        triggerActivityDebounced = _.debounce(triggerActivity, this.reportActivityEveryMs, true);
+        events = 'click scroll mousedown DOMMouseScroll mousewheel keyup';
+        return this.ui.gadgetContent.on(events, triggerActivityDebounced);
       };
 
       GadgetInstanceView.prototype.passEvent = function() {
@@ -266,20 +322,41 @@
           return;
         }
         this._isEditing = bool ? force : !this._isEditing;
+        if (this._isEditing && this.model.lock) {
+          this._isEditing = false;
+          return this.onAlreadyLocked();
+        }
         this.track('Toggle Editing', {
           editing: this._isEditing,
           gadget: this.model.id
         });
-        if (this._isEditing) {
-          this.trigger('edit', this);
-          this.togglePropertySheet(true);
-        } else {
-          this.togglePropertySheet(false);
-          this.trigger('doneEditing', this);
+        if (!this.model.config.get('_hidden')) {
+          if (this._isEditing) {
+            this.trigger('edit', this);
+            this.togglePropertySheet(true);
+          } else {
+            this.togglePropertySheet(false);
+            this.trigger('doneEditing', this);
+          }
         }
         this.$el.toggleClass('editing', this._isEditing);
         this.passEvent('toggleEdit', this._isEditing);
+        this.updateLock();
         return this.trigger('gadgetRendered');
+      };
+
+      GadgetInstanceView.prototype.onAlreadyLocked = function() {
+        var lockUserName;
+        lockUserName = this.model.lock.get('user').firstName;
+        return alert("" + lockUserName + " is already editing this gadget!");
+      };
+
+      GadgetInstanceView.prototype.updateLock = function() {
+        if (this._isEditing) {
+          return mediator.trigger('lock:locked', this.model);
+        } else {
+          return mediator.trigger('lock:unlocked', this.model);
+        }
       };
 
       GadgetInstanceView.prototype.toggleEmpty = function(force) {
@@ -342,6 +419,33 @@
 
       GadgetInstanceView.prototype.onGadgetConfigEmpty = function() {
         return this.toggleEmpty(true);
+      };
+
+      GadgetInstanceView.prototype.onCourseClick = function(e) {
+        var isClickOnCurrentView, _ref;
+        isClickOnCurrentView = $.contains(this.el, e.target);
+        if (!isClickOnCurrentView) {
+          if ((_ref = this._commentsView) != null) {
+            _ref.blur();
+          }
+          if (this._isEditing) {
+            return this.toggleEdit(false);
+          }
+        }
+      };
+
+      GadgetInstanceView.prototype.toggleToolbar = function() {
+        if (this.model.lock && !this.model.lock.isLockedByMe()) {
+          return this.ui.toolbar.hide();
+        } else {
+          return this.ui.toolbar.show();
+        }
+      };
+
+      GadgetInstanceView.prototype.onGadgetDrop = function(gadgetView) {
+        if (gadgetView !== this) {
+          return this.toggleEdit(false);
+        }
       };
 
       return GadgetInstanceView;

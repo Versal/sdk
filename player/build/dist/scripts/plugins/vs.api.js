@@ -1,7 +1,3 @@
-/*!
- * js-api v0.3.2
- * lovingly baked from ad01c6c on 07. September 2013
- */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define(factory);
@@ -614,7 +610,7 @@ define('models/asset',['require','exports','module','backbone','../collections/a
       if (!options.upload) {
         json = _.omit(json, ['content', 'contentType']);
       }
-      if (options.includeRepresentations) {
+      if (options.representations) {
         _.extend(json, {
           representations: this.representations.toJSON()
         });
@@ -660,6 +656,9 @@ define('models/asset',['require','exports','module','backbone','../collections/a
 
     Asset.prototype._expandLocations = function(data) {
       var _this = this;
+      if (!this.baseUrl) {
+        return;
+      }
       return _.each(data.representations, function(rep) {
         if (!rep.location.match(/^https?:\/\//)) {
           return rep.location = _this.baseUrl + rep.location;
@@ -1359,6 +1358,73 @@ define('models/user',['require','exports','module','backbone','underscore'],func
 
 });
 
+define('collections/user_roles',['require','exports','module','backbone','underscore','../models/user'],function (require, exports, module) {(function() {
+  var Backbone, User, UserRole, UserRoles, _, _ref,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Backbone = require('backbone');
+
+  _ = require('underscore');
+
+  User = require('../models/user');
+
+  UserRole = (function(_super) {
+    __extends(UserRole, _super);
+
+    UserRole.prototype.defaults = {
+      roles: [],
+      userId: ''
+    };
+
+    function UserRole(attrs, options) {
+      if (attrs == null) {
+        attrs = {};
+      }
+      if (options == null) {
+        options = {};
+      }
+      this.user = new User;
+      UserRole.__super__.constructor.apply(this, arguments);
+    }
+
+    UserRole.prototype.parse = function(attrs) {
+      if (attrs.user) {
+        this.user.set(attrs.user, {
+          parse: true
+        });
+      }
+      return _.omit(attrs, 'user');
+    };
+
+    UserRole.prototype.toJSON = function(options) {
+      return _.pick(this.attributes, 'roles', 'userId');
+    };
+
+    return UserRole;
+
+  })(Backbone.Model);
+
+  UserRoles = (function(_super) {
+    __extends(UserRoles, _super);
+
+    function UserRoles() {
+      _ref = UserRoles.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    UserRoles.prototype.model = UserRole;
+
+    return UserRoles;
+
+  })(Backbone.Collection);
+
+  module.exports = UserRoles;
+
+}).call(this);
+
+});
+
 define('collections/users',['require','exports','module','../models/user','backbone'],function (require, exports, module) {(function() {
   var Backbone, User, Users, _ref,
     __hasProp = {}.hasOwnProperty,
@@ -1377,6 +1443,10 @@ define('collections/users',['require','exports','module','../models/user','backb
     }
 
     Users.prototype.model = User;
+
+    Users.prototype.url = function() {
+      return '/users';
+    };
 
     return Users;
 
@@ -1453,8 +1523,8 @@ define('models/course_head',['require','exports','module','./course_revision','u
 
 });
 
-define('models/course',['require','exports','module','backbone','underscore','../collections/lessons','../models/user','../collections/users','./catalog','./course_progress','../collections/course_revisions','./course_head'],function (require, exports, module) {(function() {
-  var Backbone, Catalog, Course, CourseHead, CourseProgress, CourseRevisions, CourseUser, CourseUsers, Lessons, User, Users, _, _ref,
+define('models/course',['require','exports','module','backbone','underscore','../collections/lessons','../models/user','../collections/user_roles','../collections/users','./catalog','./course_progress','../collections/course_revisions','./course_head'],function (require, exports, module) {(function() {
+  var Backbone, Catalog, Course, CourseHead, CourseProgress, CourseRevisions, Lessons, User, UserRoles, Users, _,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1466,6 +1536,8 @@ define('models/course',['require','exports','module','backbone','underscore','..
 
   User = require('../models/user');
 
+  UserRoles = require('../collections/user_roles');
+
   Users = require('../collections/users');
 
   Catalog = require('./catalog');
@@ -1475,56 +1547,6 @@ define('models/course',['require','exports','module','backbone','underscore','..
   CourseRevisions = require('../collections/course_revisions');
 
   CourseHead = require('./course_head');
-
-  CourseUser = (function(_super) {
-    __extends(CourseUser, _super);
-
-    CourseUser.prototype.defaults = {
-      roles: {},
-      user: null
-    };
-
-    function CourseUser(attrs, options) {
-      if (attrs == null) {
-        attrs = {};
-      }
-      if (options == null) {
-        options = {};
-      }
-      this.user = new User;
-      CourseUser.__super__.constructor.apply(this, arguments);
-    }
-
-    CourseUser.prototype.parse = function(attrs) {
-      if (attrs.user) {
-        this.user.set(attrs.user, {
-          parse: true
-        });
-      }
-      return _.omit(attrs, 'user');
-    };
-
-    CourseUser.prototype.toJSON = function(options) {
-      return _.omit(this.attributes, 'id', 'user');
-    };
-
-    return CourseUser;
-
-  })(Backbone.Model);
-
-  CourseUsers = (function(_super) {
-    __extends(CourseUsers, _super);
-
-    function CourseUsers() {
-      _ref = CourseUsers.__super__.constructor.apply(this, arguments);
-      return _ref;
-    }
-
-    CourseUsers.prototype.model = CourseUser;
-
-    return CourseUsers;
-
-  })(Backbone.Collection);
 
   Course = (function(_super) {
     __extends(Course, _super);
@@ -1558,7 +1580,7 @@ define('models/course',['require','exports','module','backbone','underscore','..
       this.progress.url = function() {
         return _.result(_this, 'url') + '/progress';
       };
-      this.authors = new CourseUsers;
+      this.authors = new UserRoles;
       this.authors.url = function() {
         return _.result(_this, 'url') + '/users';
       };
@@ -1634,8 +1656,8 @@ define('models/course',['require','exports','module','backbone','underscore','..
           });
           return stagedCatalog.courses.create(revision.toJSON(), {
             success: function() {
-              var _ref1;
-              return (_ref1 = options.success) != null ? _ref1.call(_this, _this) : void 0;
+              var _ref;
+              return (_ref = options.success) != null ? _ref.call(_this, _this) : void 0;
             }
           });
         }
@@ -1993,6 +2015,55 @@ define('collections/gadget_projects',['require','exports','module','backbone','u
 
 });
 
+define('models/organization',['require','exports','module','backbone','underscore','../collections/user_roles'],function (require, exports, module) {(function() {
+  var Backbone, Organization, UserRoles, _,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Backbone = require('backbone');
+
+  _ = require('underscore');
+
+  UserRoles = require('../collections/user_roles');
+
+  Organization = (function(_super) {
+    __extends(Organization, _super);
+
+    Organization.prototype.urlRoot = '/orgs';
+
+    Organization.prototype.defaults = {
+      orgName: '',
+      website: '',
+      location: '',
+      shortDesc: ''
+    };
+
+    function Organization(attrs, options) {
+      var _this = this;
+      if (attrs == null) {
+        attrs = {};
+      }
+      if (options == null) {
+        options = {};
+      }
+      this.users = new UserRoles;
+      this.users.url = function() {
+        return _.result(_this, 'url') + '/users';
+      };
+      options.parse = true;
+      Backbone.Model.call(this, attrs, options);
+    }
+
+    return Organization;
+
+  })(Backbone.Model);
+
+  module.exports = Organization;
+
+}).call(this);
+
+});
+
 define('models/partnerkey',['require','exports','module','backbone'],function (require, exports, module) {(function() {
   var Backbone, PartnerKey, _ref,
     __hasProp = {}.hasOwnProperty,
@@ -2220,7 +2291,7 @@ define('adapters/browser',['require','exports','module','backbone','underscore']
 
 });
 
-define('api',['require','exports','module','backbone','jquery','underscore','./helpers/backbone_collection_move','./models/asset','./collections/assets','./models/asset_representation','./collections/asset_representations','./models/catalog','./collections/catalogs','./models/course','./collections/courses','./models/course_head','./models/course_progress','./models/course_revision','./collections/course_revisions','./models/gadget','./collections/gadgets','./models/gadget_project','./collections/gadget_projects','./collections/gadget_userstates','./models/lesson','./collections/lessons','./models/partnerkey','./models/tag','./collections/tags','./models/user','./collections/users','./models/gadget','./api_errors','./adapters/node','./adapters/browser'],function (require, exports, module) {(function() {
+define('api',['require','exports','module','backbone','jquery','underscore','./helpers/backbone_collection_move','./models/asset','./collections/assets','./models/asset_representation','./collections/asset_representations','./models/catalog','./collections/catalogs','./models/course','./collections/courses','./models/course_head','./models/course_progress','./models/course_revision','./collections/course_revisions','./models/gadget','./collections/gadgets','./models/gadget_project','./collections/gadget_projects','./collections/gadget_userstates','./models/lesson','./collections/lessons','./models/organization','./models/partnerkey','./models/tag','./collections/tags','./models/user','./collections/users','./collections/user_roles','./models/gadget','./api_errors','./adapters/node','./adapters/browser'],function (require, exports, module) {(function() {
   var Backbone, api, _;
 
   Backbone = require('backbone');
@@ -2232,6 +2303,7 @@ define('api',['require','exports','module','backbone','jquery','underscore','./h
   require('./helpers/backbone_collection_move');
 
   module.exports = api = {
+    Backbone: Backbone,
     Asset: require('./models/asset'),
     Assets: require('./collections/assets'),
     AssetRepresentation: require('./models/asset_representation'),
@@ -2251,11 +2323,13 @@ define('api',['require','exports','module','backbone','jquery','underscore','./h
     GadgetUserStates: require('./collections/gadget_userstates'),
     Lesson: require('./models/lesson'),
     Lessons: require('./collections/lessons'),
+    Organization: require('./models/organization'),
     PartnerKey: require('./models/partnerkey'),
     Tag: require('./models/tag'),
     Tags: require('./collections/tags'),
     User: require('./models/user'),
     Users: require('./collections/users'),
+    UserRoles: require('./collections/user_roles'),
     GadgetInstance: require('./models/gadget'),
     errors: require('./api_errors'),
     errorHandler: function(model, resp, options) {

@@ -33,9 +33,9 @@
             videos: videos
           });
         } else if (this.get("type") === 'youtube') {
-          return '<iframe id="ytplayer" type="text/html" width="100%" height="100%" src="http://www.youtube.com/embed/' + this.get("youtube_id") + '" frameborder="0"/>';
+          return '<iframe id="ytplayer" type="text/html" width="100%" height="100%" src="//www.youtube.com/embed/' + this.get("youtube_id") + '" frameborder="0"/>';
         } else if (this.get("type") === 'vimeo') {
-          return '<iframe src="http://player.vimeo.com/video/' + this.get("vimeo_id") + '" width="100%" height="100%" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+          return '<iframe src="//player.vimeo.com/video/' + this.get("vimeo_id") + '" width="100%" height="100%" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
         }
       };
 

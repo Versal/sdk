@@ -1,13 +1,14 @@
 (function() {
 
-  define(['helpers/helpers', 'helpers/fixtures', 'views/gadget_instance'], function(Helpers, Fixtures, GadgetInstanceView) {
+  define(['helpers/helpers', 'helpers/fixtures', 'views/gadget_instance', 'app/mediator'], function(Helpers, Fixtures, GadgetInstanceView, mediator) {
     var BundledGadgetStub;
     BundledGadgetStub = (function() {
 
       _.extend(BundledGadgetStub.prototype, Backbone.Events);
 
-      function BundledGadgetStub(facade) {
-        facade.on('render', this.onRender, this);
+      function BundledGadgetStub(_arg) {
+        this.el = _arg.el, this.player = _arg.player, this.config = _arg.config;
+        this.player.on('render', this.onRender, this);
       }
 
       BundledGadgetStub.prototype.start = function() {};
@@ -99,7 +100,7 @@
           });
           return this.options.userState.get('ding').should.eq('dong');
         });
-        return it('should start the gadget', function() {
+        it('should start the gadget', function() {
           var bundle, stub;
           bundle = BundledGadgetStub;
           stub = sinon.stub(bundle.prototype, 'onRender');
@@ -107,18 +108,37 @@
           stub.called.should.be["true"];
           return stub.restore();
         });
+        return describe('when a gadget is dropped', function() {
+          return describe('and gadget is in an editing state', function() {
+            it('should notify other views', function() {
+              var bundle, dropSpy;
+              dropSpy = sinon.spy();
+              mediator.on('gadget:drop', dropSpy);
+              this.view.isEditable = true;
+              this.model.dropped = true;
+              bundle = BundledGadgetStub;
+              this.view.onFetchSuccess(bundle);
+              return dropSpy.called.should.be["true"];
+            });
+            return it('should move to a non-editing state', function() {
+              this.otherView = new GadgetInstanceView({
+                model: new vs.api.Gadget
+              });
+              this.view.toggleEdit(true);
+              this.view.$el.hasClass('editing').should.be["true"];
+              this.view.onGadgetDrop(this.otherView);
+              return this.view.$el.hasClass('editing').should.be["false"];
+            });
+          });
+        });
       });
       describe('After rendering', function() {
         return it('should have class', function() {
-          this.view.render();
           this.view.onFetchSuccess(BundledGadgetStub);
           return this.view.$el.hasClass('gadget').should.be["true"];
         });
       });
       describe('When bundle fails to load', function() {
-        beforeEach(function() {
-          return this.view.render();
-        });
         return it('stops loading', function() {
           var spy;
           spy = sinon.spy(this.view, 'showCouldNotLoad');
@@ -126,12 +146,11 @@
           return spy.called.should.be["true"];
         });
       });
-      return describe('After bundle is ready', function() {
+      describe('After bundle is ready', function() {
         beforeEach(function() {
-          this.view.render();
           return this.view.onFetchSuccess(BundledGadgetStub);
         });
-        describe('Clicking .js-delete', function() {
+        describe('Clicking delete', function() {
           var clickDelete;
           clickDelete = function(view) {
             view.$('.js-trash').click();
@@ -159,7 +178,7 @@
             return spy.called.should.be["true"];
           });
         });
-        return describe('Clicking .js-edit', function() {
+        describe('Clicking edit', function() {
           it('should toggle the .editing class', function() {
             this.view.toggleEdit(false);
             this.view.$('.js-edit').click();
@@ -175,6 +194,45 @@
             this.view.toggleEdit(false);
             this.view.$('.js-edit').click();
             return this.view._configVisible.should.be["true"];
+          });
+        });
+        describe('Clicking outside gadget', function() {
+          return describe('when the gadget is in an editing state', function() {
+            return it('should move gadget to a non-editing state', function() {
+              this.view.toggleEdit(true);
+              this.view.$el.hasClass('editing').should.be["true"];
+              this.view.onCourseClick({
+                target: $(document).get(0)
+              });
+              return this.view.$el.hasClass('editing').should.be["false"];
+            });
+          });
+        });
+        return describe('Clicking inside gadget', function() {
+          return describe('when the gadget is in an editing state', function() {
+            return it('should stay in an editing state', function() {
+              this.view.toggleEdit(true);
+              this.view.$el.hasClass('editing').should.be["true"];
+              this.view.onCourseClick({
+                target: this.view.$el.find(':last').get(0)
+              });
+              return this.view.$el.hasClass('editing').should.be["true"];
+            });
+          });
+        });
+      });
+      return describe('Dropping', function() {
+        return describe('when another gadget is dropped', function() {
+          return describe('and the current gadget is in an editing state', function() {
+            return it('should move current gadget to a non-editing state', function() {
+              this.otherView = new GadgetInstanceView({
+                model: new vs.api.Gadget
+              });
+              this.view.toggleEdit(true);
+              this.view.$el.hasClass('editing').should.be["true"];
+              this.view.onGadgetDrop(this.otherView);
+              return this.view.$el.hasClass('editing').should.be["false"];
+            });
           });
         });
       });
