@@ -15,6 +15,8 @@ module.exports = sdk =
   preview: -> sdk.execCommand('preview', passThrough: true).apply null, arguments
   validate: -> sdk.execCommand('validate').apply null, arguments
   publish: -> sdk.execCommand('publish').apply null, arguments
+  gadgetsApprove: -> sdk.execCommand(['gadgets','approve']).apply null, arguments
+  gadgetsReject: -> sdk.execCommand(['gadgets','reject']).apply null, arguments
 
   config: require('./config')()
 
