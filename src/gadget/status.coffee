@@ -32,6 +32,6 @@ module.exports = (id, options = {}, callback = ->) ->
 
     # OK code
     if res.statusCode == 200
-      if options.verbose then console.log body
+      if options.verbose then console.log "gadget #{id} successfully #{options.catalog}"
       if _.isFunction options.success then options.success body
       return callback null, body

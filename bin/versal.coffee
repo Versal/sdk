@@ -17,7 +17,7 @@ debugCommands = [
   'upload'
   'validate'
   'docs'
-  'gadgets'
+  'gadget'
 ]
 
 commandsString = commands.join ' | '
@@ -62,12 +62,12 @@ argv = require('optimist')
 
     # another special case for "gadgets" command
     # second argument must be "approve" or "reject"
-    if command == 'gadgets'
+    if command == 'gadget'
       if argv._.length == 1 || not(_.contains(['approve','reject'], argv._[1]))
         # show usage information
-        throw new Error '"gagdets" command requires second argument: "versal gadgets (approve|reject) <id|type>"'
+        throw new Error '"gagdet" command requires second argument: "versal gadget (approve|reject) <id|type>"'
       if argv._.length == 2
-        throw new Error "\"gadgets #{argv._[1]}\" requires id or type of the gadget to #{argv._[1]}"
+        throw new Error "\"gadget #{argv._[1]}\" requires id or type of the gadget to #{argv._[1]}"
 
     return true
   ).argv
@@ -78,7 +78,7 @@ sdk = require '../src/sdk'
 command = argv._.shift()
 
 # special case for "create" command
-if command == 'create' || command == 'gadgets'
+if command == 'create' || command == 'gadget'
   p = argv._.shift()
   # set command to "createGadget" or "createCourse"
   command += p[0].toUpperCase() + p.slice(1)

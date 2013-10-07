@@ -2,9 +2,9 @@ require('chai').should()
 _ = require 'underscore'
 needle = require 'needle'
 sinon = require 'sinon'
-status = require '../src/gadgets/status'
-approve = require '../src/gadgets/approve'
-reject = require '../src/gadgets/reject'
+status = require '../src/gadget/status'
+approve = require '../src/gadget/approve'
+reject = require '../src/gadget/reject'
 
 describe 'Status', ->
   options =
