@@ -4,7 +4,7 @@ sinon = require 'sinon'
 install = require '../src/install/install'
 needle = require 'needle'
 
-describe.only 'Install', ->
+describe 'Install', ->
   paths = ['versal/text@0.1.0', 'versal/image@0.7.3']
 
   describe 'invalid arguments', ->
