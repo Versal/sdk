@@ -50,7 +50,11 @@ module.exports = install =
     manifestUrl = "#{url}/gadgets/#{type.username}/#{type.name}/#{type.version}/manifest"
     compiledUrl = "#{url}/gadgets/#{type.username}/#{type.name}/#{type.version}/compiled.zip"
 
-    needle.get manifestUrl, (err, res, body) ->
+    requestOptions =
+      headers:
+        SESSION_ID: sessionId
+
+    needle.get manifestUrl, requestOptions, (err, res, body) ->
       if err then return callback err
 
       unless res.statusCode == 200
@@ -63,7 +67,7 @@ module.exports = install =
       unless manifest.username && manifest.name && manifest.version
         return callback new Error 'Gadget manifest is missing one of the required fields: username, name or version.'
 
-      needle.get compiledUrl, (err, res, body) ->
+      needle.get compiledUrl, requestOptions, (err, res, body) ->
         if err then return callback err
         target = install.getInstallPath target, manifest
         if fs.existsSync target then fs.removeSync target
