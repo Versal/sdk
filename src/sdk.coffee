@@ -49,12 +49,10 @@ module.exports = sdk =
         # simply pass arguments to command
         cmd.command dirs, options, callback
       else
-        # otherwise call command async for each dir
-        funcs = _.map dirs, (dir) -> (cb) ->
-          cmd.command dir, options, cb
-        # run all tasks sequentially
-        async.series funcs, (err) ->
-          callback err
+        async.map dirs,
+          (dir, cb) ->
+            cmd.command dir, options, cb
+          callback
 
   # Detect type of the folder by its content
   # /manifest.json - it is a gadget
