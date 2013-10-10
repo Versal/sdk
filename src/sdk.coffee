@@ -15,6 +15,8 @@ module.exports = sdk =
   preview: -> sdk.execCommand('preview', passThrough: true).apply null, arguments
   validate: -> sdk.execCommand('validate').apply null, arguments
   publish: -> sdk.execCommand('publish').apply null, arguments
+  gadgetApprove: -> sdk.execCommand(['gadget','approve']).apply null, arguments
+  gadgetReject: -> sdk.execCommand(['gadget','reject']).apply null, arguments
 
   config: require('./config')()
 
@@ -34,7 +36,6 @@ module.exports = sdk =
       # init config for the specified environment
       config.env options.env
 
-      # TODO: add -r flag, that expands directories recursively
       dirs = [dirs] unless _.isArray dirs
 
       # in case options hash is omitted

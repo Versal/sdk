@@ -17,6 +17,7 @@ debugCommands = [
   'upload'
   'validate'
   'docs'
+  'gadget'
 ]
 
 commandsString = commands.join ' | '
@@ -47,12 +48,26 @@ argv = require('optimist')
     if !_.contains(commands.concat(debugCommands), command)
       throw new Error "invalid command: #{command}"
 
+    # FIXME: It's time to generalize this
     # special case for "create" command - it requires second argument
     # Second argument must be either "gadget" or "course"
     if command == 'create'
-      if not (argv._.length > 1 && _.contains(['gadget','course'], argv._[1]))
+      if argv._.length == 1 || not(_.contains(['gadget','course'], argv._[1]))
         # show usage information
-        throw new Error '"create" command requires second argument: "versal create (gadget|course) <dir> [--options]\nExamples:\n\tversal create gadget chemistry-gadget\n\tversal create course chemistry-course\n'
+        throw new Error [
+          '"create" command requires second argument: "versal create (gadget|course) <dir> [--options]'
+          'Examples:\n\tversal create gadget chemistry-gadget'
+          '\tversal create course chemistry-course'
+        ].join '\n'
+
+    # another special case for "gadgets" command
+    # second argument must be "approve" or "reject"
+    if command == 'gadget'
+      if argv._.length == 1 || not(_.contains(['approve','reject'], argv._[1]))
+        # show usage information
+        throw new Error '"gagdet" command requires second argument: "versal gadget (approve|reject) <id|type>"'
+      if argv._.length == 2
+        throw new Error "\"gadget #{argv._[1]}\" requires id or type of the gadget to #{argv._[1]}"
 
     return true
   ).argv
@@ -63,7 +78,7 @@ sdk = require '../src/sdk'
 command = argv._.shift()
 
 # special case for "create" command
-if command == 'create'
+if command == 'create' || command == 'gadget'
   p = argv._.shift()
   # set command to "createGadget" or "createCourse"
   command += p[0].toUpperCase() + p.slice(1)
