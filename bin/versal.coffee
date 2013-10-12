@@ -92,9 +92,6 @@ if !argv._.length
 options = _.omit(_.clone(argv), '_', '$0')
 
 try
-  sdk[command].apply(null, [argv._, options, (err) ->
-    if err
-      console.log err
-  ])
+  sdk[command].apply null, [argv._, options, (err) -> if err then console.log err ]
 catch err
   console.log err
