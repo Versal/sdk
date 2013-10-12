@@ -73,7 +73,7 @@ describe 'Upload', ->
 
     it 'should store result in outputJson', (done) ->
       upload.command filepath, { output: assetsPath }, (err, body) ->
-        upload.outputJson.firstCall.args[1].should.eq body
+        upload.outputJson.firstCall.args[1].should.eql { "./test/fixtures/bridge/education.jpg": body[0] }
         done()
 
     it 'should not call post, if asset already exists in output', (done) ->

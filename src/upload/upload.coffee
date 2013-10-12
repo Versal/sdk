@@ -45,7 +45,7 @@ module.exports =
       (err, results) =>
         if err then return callback err
         if options.output then @outputJson options.output, assets
-        return callback null, assets
+        return callback null, results
 
   # The only reason it exists as a stand-alone method is tests
   outputJson: (outputPath, assets) ->
