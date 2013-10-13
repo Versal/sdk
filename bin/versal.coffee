@@ -61,6 +61,7 @@ argv = require('optimist')
           '\tversal create course chemistry-course'
         ].join '\n'
 
+    # FIXME: It's time to generalize this!!!!
     # another special case for "gadgets" command
     # second argument must be "approve" or "reject"
     if command == 'gadget'
@@ -70,6 +71,7 @@ argv = require('optimist')
       if argv._.length == 2
         throw new Error "\"gadget #{argv._[1]}\" requires id or type of the gadget to #{argv._[1]}"
 
+    # FIXME: It's time to generalize this!!!!
     # another special case for "course" command
     # second argument must be "parse"
     if command == 'course'
