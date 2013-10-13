@@ -52,7 +52,6 @@ module.exports =
       headers:
         SESSION_ID: options.sessionId
 
-    console.log options
     needle.request options.method, options.url, course, requestOptions, (err, res, body) ->
       # Error code
       if !err && res.statusCode >= 300 then err = new Error body.message
@@ -68,6 +67,12 @@ module.exports =
         if _.isFunction options.success then options.success body
         return callback null, body
 
+  # Replace assets is a temporary hack for SAT courses
+  # It should give place to something more generic, once
+  # assets are revised.
+  # Ideally,
+  # 1. Platform should allow to upload assets with client-generated Ids
+  # 2. Asset json should be no more than "ID"
   replaceAssets: (course, remoteAssets) ->
     for lesson in course.lessons
       for gadget in lesson.gadgets
