@@ -7,6 +7,7 @@ commands = [
   'publish'
   'help'
   'install'
+  'course'
 ]
 
 # Debug commands are not displayed in cli help, but still runnable
@@ -69,6 +70,13 @@ argv = require('optimist')
       if argv._.length == 2
         throw new Error "\"gadget #{argv._[1]}\" requires id or type of the gadget to #{argv._[1]}"
 
+    # another special case for "course" command
+    # second argument must be "parse"
+    if command == 'course'
+      if argv._.length == 1 || not(_.contains(['parse'], argv._[1]))
+        # show usage information
+        throw new Error '"course" command requires second argument: "versal course (parse) <dir>"'
+
     return true
   ).argv
 
@@ -77,8 +85,9 @@ sdk = require '../src/sdk'
 # command itself is first argument
 command = argv._.shift()
 
-# special case for "create" command
-if command == 'create' || command == 'gadget'
+# special case for "create", "gadget" and "course" commands
+# TODO: Refactor this
+if command == 'create' || command == 'gadget' || command == 'course'
   p = argv._.shift()
   # set command to "createGadget" or "createCourse"
   command += p[0].toUpperCase() + p.slice(1)

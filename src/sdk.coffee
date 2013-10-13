@@ -17,6 +17,7 @@ module.exports = sdk =
   publish: -> sdk.execCommand('publish').apply null, arguments
   gadgetApprove: -> sdk.execCommand(['gadget','approve']).apply null, arguments
   gadgetReject: -> sdk.execCommand(['gadget','reject']).apply null, arguments
+  courseParse: -> sdk.execCommand(['course', 'parse']).apply null, arguments
 
   config: require('./config')()
 
