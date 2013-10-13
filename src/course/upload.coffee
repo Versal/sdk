@@ -13,13 +13,12 @@ module.exports =
       return callback new Error 'Valid sessionId is required to upload course.\n Please, run "versal signin".'
 
     dir = path.resolve dir
-    coursePath = path.join dir, 'versal_data', 'course.json'
-    courseMetadataPath = path.join dir, 'course.json'
 
+    coursePath = path.join dir, 'versal_data', 'course.json'
     course = require coursePath
-    courseMetadata = {}
-    if fs.existsSync courseMetadataPath
-      courseMetadata = require courseMetadataPath
+
+    courseMetadataPath = path.join(dir, 'course.json')
+    courseMetadata = @tryRequire(courseMetadataPath) || {}
 
     options.url = "#{options.apiUrl}/courses/"
     options.method = "post"
@@ -28,10 +27,8 @@ module.exports =
       options.url += courseMetadata.id
       options.method = "put"
 
-    remoteAssetsPath = path.join dir, 'versal_data', 'remote_assets.json'
-    if fs.existsSync remoteAssetsPath
-      remoteAssets = require remoteAssetsPath
-      course = @replaceAssets course, remoteAssets
+    remoteAssets = @tryRequire path.join dir, 'versal_data', 'remote_assets.json'
+    if remoteAssets then course = @replaceAssets course, remoteAssets
 
     @uploadCourse course, options, (err, body) =>
       if err then return callback err
@@ -61,6 +58,12 @@ module.exports =
         if options.verbose then console.log "course #{id} successfully uploaded"
         if _.isFunction options.success then options.success body
         return callback null, body
+
+  tryRequire: (file) ->
+    if fs.existsSync file
+      return require file
+    else
+      return null
 
   # Replace assets is a temporary hack for SAT courses
   # It should give place to something more generic, once
