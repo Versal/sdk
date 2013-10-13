@@ -42,7 +42,7 @@ module.exports = install =
     options.apiUrl = sdk.config.get 'apiUrl' unless options.apiUrl
     options.sessionId = sdk.config.get 'sessionId' unless options.sessionId
 
-    # TODO: Verify sessionId
+    # TODO: Verify sessionId as per https://github.com/Versal/sdk/issues/239
     if options.sessionId
       @downloadFromApi type, options, callback
     else

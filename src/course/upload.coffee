@@ -6,23 +6,18 @@ sdk = require '../sdk'
 
 module.exports =
   command: (dir, options = {}, callback = ->) ->
-    dir = path.resolve dir
-
-    unless options.sessionId
-      options.sessionId = sdk.config.get 'sessionId', options
-
-    unless options.apiUrl
-      options.apiUrl = sdk.config.get 'apiUrl', options
+    options.sessionId ?= sdk.config.get 'sessionId', options
+    options.apiUrl ?= sdk.config.get 'apiUrl', options
 
     unless options.sessionId
       return callback new Error 'Valid sessionId is required to upload course.\n Please, run "versal signin".'
 
+    dir = path.resolve dir
     coursePath = path.join dir, 'versal_data', 'course.json'
     courseMetadataPath = path.join dir, 'course.json'
 
     course = require coursePath
     courseMetadata = {}
-
     if fs.existsSync courseMetadataPath
       courseMetadata = require courseMetadataPath
 

@@ -6,7 +6,7 @@ path = require 'path'
 dir = path.resolve './test/fixtures/cml'
 dest = path.resolve './temp/cml'
 
-describe.only 'CML parse', ->
+describe 'CML parse', ->
   before (done) ->
     parse.command dir, dest: dest, done
 

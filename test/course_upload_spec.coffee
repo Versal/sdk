@@ -8,7 +8,7 @@ fs = require 'fs-extra'
 newCoursePath = path.resolve './test/fixtures/cml/upload/new_course'
 existingCoursePath = path.resolve './test/fixtures/cml/upload/existing_course'
 
-describe.only 'Course upload', ->
+describe 'Course upload', ->
   describe 'post', ->
     options = { apiUrl: 'http://api', sessionId: 'X123' }
 
