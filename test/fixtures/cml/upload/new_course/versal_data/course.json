@@ -1,5 +1,5 @@
 {
-  "id": "000",
-  "title": "XXX",
+  "id": "local",
+  "title": "Should be overwritten",
   "shortDesc": "Short description"
 }

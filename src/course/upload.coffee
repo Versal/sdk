@@ -14,11 +14,23 @@ module.exports =
 
     dir = path.resolve dir
 
-    coursePath = path.join dir, 'versal_data', 'course.json'
-    course = require coursePath
+    if options.meta
+      courseMetadata = options.meta
+    else
+      courseMetadataPath = path.join(dir, 'course.json')
+      courseMetadata = @tryRequire(courseMetadataPath) || {}
 
-    courseMetadataPath = path.join(dir, 'course.json')
-    courseMetadata = @tryRequire(courseMetadataPath) || {}
+    unless courseMetadata.title
+      return callback new Error 'Title of the course is not specified. Please, check your course.json'
+
+    coursePath = path.join dir, 'versal_data', 'course.json'
+    unless fs.existsSync coursePath
+      return callback new Error "versal_data/course.json not found in #{coursePath}"
+
+    # Don't use id from versal_data/course.json - that's a local id
+    course = _.omit fs.readJsonSync(coursePath), 'id'
+    # Use id and title from course.json
+    course = _.extend course, courseMetadata
 
     options.url = "#{options.apiUrl}/courses/"
     options.method = "post"
@@ -27,11 +39,13 @@ module.exports =
       options.url += courseMetadata.id
       options.method = "put"
 
-    remoteAssets = @tryRequire path.join dir, 'versal_data', 'remote_assets.json'
+    remoteAssets = @tryRequire path.join(dir, 'versal_data', 'remote_assets.json')
     if remoteAssets then course = @replaceAssets course, remoteAssets
 
     @uploadCourse course, options, (err, body) =>
       if err then return callback err
+      if options.verbose then console.log "course #{body.id} successfully uploaded"
+
       unless courseMetadata.id
         courseMetadata.id = body.id
         fs.outputJsonSync courseMetadataPath, courseMetadata
@@ -55,13 +69,12 @@ module.exports =
 
       # OK code
       if res.statusCode == 200 || res.statusCode == 201
-        if options.verbose then console.log "course #{id} successfully uploaded"
         if _.isFunction options.success then options.success body
         return callback null, body
 
   tryRequire: (file) ->
     if fs.existsSync file
-      return require file
+      return fs.readJsonSync file
     else
       return null
 
