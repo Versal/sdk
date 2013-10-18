@@ -17,6 +17,7 @@ module.exports =
 
     assets = {}
     if options.output
+      options.output = path.resolve options.output
       # Read assets to avoid duplicate uploads
       if fs.existsSync options.output
         assets = fs.readJsonSync options.output
@@ -38,18 +39,16 @@ module.exports =
 
     async.map paths,
       (filepath, cb) =>
-        @uploadFile filepath, options, (err, body) ->
+        @uploadFile filepath, options, (err, body) =>
           if err then return cb err
           assets[filepath] = body
+          if options.output then @outputJson options.output, assets
           cb null, body
-      (err, results) =>
-        if err then return callback err
-        if options.output then @outputJson options.output, assets
-        return callback null, results
+      callback
 
   # The only reason it exists as a stand-alone method is tests
   outputJson: (outputPath, assets) ->
-    fs.outputJsonSync outputPath, assets
+    fs.outputJson outputPath, assets
 
   uploadFile: (filepath, options = {}, callback = ->) ->
     unless fs.existsSync filepath
