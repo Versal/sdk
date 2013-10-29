@@ -30,7 +30,7 @@
     "lodash": "~1.0.1",
     "underscore": "~1.5.1",
     "async": "~0.2.6",
-    "ncp": "mereskin/ncp",
+    "ncp": "git+ssh://git@github.com:mereskin/ncp",
     "express": "~3.2.6",
     "shortid": "~1.0.9",
     "stylus": "~0.37.0",
