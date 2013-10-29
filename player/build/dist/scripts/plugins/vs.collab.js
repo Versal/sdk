@@ -1,6 +1,6 @@
 /*!
- * js-collab v0.0.2
- * lovingly baked from 212bdb1 on 02. October 2013
+ * js-collab v0.0.5
+ * lovingly baked from 492a252 on 09. October 2013
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -583,8 +583,9 @@ define('handlers/locks',['require','exports','module','underscore','../handler',
     };
 
     LocksHandler.prototype.onLocksList = function(locks) {
+      var _this = this;
       return locks.each(function(lock) {
-        return this.mediator.trigger('lock:lock', lock);
+        return _this.mediator.trigger('lock:lock', lock);
       });
     };
 
@@ -694,8 +695,43 @@ define('handlers/comments',['require','exports','module','underscore','../handle
 
 });
 
-define('connection',['require','exports','module','underscore','backbone','./handlers/users','./handlers/locks','./handlers/comments'],function (require, exports, module) {(function() {
-  var Backbone, CommentsHandler, Connection, LocksHandler, UsersHandler, _,
+define('handlers/updates',['require','exports','module','../handler'],function (require, exports, module) {(function() {
+  var Handler, UpdatesHandler, updateEvents, _ref,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Handler = require('../handler');
+
+  updateEvents = ['course:changed', 'lesson:changed', 'lesson:gadget:added', 'lesson:gadget:deleted', 'lesson:gadget:moved', 'gadget:changed'];
+
+  UpdatesHandler = (function(_super) {
+    __extends(UpdatesHandler, _super);
+
+    function UpdatesHandler() {
+      _ref = UpdatesHandler.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    UpdatesHandler.prototype.events = _.object(_.map(updateEvents, function(k) {
+      return [k, 'onCourseUpdated'];
+    }));
+
+    UpdatesHandler.prototype.onCourseUpdated = function() {
+      return this.conn.triggerEvent('course:update');
+    };
+
+    return UpdatesHandler;
+
+  })(Handler);
+
+  module.exports = UpdatesHandler;
+
+}).call(this);
+
+});
+
+define('connection',['require','exports','module','underscore','backbone','./handlers/users','./handlers/locks','./handlers/comments','./handlers/updates'],function (require, exports, module) {(function() {
+  var Backbone, CommentsHandler, Connection, LocksHandler, UpdatesHandler, UsersHandler, _,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   _ = require('underscore');
@@ -707,6 +743,8 @@ define('connection',['require','exports','module','underscore','backbone','./han
   LocksHandler = require('./handlers/locks');
 
   CommentsHandler = require('./handlers/comments');
+
+  UpdatesHandler = require('./handlers/updates');
 
   Connection = (function() {
     _.extend(Connection.prototype, Backbone.Events);
@@ -734,6 +772,7 @@ define('connection',['require','exports','module','underscore','backbone','./han
       new UsersHandler(this);
       new LocksHandler(this);
       new CommentsHandler(this);
+      new UpdatesHandler(this);
     }
 
     Connection.prototype.connect = function() {
@@ -967,6 +1006,7 @@ define('collab',['require','exports','module','backbone','underscore','./connect
     GadgetLock: require('./models/gadget_lock'),
     GadgetLocks: require('./collections/gadget_locks'),
     init: function(options, mediator) {
+      this.enabled = true;
       _.extend(this, Backbone.Events);
       return new Connection(this, mediator, options);
     }

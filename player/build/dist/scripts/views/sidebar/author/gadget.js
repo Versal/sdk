@@ -42,12 +42,18 @@
         title: '.title'
       };
 
+      SidebarGadget.prototype.iconPath = function() {
+        var checksum, originalUrl, serverIndex;
+        originalUrl = this.model.path('assets/icon.png');
+        checksum = _.reduce(originalUrl.split(''), function(memo, val) {
+          return memo + val.charCodeAt(0);
+        }, 0);
+        serverIndex = checksum % 10;
+        return originalUrl.replace(/^(https?:\/\/)((staging)?stack)/, "$1$2-" + serverIndex);
+      };
+
       SidebarGadget.prototype.onRender = function() {
-        if (this.model.type() === 'versal/header@0.2.9' && this.model.has('icon')) {
-          return this.ui.icon.css("background-image", "url(" + (this.model.get('icon')) + ")");
-        } else {
-          return this.ui.icon.css("background-image", "url(" + (this.model.icon()) + ")");
-        }
+        return this.ui.icon.css("background-image", "url(" + (this.iconPath()) + ")");
       };
 
       SidebarGadget.prototype.onClick = function(e) {

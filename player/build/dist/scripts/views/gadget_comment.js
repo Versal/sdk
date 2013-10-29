@@ -59,7 +59,11 @@
       };
 
       GadgetCommentView.prototype.keepTimeSinceUpdated = function() {
-        return setInterval(this.updateTimeSince, this.updateTimeSinceEveryMs);
+        return this.timeSinceUpdater = setInterval(this.updateTimeSince, this.updateTimeSinceEveryMs);
+      };
+
+      GadgetCommentView.prototype.onClose = function() {
+        return clearInterval(this.timeSinceUpdater);
       };
 
       GadgetCommentView.prototype.deleteComment = function() {

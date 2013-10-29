@@ -32,9 +32,7 @@
       };
 
       LearnerLesson.prototype.onRender = function() {
-        if (!this.model.get('isAccessible')) {
-          return this.$el.addClass('disabled-lesson');
-        }
+        return this.$el.toggleClass('disabled-lesson', !this.model.get('isAccessible'));
       };
 
       return LearnerLesson;
@@ -112,10 +110,15 @@
       };
 
       LearnerSidebar.prototype.onRender = function() {
+        var scrollbar;
         if (this.activeView) {
           this.updateActiveLesson(this.activeView);
         }
-        return this.scroll = new vs.ui.Scroll(this.ui.lessonList);
+        this.scroll = new vs.ui.Scroll(this.ui.lessonList);
+        scrollbar = this.ui.lessonList.getNiceScroll();
+        if (scrollbar.length > 0) {
+          return scrollbar[0].rail.addClass('learnerScrollbar');
+        }
       };
 
       return LearnerSidebar;

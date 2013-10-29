@@ -68,7 +68,7 @@
           return this.view.$el.find('.finish-button').length.should.eq(1);
         });
         return it('should have text on finish button', function() {
-          return this.view.$el.find('.finish-button').text().should.eq('finish course');
+          return this.view.$el.find('.finish-button').text().should.include('finish course');
         });
       });
       describe('embedded lessons', function() {
@@ -79,7 +79,7 @@
           });
           fakeLessonView.embed = true;
           mediator.trigger('lesson:rendered', fakeLessonView);
-          return this.view.$el.find('.next-button').text().should.eq('next lesson');
+          return this.view.$el.find('.next-button').text().should.include('next lesson');
         });
         return it('should have text on previous button when embedded', function() {
           var fakeLessonView;
@@ -88,7 +88,7 @@
           });
           fakeLessonView.embed = true;
           mediator.trigger('lesson:rendered', fakeLessonView);
-          return this.view.$el.find('.previous-button').text().should.eq('previous lesson');
+          return this.view.$el.find('.previous-button').text().should.include('previous lesson');
         });
       });
       it('should take you to the next lesson when next is clicked', function() {

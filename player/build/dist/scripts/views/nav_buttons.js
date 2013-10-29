@@ -105,9 +105,9 @@
         return ((_ref = this.lessonView) != null ? _ref.isComplete() : void 0) && !this.next;
       };
 
-      NavButtonsView.prototype.buttonIf = function(criterion, classname, content) {
+      NavButtonsView.prototype.buttonIf = function(criterion, classname, content, position) {
         if (criterion) {
-          return "<a class='" + classname + "'><span class='nav-button-text'>" + content + "</span><i></i></a>";
+          return "<a class='nav-button " + classname + " pull-" + position + "'>\n  <i class='icon-caret-" + position + " pull-" + position + "'></i>\n  <span class='nav-button-text'>" + content + "</span>\n</a>";
         }
       };
 

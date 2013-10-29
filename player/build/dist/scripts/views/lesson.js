@@ -8,8 +8,8 @@
     cacheStamp = (new Date).getTime();
     _.extend(vs.api.Gadget.prototype, {
       onResolveError: function(error) {
-        console.error(error);
-        return this.trigger('resolve:error', error);
+        this.trigger('resolve:error', error);
+        throw error;
       },
       onResolveSuccess: function(klass) {
         return this.trigger('resolve:success', klass, {
@@ -90,6 +90,7 @@
           return _this.trigger('userStateSync');
         });
         this.listenTo(this.catalogue, 'ready', this.onCatalogueReady, this);
+        this.listenTo(this.model.gadgets, 'remove', this.onGadgetDeleted);
         return $(window).on('resize', function() {
           return _this.fixSizing();
         });
@@ -126,6 +127,7 @@
             type: type,
             lesson: this.model.id
           });
+          mediator.trigger('lesson:gadget:added', this);
           return instance;
         } else {
           return console.error('Failed grabbing gadget ' + type);
@@ -184,6 +186,10 @@
         });
       };
 
+      Lesson.prototype.onGadgetDeleted = function() {
+        return mediator.trigger('lesson:gadget:deleted', this);
+      };
+
       Lesson.prototype.onSortOver = function(e, ui) {
         return ui.placeholder.animate({
           height: ui.helper.height()
@@ -207,6 +213,9 @@
           var newIndex, oldIndex, popped;
           oldIndex = ui.item.data('originalPosition');
           newIndex = ui.item.index();
+          if (oldIndex !== newIndex) {
+            mediator.trigger('lesson:gadget:moved', _this);
+          }
           popped = _this.collection.at(oldIndex);
           _this.collection.move(popped, newIndex);
           ui.item.find('.toolbar').removeClass("dragging");

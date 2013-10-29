@@ -41,7 +41,11 @@
       SidebarCatalogueView.prototype.itemViewContainer = '.js-gadgets';
 
       SidebarCatalogueView.prototype.appendHtml = function(cv, iv) {
-        if (iv.model.get('hidden')) {
+        var usernames, _ref;
+        usernames = _.compact((_ref = this.course) != null ? _ref.authors.map(function(author) {
+          return author.get('username');
+        }) : void 0);
+        if (iv.model.get('hidden') && !_.contains(usernames, iv.model.get('username'))) {
           return;
         }
         if (iv.model.get('catalog') === 'approved') {
@@ -70,6 +74,7 @@
           opts = {};
         }
         this.catalogue = opts.catalogue || gadgetCatalogue;
+        this.course = opts.course;
         this.collection = new this.catalogue.constructor(this.catalogue.models);
         this.listenTo(this.catalogue, 'reset', function() {
           return _this.collection.reset(_this.catalogue.models);

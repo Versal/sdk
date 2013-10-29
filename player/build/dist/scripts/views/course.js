@@ -10,9 +10,13 @@
       __extends(Course, _super);
 
       function Course() {
-        this.onToggleTOC = __bind(this.onToggleTOC, this);
+        this.onCourseRefetchFail = __bind(this.onCourseRefetchFail, this);
 
-        this.customScroller = __bind(this.customScroller, this);
+        this.onCourseRefetchSuccess = __bind(this.onCourseRefetchSuccess, this);
+
+        this.showUpdateNotification = __bind(this.showUpdateNotification, this);
+
+        this.onToggleTOC = __bind(this.onToggleTOC, this);
 
         this.onClick = __bind(this.onClick, this);
         return Course.__super__.constructor.apply(this, arguments);
@@ -47,7 +51,10 @@
         title: '.title',
         tocIcon: '.toc-icon',
         saveErrorMsg: '.saveErrorMsg',
-        collabErrorMsg: '.collabErrorMsg'
+        collabErrorMsg: '.collabErrorMsg',
+        updateNotificationContainer: '.updateNotificationContainer',
+        updateNotificationMsg: '.updateNotificationMsg',
+        updateNotification: '.updateNotification'
       };
 
       Course.prototype.regions = {
@@ -59,7 +66,8 @@
       Course.prototype.events = {
         'click .js-toggle-toc': 'onToggleTOC',
         'click .lessonTitle': 'startEditingLessonTitle',
-        'click .courseTitle': 'startEditingCourseTitle'
+        'click .courseTitle': 'startEditingCourseTitle',
+        'click .updateNotificationContainer': 'onUpdateNotificationClick'
       };
 
       Course.prototype.template = _.template(template);
@@ -117,12 +125,20 @@
       };
 
       Course.prototype.displayLesson = function(lesson) {
-        var lastActiveLesson;
+        var lastActiveLesson, lessonIndex, _ref,
+          _this = this;
         lastActiveLesson = this._activeLesson;
         this._activeLesson = lesson;
-        this.model.progress.save({
-          lessonIndex: this.activeLessonIndex() + 1
-        });
+        lessonIndex = this.activeLessonIndex() + 1;
+        if (this.model.progress.get('lessonIndex') !== lessonIndex) {
+          if ((_ref = this.renderingLesson) != null) {
+            _ref.done(function() {
+              return _this.model.progress.save({
+                lessonIndex: lessonIndex
+              });
+            });
+          }
+        }
         if (this._lessonView) {
           this._lessonView.off('menuDeactivated');
           this._lessonView.off('itemview:dblclick');
@@ -176,12 +192,14 @@
 
       Course.prototype.startEditingCourseTitle = function() {
         this.startEditing(this._courseTitle);
-        return this._isEditingCourse = true;
+        this._isEditingCourse = true;
+        return this._initialTitle = this.model.get('title');
       };
 
       Course.prototype.startEditingLessonTitle = function() {
         this.startEditing(this._lessonTitle);
-        return this._isEditingLesson = true;
+        this._isEditingLesson = true;
+        return this._initialTitle = this._activeLesson.get('title');
       };
 
       Course.prototype.stopEditing = function(model, field) {
@@ -199,10 +217,13 @@
         }
         this.stopEditing(this.model, this._courseTitle);
         this._isEditingCourse = false;
-        return this.track('Change Title', {
+        this.track('Change Title', {
           course: this.model.id,
           title: this._courseTitle.getPretty()
         });
+        if (this.model.get('title') !== this._initialTitle) {
+          return mediator.trigger('course:changed', this);
+        }
       };
 
       Course.prototype.stopEditingLessonTitle = function() {
@@ -211,10 +232,13 @@
         }
         this.stopEditing(this._activeLesson, this._lessonTitle);
         this._isEditingLesson = false;
-        return this.track('Change Lesson Title', {
+        this.track('Change Lesson Title', {
           lesson: this._activeLesson.id,
           title: this._lessonTitle.getPretty()
         });
+        if (this.model.get('title') !== this._initialTitle) {
+          return mediator.trigger('lesson:changed', this._lessonView);
+        }
       };
 
       Course.prototype.onCourseChanged = function() {
@@ -249,6 +273,7 @@
       Course.prototype.onRender = function() {
         var _this = this;
         this._rendered = true;
+        this._currentUpdates = 0;
         this._lessonTitle = new vs.ui.EditableText({
           el: this.ui.lessonTitle,
           type: 'input',
@@ -278,6 +303,7 @@
         mediator.on('course:save:success', this.hideSaveErrorMsg, this);
         mediator.on('course:collab:ready', this.onEnableCollab, this);
         mediator.on('course:collab:close', this.onDisableCollab, this);
+        mediator.on('course:update', this.onCourseUpdate, this);
         return $(window).on('click', this.onClick);
       };
 
@@ -285,26 +311,6 @@
         if (!this.isModalOpen()) {
           return mediator.trigger('course:click', e);
         }
-      };
-
-      Course.prototype.scrollWidth = function() {
-        var windowWidth;
-        windowWidth = $(window).width();
-        if (windowWidth < 1024) {
-          return windowWidth;
-        } else {
-          return windowWidth - 263;
-        }
-      };
-
-      Course.prototype.customScroller = function() {
-        return this.scroller = new vs.ui.Scroll($('html'), {
-          horizontal: false
-        });
-      };
-
-      Course.prototype.onShow = function() {
-        return this.customScroller();
       };
 
       Course.prototype.onToggleTOC = function() {
@@ -364,6 +370,41 @@
           this.ui.collabErrorMsg.slideDown(50);
           return this.collabErrorShowing = true;
         }
+      };
+
+      Course.prototype.onCourseUpdate = function() {
+        this._currentUpdates++;
+        return this.showUpdateNotification();
+      };
+
+      Course.prototype.showUpdateNotification = function() {
+        var msg;
+        msg = this._currentUpdates === 1 ? "See new update" : "See " + this._currentUpdates + " new updates";
+        this.ui.updateNotificationMsg.text(msg);
+        this.ui.updateNotificationContainer.slideDown(50);
+        return this.ui.updateNotification.removeClass('invisible');
+      };
+
+      Course.prototype.onUpdateNotificationClick = function(e) {
+        this._currentUpdates = 0;
+        this.ui.updateNotificationMsg.text('Fetching updates...');
+        return this._activeLesson.fetch({
+          success: this.onCourseRefetchSuccess,
+          fail: this.onCourseRefetchFail
+        });
+      };
+
+      Course.prototype.onCourseRefetchSuccess = function() {
+        if (this._currentUpdates) {
+          return this.showUpdateNotification();
+        } else {
+          return this.ui.updateNotificationContainer.slideUp(50);
+        }
+      };
+
+      Course.prototype.onCourseRefetchFail = function() {
+        this.ui.updateNotification.removeClass('invisible');
+        return this.ui.updateNotificationMsg.text("Failed to update lesson, please try again!");
       };
 
       return Course;

@@ -2,7 +2,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['cdn.lodash', 'libs/backbone-forms', 'tags'], function(_, Form, tags) {
+  define(['cdn.underscore', 'libs/backbone-forms', 'tags'], function(_, Form, tags) {
     return Form.editors.Tags = (function(_super) {
 
       __extends(Tags, _super);

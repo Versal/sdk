@@ -10,6 +10,8 @@
       __extends(GadgetCommentsView, _super);
 
       function GadgetCommentsView() {
+        this.hideSubmitButtons = __bind(this.hideSubmitButtons, this);
+
         this.updateCount = __bind(this.updateCount, this);
         return GadgetCommentsView.__super__.constructor.apply(this, arguments);
       }
@@ -17,15 +19,18 @@
       _.extend(GadgetCommentsView.prototype, tracker('Comments'));
 
       GadgetCommentsView.prototype.ui = {
-        commentText: '.submit-comment-text',
-        commentsCount: '.comments-count',
-        commentsDisplay: '.comments-box'
+        commentText: '.js-submit-comment-text',
+        commentsCount: '.js-comments-count',
+        commentsDisplay: '.js-comments-box',
+        commentsSubmitButtons: '.js-submit-action-buttons',
+        commentsBox: '.js-comments'
       };
 
       GadgetCommentsView.prototype.events = {
         'click .js-submit-comment': 'onCommentSubmit',
         'click .js-cancel-comment': 'onCommentCancel',
         'click .js-comments-toggle': 'onToggleClick',
+        'focus .js-submit-comment-text': 'onTextAreaFocus',
         'click': 'onClick'
       };
 
@@ -44,7 +49,7 @@
       GadgetCommentsView.prototype.initialize = function(options) {
         this.gadget = this.model;
         this.comments = this.collection;
-        this.comments.on('add remove reset', this.updateCount);
+        this.listenTo(this.comments, 'add remove reset', this.updateCount);
         mediator.on('comment:add', this.addComment, this);
         mediator.on('comment:delete', this.deleteComment, this);
         return mediator.on('comments:click', this.onCommentsClick, this);
@@ -53,6 +58,18 @@
       GadgetCommentsView.prototype.onRender = function() {
         mediator.on('course:collab:ready', this.enable, this);
         return mediator.on('course:collab:close', this.disable, this);
+      };
+
+      GadgetCommentsView.prototype.onTextAreaFocus = function() {
+        return this.ui.commentsSubmitButtons.show();
+      };
+
+      GadgetCommentsView.prototype.onClose = function() {
+        mediator.off('comment:add', this.addComment, this);
+        mediator.off('comment:delete', this.deleteComment, this);
+        mediator.off('comments:click', this.onCommentsClick, this);
+        mediator.off('course:collab:ready', this.enable, this);
+        return mediator.off('course:collab:close', this.disable, this);
       };
 
       GadgetCommentsView.prototype.disable = function() {
@@ -89,6 +106,7 @@
             body: this.ui.commentText.val()
           });
           this.ui.commentText.val('');
+          this.hideSubmitButtons();
           return mediator.trigger('comment:added', comment);
         }
       };
@@ -109,9 +127,21 @@
         return this.ui.commentsCount.text(this.commentCount());
       };
 
+      GadgetCommentsView.prototype.hideSubmitButtons = function() {
+        if (this.comments.size() > 0) {
+          return this.ui.commentsSubmitButtons.hide();
+        }
+      };
+
+      GadgetCommentsView.prototype.hideComments = function() {
+        this.ui.commentText.val('');
+        this.ui.commentsDisplay.hide();
+        return this.hideSubmitButtons();
+      };
+
       GadgetCommentsView.prototype.onCommentCancel = function() {
         this.ui.commentText.val('');
-        return this.ui.commentsDisplay.hide();
+        return this.hideComments();
       };
 
       GadgetCommentsView.prototype.onClick = function(e) {
@@ -119,16 +149,17 @@
       };
 
       GadgetCommentsView.prototype.blur = function() {
-        return this.ui.commentsDisplay.hide();
+        return this.hideComments();
       };
 
       GadgetCommentsView.prototype.onCommentsClick = function(e, commentsView) {
-        if (commentsView !== this || e.target === this.el) {
-          return this.ui.commentsDisplay.hide();
+        if (commentsView !== this || $(e.target).is(this.ui.commentsBox)) {
+          return this.hideComments();
         }
       };
 
       GadgetCommentsView.prototype.onToggleClick = function(e) {
+        this.hideSubmitButtons();
         return this.ui.commentsDisplay.toggle();
       };
 

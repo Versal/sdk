@@ -2,7 +2,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['collections/gadget_catalogue', 'plugins/backbone.prioritize'], function(GadgetCatalogue, SectionGadget) {
+  define(['collections/gadget_catalogue', 'plugins/backbone.prioritize'], function(GadgetCatalogue) {
     var CombinedCatalogue;
     CombinedCatalogue = (function(_super) {
 
@@ -13,14 +13,15 @@
       }
 
       CombinedCatalogue.prototype.fetchAll = function(opts) {
-        var approved, unapproved,
+        var approved, sandbox,
           _this = this;
         if (opts == null) {
           opts = {};
         }
         approved = new GadgetCatalogue;
-        unapproved = new GadgetCatalogue;
-        return $.when(approved.fetchApproved(), unapproved.fetchUnapproved()).then(function() {
+        sandbox = new GadgetCatalogue;
+        return $.when(approved.fetchApproved(), sandbox.fetchSandbox()).then(function() {
+          var addAs;
           approved.prioritize([
             {
               title: 'Header'
@@ -61,8 +62,18 @@
               title: 'Principle of superposition'
             }
           ]);
-          _this.add(approved.models);
-          _this.add(unapproved.models);
+          addAs = function(catalog, collection) {
+            return _this.add(collection.models.map(function(m) {
+              if (!m.get('catalog')) {
+                m.set({
+                  catalog: catalog
+                });
+              }
+              return m;
+            }));
+          };
+          addAs('approved', approved);
+          addAs('sandbox', sandbox);
           _this.trigger('reset');
           return _this.trigger('sync');
         });

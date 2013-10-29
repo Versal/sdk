@@ -1,7 +1,7 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  define(['cdn.lodash', 'cdn.jquery'], function(_, $) {
+  define(['cdn.underscore', 'cdn.jquery'], function(_, $) {
     var VsSticky;
     return VsSticky = (function() {
 

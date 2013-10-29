@@ -31,6 +31,9 @@
           isLocked: function() {
             return !!_this.gadget.lock;
           },
+          name: function() {
+            return _this.gadget.lock.get('user').fn || 'Collaborator';
+          },
           profileImage: function() {
             var image, representations, _ref;
             representations = (_ref = _this.gadget.lock.get('user').image) != null ? _ref.representations : void 0;
