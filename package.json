@@ -35,12 +35,12 @@
     "shortid": "~1.0.9",
     "stylus": "~0.37.0",
     "express-resource": "~1.0.0",
-    "versal-shared-libs": "Versal/shared-libs#v0.0.3",
+    "versal-shared-libs": "git+ssh://git@github.com:Versal/shared-libs#v0.0.3",
     "js-api": "Versal/js-api#v0.3.4",
     "mime": "~1.2.11"
   },
   "devDependencies": {
-    "asset-stubs": "Versal/asset-stubs",
+    "asset-stubs": "git+ssh://git@github.com:Versal/asset-stubs",
     "grunt": "~0.4.0",
     "mocha": "~1.8.1",
     "chai": "~1.5.0",
