@@ -12,6 +12,7 @@
         var gadget;
         gadget = new vs.api.Gadget;
         gadget.gadgetProject = catalogue.findGadgetByType();
+        gadget.resolve = function() {};
         return gadget;
       });
       return catalogue;
@@ -208,14 +209,6 @@
           this.view.onSortReceive({}, {
             item: this.item
           });
-          stub.called.should.be["true"];
-          return stub.restore();
-        });
-        it('should retrieve the gadget bundle', function() {
-          var stub, url;
-          url = 'http://example.com/gadgets/foobar.js';
-          stub = sinon.stub(window, 'require');
-          this.view.insertGadgetTypeAt('foobar', 0);
           stub.called.should.be["true"];
           return stub.restore();
         });

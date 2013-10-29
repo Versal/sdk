@@ -12,6 +12,7 @@ define [
     sinon.stub catalogue, 'buildInstanceOfType', ->
       gadget = new vs.api.Gadget
       gadget.gadgetProject = catalogue.findGadgetByType()
+      gadget.resolve = ->
       gadget
 
     catalogue
@@ -179,13 +180,6 @@ define [
       it 'should be added to the collection', ->
         stub = sinon.stub @view.collection, 'create'
         @view.onSortReceive {}, item: @item
-        stub.called.should.be.true
-        stub.restore()
-
-      it 'should retrieve the gadget bundle', ->
-        url = 'http://example.com/gadgets/foobar.js'
-        stub = sinon.stub window, 'require'
-        @view.insertGadgetTypeAt 'foobar', 0
         stub.called.should.be.true
         stub.restore()
 

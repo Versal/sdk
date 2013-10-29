@@ -17,46 +17,53 @@
       });
       describe('Initializing', function() {
         describe('When a courseId is provided', function() {
-          return it('should load requested course', function() {
-            var courseId, stub;
-            courseId = 'some-course-uuid';
-            stub = sinon.stub(PlayerApplication.prototype, 'loadCourse');
-            new PlayerApplication({
+          var courseId;
+          courseId = 'some-course-uuid';
+          beforeEach(function() {
+            sinon.stub(PlayerApplication.prototype, 'loadCourse');
+            return new PlayerApplication({
               api: {},
               courseId: courseId
             });
-            stub.calledWith(courseId).should.be["true"];
-            return stub.restore();
+          });
+          afterEach(function() {
+            return PlayerApplication.prototype.loadCourse.restore();
+          });
+          return it('should load requested course', function() {
+            return PlayerApplication.prototype.loadCourse.calledWith(courseId).should.be["true"];
           });
         });
         return describe('When no courseId is provided', function() {
-          return it('should load empty course', function() {
-            var loadSpy;
-            loadSpy = sinon.spy(PlayerApplication.prototype, 'buildCourse');
-            new PlayerApplication({
+          beforeEach(function() {
+            sinon.spy(PlayerApplication.prototype, 'buildCourse');
+            return new PlayerApplication({
               api: {}
             });
-            loadSpy.called.should.be["true"];
-            return loadSpy.restore();
+          });
+          afterEach(function() {
+            return PlayerApplication.prototype.buildCourse.restore();
+          });
+          return it('should load empty course', function() {
+            return PlayerApplication.prototype.buildCourse.called.should.be["true"];
           });
         });
       });
       describe('.loadCourse', function() {
+        var courseId;
+        courseId = '42';
         beforeEach(function() {
-          return this.player = new PlayerApplication({
+          sinon.stub(vs.api.Course.prototype, 'fetch');
+          this.player = new PlayerApplication({
             api: {}
           });
+          return this.player.loadCourse(courseId);
         });
         afterEach(function() {
-          return Backbone.history.stop();
+          Backbone.history.stop();
+          return vs.api.Course.prototype.fetch.restore();
         });
         return it('should fetch the course model', function() {
-          var courseId, fetchStub;
-          courseId = 42;
-          fetchStub = sinon.stub(vs.api.Course.prototype, 'fetch');
-          this.player.loadCourse(courseId);
-          fetchStub.called.should.be["true"];
-          return fetchStub.restore();
+          return vs.api.Course.prototype.fetch.called.should.be["true"];
         });
       });
       describe('.onCourseLoad', function() {
@@ -67,38 +74,82 @@
           this.course = new vs.api.Course(Fixtures.Course(), {
             parse: true
           });
-          return this.showSpy = sinon.spy(this.player.layout.sidebar, 'show');
+          sinon.spy(this.player.layout.sidebar, 'show');
+          return sinon.stub(this.course, 'start');
         });
         afterEach(function() {
-          this.showSpy.restore();
+          this.player.layout.sidebar.show.restore();
+          this.course.start.restore();
           $('.sidebar').html('');
           return Backbone.history.stop();
         });
-        it('should show the author sidebar in the left rail if the course is editable and not embedded', function() {
-          this.player.options.embed = false;
-          this.course.set({
-            isEditable: true
+        describe('when the course is editable and not embedded', function() {
+          beforeEach(function() {
+            this.player.options.embed = false;
+            this.course.set({
+              isEditable: true
+            });
+            return this.player.onCourseLoad(this.course);
           });
-          this.player.onCourseLoad(this.course);
-          this.showSpy.called.should.be["true"];
-          return this.player.layout.sidebar.$el.find('.authorSidebar').length.should.eq(1);
+          it('should show a sidebar', function() {
+            return this.player.layout.sidebar.show.called.should.be["true"];
+          });
+          return it('should show an author sidebar', function() {
+            return this.player.layout.sidebar.$el.find('.authorSidebar').length.should.eq(1);
+          });
         });
-        it('should not show the author sidebar in the left rail if the course is embedded', function() {
-          this.player.options.embed = true;
-          this.course.set({
-            isEditable: true
+        describe('when the course is embedded', function() {
+          beforeEach(function() {
+            this.player.options.embed = true;
+            this.course.set({
+              isEditable: true
+            });
+            return this.player.onCourseLoad(this.course);
           });
-          this.player.onCourseLoad(this.course);
-          this.showSpy.called.should.be["true"];
-          return this.player.layout.sidebar.$el.find('.authorSidebar').length.should.eq(0);
+          it('should show a sidebar', function() {
+            return this.player.layout.sidebar.show.called.should.be["true"];
+          });
+          return it('should show a learner sidebar', function() {
+            return this.player.layout.sidebar.$el.find('.learnerSidebar').length.should.eq(1);
+          });
         });
-        return it('should show the learner sidebar if the course is not editable', function() {
-          this.course.set({
-            isEditable: false
+        describe('when the course is not editable and not embedded', function() {
+          return beforeEach(function() {
+            this.course.set({
+              isEditable: false
+            });
+            this.player.onCourseLoad(this.course);
+            it('should show a sidebar', function() {
+              return this.player.layout.sidebar.show.called.should.be["true"];
+            });
+            return it('should show a learner sidebar', function() {
+              return this.player.layout.sidebar.$el.find('.learnerSidebar').length.should.eq(1);
+            });
           });
-          this.player.onCourseLoad(this.course);
-          this.showSpy.called.should.be["true"];
-          return this.player.layout.sidebar.$el.find('.learnerSidebar').length.should.eq(1);
+        });
+        describe('when the course has no position set', function() {
+          beforeEach(function() {
+            this.course.set({
+              currentPosition: null
+            });
+            return this.player.onCourseLoad(this.course);
+          });
+          return it('should start it', function() {
+            return this.course.start.called.should.be["true"];
+          });
+        });
+        return describe('when the course has a position set', function() {
+          beforeEach(function() {
+            this.course.set({
+              currentPosition: {
+                currentLesson: 1
+              }
+            });
+            return this.player.onCourseLoad(this.course);
+          });
+          return it('should not start it', function() {
+            return this.course.start.called.should.be["false"];
+          });
         });
       });
       return describe('registerStylesheet', function() {

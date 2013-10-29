@@ -122,7 +122,7 @@
           });
         });
       });
-      return describe('Modal', function() {
+      describe('Modal', function() {
         describe('when open', function() {
           return it('should be detectable', function() {
             this.view.render();
@@ -135,6 +135,45 @@
             this.view.render();
             $('.modal').remove();
             return this.view.isModalOpen().should.be["false"];
+          });
+        });
+      });
+      return describe('Update Notification', function() {
+        describe('when another author updates the course', function() {
+          it('should display the notification banner', function() {
+            sinon.stub(CourseView.prototype, 'showUpdateNotification');
+            this.view = new CourseView({
+              model: this.model
+            });
+            this.view.onCourseUpdate();
+            CourseView.prototype.showUpdateNotification.called.should.be["true"];
+            return CourseView.prototype.showUpdateNotification.restore();
+          });
+          return describe('multiple times', function() {
+            return it('should display the notification banner with an update count', function() {
+              sinon.spy(CourseView.prototype, 'showUpdateNotification');
+              this.view = new CourseView({
+                model: this.model
+              });
+              this.view.render();
+              _.times(2, this.view.onCourseUpdate, this.view);
+              CourseView.prototype.showUpdateNotification.called.should.be["true"];
+              this.view.ui.updateNotificationMsg.text().should.contain('See 2 new updates');
+              return CourseView.prototype.showUpdateNotification.restore();
+            });
+          });
+        });
+        return describe('when an update comes in while re-fetching course', function() {
+          return it('should redisplay the notification banner', function() {
+            sinon.spy(CourseView.prototype, 'showUpdateNotification');
+            this.view = new CourseView({
+              model: this.model
+            });
+            this.view.render();
+            this.view.onCourseUpdate();
+            this.view.onCourseRefetchSuccess();
+            CourseView.prototype.showUpdateNotification.called.should.be["true"];
+            return CourseView.prototype.showUpdateNotification.restore();
           });
         });
       });

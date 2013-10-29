@@ -4,7 +4,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __slice = [].slice;
 
-  define(['cdn.marionette', 'app/mediator', 'plugins/tracker', 'messages/facade', 'views/gadget_lock', 'views/gadget_comments', 'views/property_sheet', 'models/property_sheet_schema', 'models/children', 'text!templates/gadget_instance.html', 'text!templates/gadget_instance_error.html', 'text!templates/gadget_delete_warn.html', 'cdn.lodash'], function(Marionette, mediator, tracker, Facade, GadgetLockView, GadgetCommentsView, PropertySheetView, PropertySheetSchema, Children, template, error_template, warn_template, _) {
+  define(['cdn.marionette', 'app/mediator', 'plugins/tracker', 'messages/facade', 'views/gadget_lock', 'views/gadget_comments', 'views/property_sheet', 'models/property_sheet_schema', 'models/children', 'text!templates/gadget_instance.html', 'text!templates/gadget_instance_error.html', 'text!templates/gadget_delete_warn.html', 'cdn.underscore'], function(Marionette, mediator, tracker, Facade, GadgetLockView, GadgetCommentsView, PropertySheetView, PropertySheetSchema, Children, template, error_template, warn_template, _) {
     var GadgetInstanceView;
     return GadgetInstanceView = (function(_super) {
 
@@ -28,7 +28,7 @@
       GadgetInstanceView.prototype.regions = {
         propertySheetRegion: '.js-property-dialog',
         lockRegion: '.lock',
-        commentsRegion: '.comments'
+        commentsRegion: '.toolbar-right'
       };
 
       GadgetInstanceView.prototype.events = {
@@ -84,9 +84,16 @@
         this.model.userState.on('sync', function() {
           return _this.trigger('userStateSync');
         });
-        this.model.on('lock', this.toggleToolbar, this);
-        this.model.on('unlock', this.toggleToolbar, this);
+        this.listenTo(this.model, 'lock unlock', this.onLockChange);
         return mediator.on('course:click', this.onCourseClick, this);
+      };
+
+      GadgetInstanceView.prototype.onModelDestroy = function() {
+        return mediator.trigger('gadget:deleted');
+      };
+
+      GadgetInstanceView.prototype.onBeforeClose = function() {
+        return mediator.off('course:click', this.onCourseClick, this);
       };
 
       GadgetInstanceView.prototype.onInstanceAvailable = function() {
@@ -158,8 +165,6 @@
         if (this.model.lock && !this.model.lock.isLockedByMe()) {
           this.onAlreadyLocked();
           return $(e.target).blur();
-        } else {
-          return this.toggleEdit();
         }
       };
 
@@ -244,12 +249,18 @@
         if (this.model._gadgetKlass) {
           this.instantiateGadget(this.model._gadgetKlass);
         }
-        if (vs.collab._enabled) {
-          return this.initializeCollab();
-        }
+        return this.initializeCollab();
+      };
+
+      GadgetInstanceView.prototype.onClose = function() {
+        mediator.off('course:click', this.onCourseClick, this);
+        return this.stopReportingActivity();
       };
 
       GadgetInstanceView.prototype.initializeCollab = function() {
+        if (!vs.collab.enabled) {
+          return;
+        }
         this._lockView = new GadgetLockView({
           model: this.model
         });
@@ -262,14 +273,21 @@
         return this.startReportingActivity();
       };
 
+      GadgetInstanceView.prototype.activityEvents = 'scroll mousedown DOMMouseScroll mousewheel keyup';
+
       GadgetInstanceView.prototype.startReportingActivity = function() {
-        var events, triggerActivity, triggerActivityDebounced;
+        var triggerActivity, triggerActivityDebounced;
         triggerActivity = function() {
           return mediator.trigger('gadget:activity');
         };
         triggerActivityDebounced = _.debounce(triggerActivity, this.reportActivityEveryMs, true);
-        events = 'click scroll mousedown DOMMouseScroll mousewheel keyup';
-        return this.ui.gadgetContent.on(events, triggerActivityDebounced);
+        this.ui.gadgetContent.on(this.activityEvents, triggerActivityDebounced);
+        return mediator.on('course:click', triggerActivityDebounced);
+      };
+
+      GadgetInstanceView.prototype.stopReportingActivity = function() {
+        this.ui.gadgetContent.off(this.activityEvents);
+        return mediator.off('course:click');
       };
 
       GadgetInstanceView.prototype.passEvent = function() {
@@ -353,9 +371,14 @@
 
       GadgetInstanceView.prototype.updateLock = function() {
         if (this._isEditing) {
-          return mediator.trigger('lock:locked', this.model);
+          mediator.trigger('lock:locked', this.model);
+          return this._initialConfig = _.cloneDeep(this.model.config.attributes);
         } else {
-          return mediator.trigger('lock:unlocked', this.model);
+          mediator.trigger('lock:unlocked', this.model);
+          if (!_.isEqual(this.model.config.attributes, this._initialConfig)) {
+            delete this._initialConfig;
+            return mediator.trigger('gadget:changed', this);
+          }
         }
       };
 
@@ -434,12 +457,10 @@
         }
       };
 
-      GadgetInstanceView.prototype.toggleToolbar = function() {
-        if (this.model.lock && !this.model.lock.isLockedByMe()) {
-          return this.ui.toolbar.hide();
-        } else {
-          return this.ui.toolbar.show();
-        }
+      GadgetInstanceView.prototype.onLockChange = function() {
+        var isLocked;
+        isLocked = !!this.model.lock && !this.model.lock.isLockedByMe();
+        return this.$el.toggleClass('locked', isLocked);
       };
 
       GadgetInstanceView.prototype.onGadgetDrop = function(gadgetView) {

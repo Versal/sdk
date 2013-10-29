@@ -22,68 +22,108 @@ define [
     describe 'Initializing', ->
 
       describe 'When a courseId is provided', ->
+        courseId = 'some-course-uuid'
+
+        beforeEach ->
+          sinon.stub PlayerApplication::, 'loadCourse'
+          new PlayerApplication api: {}, courseId: courseId
+
+        afterEach ->
+          PlayerApplication::loadCourse.restore()
 
         it 'should load requested course', ->
-          courseId = 'some-course-uuid'
-          stub = sinon.stub PlayerApplication::, 'loadCourse'
-          new PlayerApplication api: {}, courseId: courseId
-          stub.calledWith(courseId).should.be.true
-          stub.restore()
+          PlayerApplication::loadCourse.calledWith(courseId).should.be.true
 
       describe 'When no courseId is provided', ->
+        beforeEach ->
+          sinon.spy PlayerApplication::, 'buildCourse'
+          new PlayerApplication api: {}
+
+        afterEach ->
+          PlayerApplication::buildCourse.restore()
 
         it 'should load empty course', ->
-          loadSpy = sinon.spy PlayerApplication::, 'buildCourse'
-          new PlayerApplication api: {}
-          loadSpy.called.should.be.true
-          loadSpy.restore()
+          PlayerApplication::buildCourse.called.should.be.true
 
     describe '.loadCourse', ->
+      courseId = '42'
 
       beforeEach ->
+        sinon.stub vs.api.Course::, 'fetch'
         @player = new PlayerApplication api: {}
+        @player.loadCourse courseId
 
       afterEach ->
         Backbone.history.stop()
+        vs.api.Course::fetch.restore()
 
       it 'should fetch the course model', ->
-        courseId = 42
-        fetchStub = sinon.stub vs.api.Course::, 'fetch'
-        @player.loadCourse courseId
-        fetchStub.called.should.be.true
-        fetchStub.restore()
+        vs.api.Course::fetch.called.should.be.true
 
     describe '.onCourseLoad', ->
 
       beforeEach ->
         @player = new PlayerApplication api: {}
         @course = new vs.api.Course Fixtures.Course(), { parse: true }
-        @showSpy = sinon.spy @player.layout.sidebar, 'show'
+        sinon.spy @player.layout.sidebar, 'show'
+        sinon.stub @course, 'start'
 
       afterEach ->
-        @showSpy.restore()
+        @player.layout.sidebar.show.restore()
+        @course.start.restore()
         $('.sidebar').html('')
         Backbone.history.stop()
 
-      it 'should show the author sidebar in the left rail if the course is editable and not embedded', ->
-        @player.options.embed = false
-        @course.set isEditable: true
-        @player.onCourseLoad @course
-        @showSpy.called.should.be.true
-        @player.layout.sidebar.$el.find('.authorSidebar').length.should.eq 1
+      describe 'when the course is editable and not embedded', ->
+        beforeEach ->
+          @player.options.embed = false
+          @course.set isEditable: true
+          @player.onCourseLoad @course
 
-      it 'should not show the author sidebar in the left rail if the course is embedded', ->
-        @player.options.embed = true
-        @course.set isEditable: true
-        @player.onCourseLoad @course
-        @showSpy.called.should.be.true
-        @player.layout.sidebar.$el.find('.authorSidebar').length.should.eq 0
+        it 'should show a sidebar', ->
+          @player.layout.sidebar.show.called.should.be.true
 
-      it 'should show the learner sidebar if the course is not editable', ->
-        @course.set isEditable: false
-        @player.onCourseLoad @course
-        @showSpy.called.should.be.true
-        @player.layout.sidebar.$el.find('.learnerSidebar').length.should.eq 1
+        it 'should show an author sidebar', ->
+          @player.layout.sidebar.$el.find('.authorSidebar').length.should.eq 1
+
+      describe 'when the course is embedded', ->
+        beforeEach ->
+          @player.options.embed = true
+          @course.set isEditable: true
+          @player.onCourseLoad @course
+
+        it 'should show a sidebar', ->
+          @player.layout.sidebar.show.called.should.be.true
+
+        it 'should show a learner sidebar', ->
+          @player.layout.sidebar.$el.find('.learnerSidebar').length.should.eq 1
+
+      describe 'when the course is not editable and not embedded', ->
+        beforeEach ->
+          @course.set isEditable: false
+          @player.onCourseLoad @course
+
+          it 'should show a sidebar', ->
+            @player.layout.sidebar.show.called.should.be.true
+
+          it 'should show a learner sidebar', ->
+            @player.layout.sidebar.$el.find('.learnerSidebar').length.should.eq 1
+
+      describe 'when the course has no position set', ->
+        beforeEach ->
+          @course.set currentPosition: null
+          @player.onCourseLoad @course
+
+        it 'should start it', ->
+          @course.start.called.should.be.true
+
+      describe 'when the course has a position set', ->
+        beforeEach ->
+          @course.set currentPosition: { currentLesson: 1 }
+          @player.onCourseLoad @course
+
+        it 'should not start it', ->
+          @course.start.called.should.be.false
 
     describe 'registerStylesheet', ->
       beforeEach ->
@@ -92,3 +132,4 @@ define [
       it 'should create LINK tag in document head', ->
         @player.registerStylesheet { key: 'k1', url: 'some/file.css' }
         $('link.k1').attr('href').should.eq 'some/file.css'
+

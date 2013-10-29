@@ -31,6 +31,26 @@ define ['cdn.lodash'], (_) ->
         title: 'lesson 3'
         gadgets: []
       }
+    ]
+
+  Fixtures.BlockedCourse = factory ->
+    title: 'my course'
+    lessons: [
+      {
+        isAccessible: true
+        title: 'lesson 1'
+        gadgets: []
+      },
+      {
+        isAccessible: true
+        title: 'lesson 2'
+        gadgets: []
+      },
+      {
+        isAccessible: false
+        title: 'lesson 3'
+        gadgets: []
+      }
 
     ]
 

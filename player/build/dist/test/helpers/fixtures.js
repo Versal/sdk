@@ -36,6 +36,26 @@
         ]
       };
     });
+    Fixtures.BlockedCourse = factory(function() {
+      return {
+        title: 'my course',
+        lessons: [
+          {
+            isAccessible: true,
+            title: 'lesson 1',
+            gadgets: []
+          }, {
+            isAccessible: true,
+            title: 'lesson 2',
+            gadgets: []
+          }, {
+            isAccessible: false,
+            title: 'lesson 3',
+            gadgets: []
+          }
+        ]
+      };
+    });
     Fixtures.Lesson = factory(function() {
       return {
         title: 'my lesson',

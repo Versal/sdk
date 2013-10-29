@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  define(['cdn.marionette', 'views/course', 'views/sidebar/author/author', 'views/sidebar/learner', 'app/catalogue', 'text!templates/player.html', 'views/loading', 'app/mediator', 'plugins/tracker', 'messages/decorate', 'modernizr', 'plugins/vs.ui', 'plugins/vs.collab', 'models/video'], function(Marionette, CourseView, AuthorSidebarView, LearnerSidebarView, gadgetCatalogue, template, LoadingView, mediator, tracker) {
+  define(['cdn.marionette', 'views/course', 'views/sidebar/author/author', 'views/sidebar/learner', 'app/catalogue', 'text!templates/player.html', 'views/loading', 'app/mediator', 'plugins/tracker', 'messages/decorate', 'modernizr', 'plugins/vs.api', 'plugins/vs.ui', 'plugins/vs.collab', 'models/video'], function(Marionette, CourseView, AuthorSidebarView, LearnerSidebarView, gadgetCatalogue, template, LoadingView, mediator, tracker) {
     var PlayerApplication, PlayerLayout, PlayerRouter;
     PlayerLayout = (function(_super) {
 
@@ -48,7 +48,6 @@
       };
 
       PlayerRouter.prototype.routes = {
-        'learn': 'learn',
         'courses/:courseId': 'showCourse',
         'courses/:courseId/lessons/:lessonIndex': 'showLesson',
         'courses/:courseId/lessons/:lessonIndex/gadgets/:gadgetIndex': 'showGadget'
@@ -83,45 +82,20 @@
       };
 
       function PlayerApplication(options) {
+        var courseId, el,
+          _this = this;
+        this.options = options;
         this.onProgressLoad = __bind(this.onProgressLoad, this);
 
         this.onCourseLoad = __bind(this.onCourseLoad, this);
 
-        var courseId, el,
-          _this = this;
-        if (!_.has(options, 'api')) {
+        _.defaults(this.options, this.defaults);
+        if (!_.has(this.options, 'api')) {
           throw new Error('Please set options.api!');
         }
-        vs.api.init(options.api);
-        vs.api.on('xhr:start', function(xhr) {
-          return _this.startTimer(xhr.requestUrl);
-        });
-        vs.api.on('xhr:error', function(opts, e, xhr) {
-          _this.endTimer(xhr.requestUrl, {
-            status: 'error'
-          });
-          return mediator.trigger('course:save:error');
-        });
-        vs.api.on('xhr:success', function(opts, e, xhr) {
-          _this.endTimer(xhr.requestUrl, {
-            status: 'success'
-          });
-          return mediator.trigger('course:save:success');
-        });
-        if (options.collabUrl) {
-          vs.collab._enabled = true;
-          vs.collab.init(options, mediator);
-          vs.collab.on('ws:open', function() {
-            return mediator.trigger('course:collab:open');
-          });
-          vs.collab.on('ws:close', function() {
-            return mediator.trigger('course:collab:close');
-          });
-          vs.collab.on('ws:error', function(error) {
-            return mediator.trigger('course:collab:error', error);
-          });
-        }
-        this.baseUrl = options && options.requireRoot ? options.requireRoot : '/';
+        this.initializeApi();
+        this.initializeCollab();
+        this.baseUrl = this.options.requireRoot || '/';
         if (!this.baseUrl.match(/\/$/)) {
           this.baseUrl += '/';
         }
@@ -134,7 +108,6 @@
           return mediator.trigger('course:rendered', _this.courseView);
         });
         this.router = new PlayerRouter;
-        this.options = _.extend({}, this.defaults, options);
         courseId = this.options.courseId;
         this.trackerSetup({
           sessionId: this.options.api.sessionId,
@@ -145,7 +118,6 @@
         }
         this.router.on('route:showLesson', this.showLesson, this);
         this.router.on('route:showGadget', this.showGadget, this);
-        this.router.on('route:learn', this.becomeLearner, this);
         Backbone.history.start({
           root: window.location.pathname
         });
@@ -173,10 +145,39 @@
         }
       }
 
-      PlayerApplication.prototype.isLearner = false;
+      PlayerApplication.prototype.initializeApi = function() {
+        var _this = this;
+        vs.api.init(this.options.api);
+        vs.api.on('xhr:start', function(xhr) {
+          return _this.startTimer(xhr.requestUrl);
+        });
+        vs.api.on('xhr:error', function(opts, e, xhr) {
+          _this.endTimer(xhr.requestUrl, {
+            status: 'error'
+          });
+          return mediator.trigger('course:save:error');
+        });
+        return vs.api.on('xhr:success', function(opts, e, xhr) {
+          _this.endTimer(xhr.requestUrl, {
+            status: 'success'
+          });
+          return mediator.trigger('course:save:success');
+        });
+      };
 
-      PlayerApplication.prototype.becomeLearner = function() {
-        return this.isLearner = true;
+      PlayerApplication.prototype.initializeCollab = function() {
+        if (this.options.collabUrl) {
+          vs.collab.init(this.options, mediator);
+          vs.collab.on('ws:open', function() {
+            return mediator.trigger('course:collab:open');
+          });
+          vs.collab.on('ws:close', function() {
+            return mediator.trigger('course:collab:close');
+          });
+          return vs.collab.on('ws:error', function(error) {
+            return mediator.trigger('course:collab:error', error);
+          });
+        }
       };
 
       PlayerApplication.prototype.registerStylesheet = function(options) {
@@ -199,7 +200,7 @@
       };
 
       PlayerApplication.prototype.loadCourse = function(courseId) {
-        var courseBaseUrl, courseModel, progressFetch,
+        var courseBaseUrl, courseModel,
           _this = this;
         this.track('Begin Loading', {
           course: courseId
@@ -210,8 +211,6 @@
         courseModel.set({
           isEditable: false
         });
-        progressFetch = courseModel.progress.fetch();
-        progressFetch.success(this.onProgressLoad);
         if (this.options.revision) {
           courseBaseUrl = courseModel.url();
           courseModel.url = function() {
@@ -220,9 +219,8 @@
         }
         courseModel.fetch({
           success: function(model) {
-            return $.when(progressFetch).then(function() {
-              return _this.onCourseLoad(model);
-            });
+            _this.onProgressLoad(model.progress);
+            return _this.onCourseLoad(model);
           },
           silent: true
         });
@@ -247,7 +245,7 @@
           course: courseModel.id,
           editable: courseModel.get('isEditable')
         });
-        if (this.options.noEditable || this.isLearner || this.options.embed) {
+        if (this.options.noEditable || this.options.embed) {
           courseModel.set({
             isEditable: false
           });
@@ -264,11 +262,16 @@
         } else {
           this.layout.sidebar.show(new LearnerSidebarView(viewOpts));
         }
+        if (courseModel.get('currentPosition') == null) {
+          courseModel.start();
+        }
         courseModel.parse = function(attrs) {
-          attrs.lessons = _.map(attrs.lessons, function(lesson) {
-            return _.omit(lesson, 'gadgets');
-          });
-          this.lessons.set(attrs.lessons);
+          if (_.has(attrs, 'lessons')) {
+            attrs.lessons = _.map(attrs.lessons, function(lesson) {
+              return _.omit(lesson, 'gadgets');
+            });
+            this.lessons.set(attrs.lessons);
+          }
           return _.omit(attrs, 'lessons');
         };
         return this._courseRendering.resolve();
@@ -278,11 +281,11 @@
         if (model == null) {
           model = {};
         }
-        if (model.lessonIndex) {
+        if (model.get('lessonIndex')) {
           if (model.gadgetIndex) {
             return this.router.navigateGadget(model.lessonIndex, model.gadgetIndex);
           } else {
-            return this.router.navigateLesson(model.lessonIndex);
+            return this.router.navigateLesson(model.get('lessonIndex'));
           }
         }
       };

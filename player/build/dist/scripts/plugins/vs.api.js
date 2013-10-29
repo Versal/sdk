@@ -417,6 +417,73 @@ var requirejs, require, define;
 }());
 define("../src/build/almond", function(){});
 
+define('pagination',['require','exports','module','underscore'],function (require, exports, module) {(function() {
+  var Pagination, _;
+
+  _ = require('underscore');
+
+  Pagination = (function() {
+    var defaults, maxPerPage, pageParams, whitelist;
+
+    maxPerPage = 20;
+
+    defaults = {
+      count: 0,
+      page: 1,
+      perPage: maxPerPage,
+      pageCount: 1
+    };
+
+    pageParams = Pagination.pageParams = _.keys(defaults);
+
+    whitelist = function(obj) {
+      return _.pick(obj, pageParams);
+    };
+
+    function Pagination(params) {
+      if (params == null) {
+        params = {};
+      }
+      _.extend(this, defaults, whitelist(params));
+    }
+
+    Pagination.prototype.pageRequest = function(page, params) {
+      var data;
+      if (params == null) {
+        params = {};
+      }
+      data = _.extend(whitelist(this), whitelist(params), {
+        page: page
+      });
+      if (data.perPage < 1) {
+        data.perPage = 1;
+      } else if (data.perPage > maxPerPage) {
+        data.perPage = maxPerPage;
+      }
+      if (!((0 < page && page <= data.pageCount))) {
+        return false;
+      }
+      return data;
+    };
+
+    Pagination.prototype.nextPageRequest = function(params) {
+      return this.pageRequest(this.page + 1, params);
+    };
+
+    Pagination.prototype.prevPageRequest = function(params) {
+      return this.pageRequest(this.page - 1, params);
+    };
+
+    return Pagination;
+
+  })();
+
+  module.exports = Pagination;
+
+}).call(this);
+
+});
+
 define('helpers/backbone_collection_move',['require','exports','module','backbone','underscore'],function (require, exports, module) {(function() {
   var Backbone, _;
 
@@ -1358,8 +1425,8 @@ define('models/user',['require','exports','module','backbone','underscore'],func
 
 });
 
-define('collections/user_roles',['require','exports','module','backbone','underscore','../models/user'],function (require, exports, module) {(function() {
-  var Backbone, User, UserRole, UserRoles, _, _ref,
+define('models/user_role',['require','exports','module','backbone','underscore','../models/user'],function (require, exports, module) {(function() {
+  var Backbone, User, UserRole, _,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1404,6 +1471,21 @@ define('collections/user_roles',['require','exports','module','backbone','unders
     return UserRole;
 
   })(Backbone.Model);
+
+  module.exports = UserRole;
+
+}).call(this);
+
+});
+
+define('collections/user_roles',['require','exports','module','backbone','../models/user_role'],function (require, exports, module) {(function() {
+  var Backbone, UserRole, UserRoles, _ref,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Backbone = require('backbone');
+
+  UserRole = require('../models/user_role');
 
   UserRoles = (function(_super) {
     __extends(UserRoles, _super);
@@ -1571,6 +1653,10 @@ define('models/course',['require','exports','module','backbone','underscore','..
       if (options == null) {
         options = {};
       }
+      this.authors = new UserRoles;
+      this.authors.url = function() {
+        return _.result(_this, 'url') + '/users';
+      };
       this.lessons = new Lessons([], {
         course: this
       });
@@ -1580,8 +1666,8 @@ define('models/course',['require','exports','module','backbone','underscore','..
       this.progress.url = function() {
         return _.result(_this, 'url') + '/progress';
       };
-      this.authors = new UserRoles;
-      this.authors.url = function() {
+      this.users = new UserRoles;
+      this.users.url = function() {
         return _.result(_this, 'url') + '/users';
       };
       this.head = new CourseHead({}, {
@@ -1601,13 +1687,18 @@ define('models/course',['require','exports','module','backbone','underscore','..
     }
 
     Course.prototype.parse = function(attrs) {
+      if (attrs.authors) {
+        this.authors.set(attrs.authors, {
+          parse: true
+        });
+      }
       if (attrs.lessons) {
         this.lessons.reset(attrs.lessons, {
           parse: true
         });
       }
-      if (attrs.authors) {
-        this.authors.set(attrs.authors, {
+      if (attrs.users) {
+        this.users.set(attrs.users, {
           parse: true
         });
       }
@@ -1621,7 +1712,12 @@ define('models/course',['require','exports','module','backbone','underscore','..
           silent: true
         });
       }
-      return _.omit(attrs, 'lessons', 'authors', 'revisions', 'head');
+      if (attrs.currentPosition) {
+        this.progress.set({
+          lessonIndex: attrs.currentPosition.currentLesson
+        });
+      }
+      return _.omit(attrs, 'lessons', 'authors', 'revisions', 'head', 'users', 'progress');
     };
 
     Course.prototype.toJSON = function(options) {
@@ -2015,8 +2111,8 @@ define('collections/gadget_projects',['require','exports','module','backbone','u
 
 });
 
-define('models/organization',['require','exports','module','backbone','underscore','../collections/user_roles'],function (require, exports, module) {(function() {
-  var Backbone, Organization, UserRoles, _,
+define('models/organization',['require','exports','module','backbone','underscore','../collections/user_roles','../collections/courses'],function (require, exports, module) {(function() {
+  var Backbone, Courses, Organization, UserRoles, _,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -2025,6 +2121,8 @@ define('models/organization',['require','exports','module','backbone','underscor
   _ = require('underscore');
 
   UserRoles = require('../collections/user_roles');
+
+  Courses = require('../collections/courses');
 
   Organization = (function(_super) {
     __extends(Organization, _super);
@@ -2049,6 +2147,10 @@ define('models/organization',['require','exports','module','backbone','underscor
       this.users = new UserRoles;
       this.users.url = function() {
         return _.result(_this, 'url') + '/users';
+      };
+      this.courses = new Courses;
+      this.courses.url = function() {
+        return _.result(_this, 'url') + '/courses';
       };
       options.parse = true;
       Backbone.Model.call(this, attrs, options);
@@ -2291,12 +2393,15 @@ define('adapters/browser',['require','exports','module','backbone','underscore']
 
 });
 
-define('api',['require','exports','module','backbone','jquery','underscore','./helpers/backbone_collection_move','./models/asset','./collections/assets','./models/asset_representation','./collections/asset_representations','./models/catalog','./collections/catalogs','./models/course','./collections/courses','./models/course_head','./models/course_progress','./models/course_revision','./collections/course_revisions','./models/gadget','./collections/gadgets','./models/gadget_project','./collections/gadget_projects','./collections/gadget_userstates','./models/lesson','./collections/lessons','./models/organization','./models/partnerkey','./models/tag','./collections/tags','./models/user','./collections/users','./collections/user_roles','./models/gadget','./api_errors','./adapters/node','./adapters/browser'],function (require, exports, module) {(function() {
-  var Backbone, api, _;
+define('api',['require','exports','module','backbone','jquery','./pagination','underscore','./helpers/backbone_collection_move','./models/asset','./collections/assets','./models/asset_representation','./collections/asset_representations','./models/catalog','./collections/catalogs','./models/course','./collections/courses','./models/course_head','./models/course_progress','./models/course_revision','./collections/course_revisions','./models/gadget','./collections/gadgets','./models/gadget_project','./collections/gadget_projects','./collections/gadget_userstates','./models/lesson','./collections/lessons','./models/organization','./models/partnerkey','./models/tag','./collections/tags','./models/user','./collections/users','./models/user_role','./collections/user_roles','./models/gadget','./api_errors','./adapters/node','./adapters/browser'],function (require, exports, module) {(function() {
+  var Backbone, Pagination, api, _,
+    __slice = [].slice;
 
   Backbone = require('backbone');
 
   Backbone.$ = require('jquery');
+
+  Pagination = require('./pagination');
 
   _ = require('underscore');
 
@@ -2329,6 +2434,7 @@ define('api',['require','exports','module','backbone','jquery','underscore','./h
     Tags: require('./collections/tags'),
     User: require('./models/user'),
     Users: require('./collections/users'),
+    UserRole: require('./models/user_role'),
     UserRoles: require('./collections/user_roles'),
     GadgetInstance: require('./models/gadget'),
     errors: require('./api_errors'),
@@ -2401,7 +2507,7 @@ define('api',['require','exports','module','backbone','jquery','underscore','./h
         };
         sync = Backbone.sync;
         return Backbone.sync = function(method, model, options) {
-          var beforeSend, urlPath, xhr;
+          var beforeSend, success, urlPath, xhr;
           if (options == null) {
             options = {};
           }
@@ -2422,6 +2528,15 @@ define('api',['require','exports','module','backbone','jquery','underscore','./h
           if (options.upload) {
             options.data = _this.uploadAdapter.createFormData(model);
           }
+          success = options.success || _.identity;
+          options.success = _.wrap(success, function() {
+            var args, func, pageHeader;
+            func = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+            if (pageHeader = typeof xhr.getResponseHeader === "function" ? xhr.getResponseHeader('X-Pagination') : void 0) {
+              model.pagination = new Pagination(JSON.parse(pageHeader));
+            }
+            return func.apply(this, args);
+          });
           xhr = sync.apply(_this, arguments);
           xhr.requestUrl = options.url;
           if (_.isFunction(xhr.done)) {

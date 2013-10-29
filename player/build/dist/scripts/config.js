@@ -1,7 +1,7 @@
 (function() {
 
   require.config({
-    waitSeconds: 0,
+    waitSeconds: 120,
     paths: {
       libs: 'libs',
       plugins: 'plugins',
@@ -19,13 +19,15 @@
     },
     shim: {
       'plugins/vs.ui': {
-        deps: ['cdn.jquery']
+        deps: ['cdn.jquery'],
+        exports: 'vs.ui'
       },
       'plugins/vs.api': {
-        deps: ['cdn.jquery', 'cdn.lodash', 'cdn.backbone']
+        deps: ['cdn.jquery', 'cdn.underscore', 'cdn.backbone'],
+        exports: 'vs.api'
       },
       'plugins/vs.collab': {
-        deps: ['cdn.lodash', 'cdn.backbone']
+        deps: ['cdn.underscore', 'cdn.backbone']
       },
       'plugins/backbone.filter': {
         deps: ['cdn.backbone']

@@ -57,20 +57,20 @@ define [
         @view.$el.find('.finish-button').length.should.eq 1
 
       it 'should have text on finish button', ->
-        @view.$el.find('.finish-button').text().should.eq 'finish course'
+        @view.$el.find('.finish-button').text().should.include 'finish course'
 
     describe 'embedded lessons', ->
       it 'should have text on next button when embedded', ->
         fakeLessonView = new LessonView model: @model.lessons.first()
         fakeLessonView.embed = true
         mediator.trigger 'lesson:rendered', fakeLessonView
-        @view.$el.find('.next-button').text().should.eq 'next lesson'
+        @view.$el.find('.next-button').text().should.include 'next lesson'
 
       it 'should have text on previous button when embedded', ->
         fakeLessonView = new LessonView model: @model.lessons.at(1)
         fakeLessonView.embed = true
         mediator.trigger 'lesson:rendered', fakeLessonView
-        @view.$el.find('.previous-button').text().should.eq 'previous lesson'
+        @view.$el.find('.previous-button').text().should.include 'previous lesson'
 
 
     it 'should take you to the next lesson when next is clicked', ->

@@ -125,3 +125,36 @@ define [
           @view.render()
           $('.modal').remove()
           @view.isModalOpen().should.be.false
+
+    describe 'Update Notification', ->
+
+      describe 'when another author updates the course', ->
+
+        it 'should display the notification banner', ->
+          sinon.stub CourseView::, 'showUpdateNotification'
+          @view = new CourseView model: @model
+          @view.onCourseUpdate()
+          CourseView::showUpdateNotification.called.should.be.true
+          CourseView::showUpdateNotification.restore()
+
+        describe 'multiple times', ->
+
+          it 'should display the notification banner with an update count', ->
+            sinon.spy CourseView::, 'showUpdateNotification'
+            @view = new CourseView model: @model
+            @view.render()
+            _.times 2, @view.onCourseUpdate, @view
+            CourseView::showUpdateNotification.called.should.be.true
+            @view.ui.updateNotificationMsg.text().should.contain 'See 2 new updates'
+            CourseView::showUpdateNotification.restore()
+
+      describe 'when an update comes in while re-fetching course', ->
+
+        it 'should redisplay the notification banner', ->
+          sinon.spy CourseView::, 'showUpdateNotification'
+          @view = new CourseView model: @model
+          @view.render()
+          @view.onCourseUpdate()
+          @view.onCourseRefetchSuccess()
+          CourseView::showUpdateNotification.called.should.be.true
+          CourseView::showUpdateNotification.restore()

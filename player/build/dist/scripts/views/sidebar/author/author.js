@@ -47,7 +47,9 @@
       };
 
       AuthorSidebar.prototype.onRender = function() {
-        return this.catalogue.show(new SidebarCatalogueView);
+        return this.catalogue.show(new SidebarCatalogueView({
+          course: this.model
+        }));
       };
 
       AuthorSidebar.prototype.onAjaxComplete = function() {
