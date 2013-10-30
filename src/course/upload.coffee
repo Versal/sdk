@@ -44,7 +44,7 @@ module.exports =
 
     @uploadCourse course, options, (err, body) =>
       if err then return callback err
-      if options.verbose then console.log "course #{body.id} successfully uploaded"
+      console.log "course #{body.id} successfully uploaded"
 
       unless courseMetadata.id
         courseMetadata.id = body.id
