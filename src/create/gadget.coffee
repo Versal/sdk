@@ -36,7 +36,7 @@ module.exports =
     # async copy all template files to the destination
     ncp template, dest, (err) =>
       if err then return callback(err)
-      @updateManifest dest, _.pick(options, 'name', 'version', 'username', 'author', 'title')
+      @updateManifest dest, _.pick(options, 'name', 'version', 'username', 'author', 'title', 'defaultConfig')
       callback()
 
   updateManifest: (dest, attrs) ->
