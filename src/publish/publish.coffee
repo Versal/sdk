@@ -15,7 +15,10 @@ module.exports = publish =
     async.series
       validate: (cb) -> sdk.validate dest, options, cb
       compress: (cb) -> sdk.compress dest, options, cb
-      upload: (cb) -> sdk.upload dest, options, cb
+      upload: (cb) -> sdk.upload dest, options, (err, body) ->
+        if err then return cb err
+        console.log "#{body[0].name} published with id #{body[0].id}"
+        cb()
     , callback
 
   verifySession: (options = {}, callback) ->

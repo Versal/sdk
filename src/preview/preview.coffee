@@ -15,18 +15,19 @@ module.exports =
       port: 3000
 
     options = _.extend defaults, options
-    @bridge = options.bridge || new Bridge
 
-    if dirs.length == 1
-      dir = path.resolve dirs[0]
+    lookupCourse = dirs.length == 1
+    baseDir = if lookupCourse then path.resolve(dirs[0]) else null
+    @bridge = options.bridge || new Bridge { baseDir }
 
-      gadgetsPath = "#{dir}/versal_data/gadgets"
+    if lookupCourse
+      gadgetsPath = "#{baseDir}/versal_data/gadgets"
       if fs.existsSync gadgetsPath then @addGadgets gadgetsPath
 
-      coursePath = "#{dir}/versal_data/course.json"
+      coursePath = "#{baseDir}/versal_data/course.json"
       if fs.existsSync coursePath then @bridge.linkCourse coursePath, options
 
-      assetsPath = "#{dir}/versal_data/local_assets.json"
+      assetsPath = "#{baseDir}/versal_data/local_assets.json"
       if fs.existsSync assetsPath then @bridge.linkAssets assetsPath
 
     # Link default course in readonly mode

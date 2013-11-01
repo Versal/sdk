@@ -8,7 +8,7 @@ ncp = require 'ncp'
 
 module.exports = install =
   command: (dir, options = {}, callback = ->) ->
-    callback new Error 'argument is required for versal install' unless dir
+    callback new Error 'gadget type is required for versal install' unless dir
 
     if dir[0] == '.' || dir[0] == '/'
       @installFromFolder dir, options, callback
@@ -39,18 +39,29 @@ module.exports = install =
     unless type = @parseType type
       return callback new Error 'Invalid gadget type. Type should be specified as "username/gadget@version"'
 
-    unless sessionId = (options.sessionId || sdk.config.get 'sessionId')
-      return callback new Error 'sessionId is required to upload a gadget'
+    options.apiUrl = sdk.config.get 'apiUrl' unless options.apiUrl
+    options.sessionId = sdk.config.get 'sessionId' unless options.sessionId
 
-    unless url = (options.apiUrl || sdk.config.get 'apiUrl')
-      return callback new Error 'apiUrl is required to upload a gadget'
+    # TODO: Verify sessionId as per https://github.com/Versal/sdk/issues/239
+    if options.sessionId
+      @downloadFromApi type, options, callback
+    else
+      sdk.signin '.', options, (err) =>
+        if err then return callback err
+        options.sessionId = sdk.config.get 'sessionId'
+        @downloadFromApi type, options, callback
 
+  downloadFromApi: (type, options, callback) ->
     target = options.cwd || path.resolve '.'
 
-    manifestUrl = "#{url}/gadgets/#{type.username}/#{type.name}/#{type.version}/manifest"
-    compiledUrl = "#{url}/gadgets/#{type.username}/#{type.name}/#{type.version}/compiled.zip"
+    manifestUrl = "#{options.apiUrl}/gadgets/#{type.username}/#{type.name}/#{type.version}/manifest"
+    compiledUrl = "#{options.apiUrl}/gadgets/#{type.username}/#{type.name}/#{type.version}/compiled.zip"
 
-    needle.get manifestUrl, (err, res, body) ->
+    requestOptions =
+      headers:
+        SESSION_ID: options.sessionId
+
+    needle.get manifestUrl, requestOptions, (err, res, body) ->
       if err then return callback err
 
       unless res.statusCode == 200
@@ -63,7 +74,7 @@ module.exports = install =
       unless manifest.username && manifest.name && manifest.version
         return callback new Error 'Gadget manifest is missing one of the required fields: username, name or version.'
 
-      needle.get compiledUrl, (err, res, body) ->
+      needle.get compiledUrl, requestOptions, (err, res, body) ->
         if err then return callback err
         target = install.getInstallPath target, manifest
         if fs.existsSync target then fs.removeSync target

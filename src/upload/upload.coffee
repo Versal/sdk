@@ -7,20 +7,29 @@ path = require 'path'
 sdk = require '../sdk'
 mime = require 'mime'
 needle = require 'needle'
+async = require 'async'
 
 module.exports =
-  command: (filepath, options = {}, callback = ->) ->
-    unless filepath
-      return callback new Error 'filepath argument is required'
+  command: (paths, options = {}, callback = ->) ->
+    unless paths
+      return callback new Error 'Please, specify paths for the files you want to upload'
+    if _.isString paths then paths = [paths]
 
-    unless fs.existsSync filepath
-      return callback new Error "nothing to upload in #{path.resolve filepath}"
-
-    # if provided path is directory, look up for bundle.zip inside
-    if fs.statSync(filepath).isDirectory()
-      filepath = path.join filepath, 'bundle.zip'
-      unless fs.existsSync filepath
-        return callback new Error "bundle.zip not found in #{filepath}"
+    assets = {}
+    if options.output
+      options.output = path.resolve options.output
+      # Read assets to avoid duplicate uploads
+      if fs.existsSync options.output
+        assets = fs.readJsonSync options.output
+        unless options.force
+          existing = _.keys assets
+          # Check output for the paths, that are already uploaded
+          # TODO: Implement MD5 or content-length comparison
+          skipped = _.intersection paths, existing
+          if skipped.length
+            console.log "Skipped #{skipped.length} files"
+            if skipped.length == paths.length then return callback null, {}
+            paths = _.difference paths, skipped
 
     unless options.sessionId
       options.sessionId = sdk.config.get 'sessionId', options
@@ -28,30 +37,40 @@ module.exports =
     unless options.apiUrl
       options.apiUrl = sdk.config.get 'apiUrl', options
 
-    unless options.endpoint
-      options.endpoint = if filepath.match /bundle\.zip$/ then 'gadgets' else 'assets'
+    async.map paths,
+      (filepath, cb) =>
+        @uploadFile filepath, options, (err, body) =>
+          if err then return cb err
+          assets[filepath] = body
+          if options.output then @outputJson options.output, assets
+          cb null, body
+      callback
 
-    if options.output
-      cb = callback
-      callback = (err, body) =>
-        unless err
-          @outputJson options.output, filepath, body
-        cb err, body
-
-    @uploadFile filepath, options, callback
+  # The only reason it exists as a stand-alone method is tests
+  outputJson: (outputPath, assets) ->
+    fs.outputJson outputPath, assets
 
   uploadFile: (filepath, options = {}, callback = ->) ->
-    unless options.sessionId
-      return callback new Error 'sessionId is required to upload a gadget'
-    unless options.apiUrl
-      return callback new Error 'apiUrl is required to upload a gadget'
     unless fs.existsSync filepath
       return callback new Error "nothing to upload in #{filepath}"
+
+    # if provided path is a directory, look up for bundle.zip inside
+    if fs.statSync(filepath).isDirectory()
+      filepath = path.join filepath, 'bundle.zip'
+      # bundle should be sent to /gadgets
+      unless fs.existsSync filepath
+        return callback new Error "bundle.zip not found in #{filepath}"
+
+    filename = path.basename filepath
+    unless options.endpoint
+      if filename == 'bundle.zip'
+        options.endpoint = 'gadgets'
+      else
+        options.endpoint = 'assets'
 
     url = "#{options.apiUrl}/#{options.endpoint}"
 
     # Needle requires that kind of naming for the keys of content object
-    filename = path.basename filepath
     content_type = mime.lookup filename
     buffer = fs.readFileSync filepath
 
@@ -84,13 +103,6 @@ module.exports =
           if options.verbose then console.log body
           if _.isFunction options.success then options.success body
           return callback null, body
-
-  outputJson: (outputPath, filepath, body) ->
-    assets = {}
-    if fs.existsSync outputPath
-      assets = fs.readJsonSync outputPath
-    assets[filepath] = body
-    fs.outputJsonSync outputPath, assets
 
   createRequestOptions: (sessionId) ->
     multipart: true

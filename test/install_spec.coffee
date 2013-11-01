@@ -8,17 +8,16 @@ describe 'Install', ->
   paths = ['versal/text@0.1.0', 'versal/image@0.7.3']
 
   describe 'invalid arguments', ->
-    get = null
     options =
       apiUrl: 'http://api'
       sessionId: 'X'
       cwd: path.resolve 'temp/install'
 
     before ->
-      get = sinon.stub(needle, 'get').callsArgWith(1, null, { statusCode: 404 }, { message: 'Gadget project not found '})
+      sinon.stub(needle, 'get').callsArgWith(2, null, { statusCode: 404 }, { message: 'Gadget project not found '})
 
     after ->
-      get.restore()
+      needle.get.restore()
 
     it 'should return error if type doesnt look like gadget type', (done) ->
       install.command 'invalid/type', null, (err) ->
@@ -36,13 +35,12 @@ describe 'Install', ->
       sessionId: 'X'
       cwd: path.resolve 'temp/install'
 
-    get = null
     manifestUrl = 'http://api/gadgets/versal/text/0.1.0/manifest'
     compiledUrl = 'http://api/gadgets/versal/text/0.1.0/compiled.zip'
     target = "#{options.cwd}/versal_data/gadgets/versal/text/0.1.0"
 
     before (done) ->
-      get = sinon.stub needle, 'get', (url, callback) ->
+      sinon.stub needle, 'get', (url, options, callback) ->
         if url == manifestUrl
           return callback null, { statusCode: 200 }, { username: 'versal', name: 'text', version: '0.1.0' }
         if url == compiledUrl
@@ -51,16 +49,19 @@ describe 'Install', ->
       install.command 'versal/text@0.1.0', options, -> done()
 
     after ->
-      get.restore()
+      needle.get.restore()
 
     it 'should call get', ->
-      get.called.should.be.true
+      needle.get.called.should.be.true
 
     it 'should hit correct url for manifest', ->
-      get.firstCall.args[0].should.eq manifestUrl
+      needle.get.firstCall.args[0].should.eq manifestUrl
 
     it 'should hit correct url for compiled', ->
-      get.secondCall.args[0].should.eq compiledUrl
+      needle.get.secondCall.args[0].should.eq compiledUrl
+
+    it 'should set SESSION_ID header to get the manifest', ->
+      needle.get.firstCall.args[1].headers.SESSION_ID.should.eq 'X'
 
     it 'should create gadget folder', ->
       fs.existsSync(target).should.be.true

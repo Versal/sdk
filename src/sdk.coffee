@@ -11,12 +11,14 @@ module.exports = sdk =
   docs: -> sdk.execCommand('docs').apply null, arguments
   compile: -> sdk.execCommand('compile').apply null, arguments
   compress: -> sdk.execCommand('compress').apply null, arguments
-  upload: -> sdk.execCommand('upload').apply null, arguments
+  upload: -> sdk.execCommand('upload', passThrough: true).apply null, arguments
   preview: -> sdk.execCommand('preview', passThrough: true).apply null, arguments
   validate: -> sdk.execCommand('validate').apply null, arguments
   publish: -> sdk.execCommand('publish').apply null, arguments
   gadgetApprove: -> sdk.execCommand(['gadget','approve']).apply null, arguments
   gadgetReject: -> sdk.execCommand(['gadget','reject']).apply null, arguments
+  courseParse: -> sdk.execCommand(['course', 'parse']).apply null, arguments
+  courseUpload: -> sdk.execCommand(['course', 'upload']).apply null, arguments
 
   config: require('./config')()
 
@@ -49,12 +51,10 @@ module.exports = sdk =
         # simply pass arguments to command
         cmd.command dirs, options, callback
       else
-        # otherwise call command async for each dir
-        funcs = _.map dirs, (dir) -> (cb) ->
-          cmd.command dir, options, cb
-        # run all tasks sequentially
-        async.series funcs, (err) ->
-          callback err
+        async.map dirs,
+          (dir, cb) ->
+            cmd.command dir, options, cb
+          callback
 
   # Detect type of the folder by its content
   # /manifest.json - it is a gadget

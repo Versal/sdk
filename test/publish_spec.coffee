@@ -14,7 +14,7 @@ describe 'Publish', ->
 
     validate = sinon.stub(sdk, 'validate').callsArgWith(2, null)
     compress = sinon.stub(sdk, 'compress').callsArgWith(2, null)
-    upload = sinon.stub(sdk, 'upload').callsArgWith(2, null)
+    upload = sinon.stub(sdk, 'upload').callsArgWith(2, null, [{ id: '1', name: 'G1' }])
 
     sdk.createGadget gadgetPath, ->
       sdk.publish gadgetPath, -> done()

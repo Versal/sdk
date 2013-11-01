@@ -1,0 +1,45 @@
+{
+  "lessons": [
+    {
+      "gadgets": [
+        {
+          "type": "versal/video@0.1.1",
+          "config": {
+            "myVideo": {
+              "_path": "/path/to/asset"
+            }
+          }
+        },
+        {
+          "type": "versal/image@0.7.3",
+          "config": {
+            "asset": {
+              "_path": "/path/to/asset"
+            }
+          }
+        },
+        {
+          "type": "versal/math@0.2.2",
+          "config": {
+            "section": {
+              "questions": [
+                {
+                  "image": {
+                    "_path": "/path/to/asset"
+                  },
+                  "answers": [
+                    {
+                      "image": {
+                        "_path": "/path/to/asset"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

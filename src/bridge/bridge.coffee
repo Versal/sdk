@@ -23,6 +23,7 @@ module.exports = class Bridge
     # bodyParser supports "uploadDir" option.
     # Unless it is specified, all uploaded assets
     # will be saved in /usr/var directory.
+    # TODO: This is not obvious. Fix this.
     if options?.baseDir
       options.uploadDir = path.join options.baseDir, 'versal_data/assets'
     @api.use express.bodyParser options
@@ -129,6 +130,7 @@ module.exports = class Bridge
           if err then promise.reject err
           promise.resolve()
         return promise
+      course.sync = _.debounce course.sync, 250
 
     @data.courses.add course
 
