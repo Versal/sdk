@@ -26,9 +26,8 @@ module.exports = signin =
 
     @promptCredentials options, (err, credentials) ->
       data = querystring.stringify(credentials)
-      requestOptions = 'X-Requested-With': 'XMLHttpRequest'
 
-      needle.post authUrl, data, requestOptions, (err, res, body) ->
+      needle.post authUrl, data, null, (err, res, body) ->
         if err then return callback err
         if res.statusCode != 200
           if body.message
