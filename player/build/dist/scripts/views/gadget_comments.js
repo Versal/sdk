@@ -30,7 +30,7 @@
         'click .js-submit-comment': 'onCommentSubmit',
         'click .js-cancel-comment': 'onCommentCancel',
         'click .js-comments-toggle': 'onToggleClick',
-        'focus .js-submit-comment-text': 'onTextAreaFocus',
+        'focus .js-submit-comment-text': 'showSubmitButtons',
         'click': 'onClick'
       };
 
@@ -60,7 +60,7 @@
         return mediator.on('course:collab:close', this.disable, this);
       };
 
-      GadgetCommentsView.prototype.onTextAreaFocus = function() {
+      GadgetCommentsView.prototype.showSubmitButtons = function() {
         return this.ui.commentsSubmitButtons.show();
       };
 
@@ -92,7 +92,10 @@
         var gadgetId;
         gadgetId = comment.get('gadgetId');
         if (gadgetId === this.gadget.id) {
-          return this.comments.remove(comment);
+          this.comments.remove(comment);
+          if (this.comments.length === 0) {
+            return this.showSubmitButtons();
+          }
         }
       };
 
@@ -160,7 +163,10 @@
 
       GadgetCommentsView.prototype.onToggleClick = function(e) {
         this.hideSubmitButtons();
-        return this.ui.commentsDisplay.toggle();
+        this.ui.commentsDisplay.toggle();
+        return _.each(this.children._views, function(view) {
+          return view.determineHeight();
+        });
       };
 
       return GadgetCommentsView;
