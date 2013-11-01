@@ -19,17 +19,24 @@
       GadgetCommentView.prototype.className = 'comment';
 
       GadgetCommentView.prototype.events = {
-        'click .js-delete-comment': 'deleteComment'
+        'click .js-delete-comment': 'deleteComment',
+        'click .js-show': 'toggleShow'
       };
 
       GadgetCommentView.prototype.template = _.template(template);
 
       GadgetCommentView.prototype.ui = {
-        createdAt: '.timestamp'
+        createdAt: '.js-timestamp',
+        commentBody: '.js-comment-body'
       };
 
       GadgetCommentView.prototype.initialize = function() {
         return this.comment = this.model;
+      };
+
+      GadgetCommentView.prototype.toggleShow = function() {
+        this.$el.toggleClass('expanded');
+        return this.$el.toggleClass('compacted');
       };
 
       GadgetCommentView.prototype.templateHelpers = function() {
@@ -66,7 +73,8 @@
         return clearInterval(this.timeSinceUpdater);
       };
 
-      GadgetCommentView.prototype.deleteComment = function() {
+      GadgetCommentView.prototype.deleteComment = function(e) {
+        e.stopPropagation();
         return mediator.trigger('comment:deleted', this.comment);
       };
 
@@ -74,6 +82,12 @@
         var commentDate;
         commentDate = new Date(this.comment.get('createdAt'));
         return this.ui.createdAt.text(timeSince(commentDate));
+      };
+
+      GadgetCommentView.prototype.determineHeight = function() {
+        if (this.ui.commentBody.height() > 145) {
+          return this.$el.addClass('compacted');
+        }
       };
 
       return GadgetCommentView;

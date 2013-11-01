@@ -1,8 +1,0 @@
-/*
- * @ e74c5b9c4730bbd1bc9fd1ab3628ddf8e1950ead
- */
-
-@import 'style.css';
-@import 'signin_popup.css';
-html{background-color:#eee;margin:20px}
-body{-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 2px 2px rgba(0,0,0,0.1);box-shadow:0 2px 2px rgba(0,0,0,0.1);background-color:#fff;border:1px solid #ddd;margin-bottom:20px;padding:20px}

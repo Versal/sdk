@@ -31,7 +31,8 @@
       };
 
       PropertySheetView.prototype.initialize = function() {
-        return this.listenTo(this.options.config, 'change', this.onConfigChange);
+        this.listenTo(this.options.config, 'change', this.onConfigChange);
+        return this.listenTo(this.options.propertySheetSchema, 'change', this.onSchemaChange);
       };
 
       PropertySheetView.prototype.onConfigChange = function(model, options) {
@@ -42,6 +43,10 @@
           gadget: this.options.model.id,
           changed: this.options.config.changedAttributes()
         });
+      };
+
+      PropertySheetView.prototype.onSchemaChange = function() {
+        return this.render();
       };
 
       PropertySheetView.prototype.setErrorCount = function(count) {

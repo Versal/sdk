@@ -156,7 +156,7 @@ html.no-pointerevents .course .lessonTitleWrapper .fade-out,html.no-pointerevent
 .course .lessonTitleWrapper .lessonTitle,.course .courseTitleWrapper .lessonTitle,.course .lessonTitleWrapper .courseTitle,.course .courseTitleWrapper .courseTitle{color:#454442;margin:0;padding:0;overflow-x:hidden;max-width:700px;white-space:nowrap;min-width:20px;min-height:1em;}
 .course .lessonTitleWrapper .lessonTitle.placeholder:after,.course .courseTitleWrapper .lessonTitle.placeholder:after,.course .lessonTitleWrapper .courseTitle.placeholder:after,.course .courseTitleWrapper .courseTitle.placeholder:after{content:attr(placeholder);color:#c7c3be;cursor:default}
 .course .lessonTitleWrapper .lessonTitleEditable,.course .courseTitleWrapper .lessonTitleEditable{height:14px}
-.course .updateNotificationContainer{position:absolute;color:#486b6d;top:57px;width:100%;background-color:rgba(242,241,237,0.88);z-index:100;margin:0 auto;text-align:center;padding:10px 0;cursor:pointer;}
+.course .updateNotificationContainer{position:fixed;color:#486b6d;top:57px;width:758px;background-color:rgba(242,241,237,0.88);z-index:100;margin:0 auto;text-align:center;padding:10px 0;cursor:pointer;}
 .course .updateNotificationContainer .updateNotification{cursor:pointer}
 .course .updateNotificationContainer .updateNotificationMsg{margin-left:10px}
 @media (max-width: 1023px){.course:not(.editable){left:0}
@@ -190,10 +190,17 @@ html.no-pointerevents .course .lessonTitleWrapper .fade-out,html.no-pointerevent
 .comments-toolbar .deleted_comment{font-style:italic;color:#c7c3be}
 .comments-toolbar .actions{height:22px}
 .comments-toolbar .comment{color:#454442;font:12px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;border-width:1px;border-bottom:1px #e4e3e0 solid;padding:7px;line-height:18px;}
+.comments-toolbar .comment.compacted .comment-body{overflow:hidden;max-height:142px;position:relative;z-index:1}
+.comments-toolbar .comment.compacted .comment-actions{position:relative;z-index:2;-webkit-box-shadow:0 -15px 10px #fff;box-shadow:0 -15px 10px #fff;}
+.comments-toolbar .comment.compacted .comment-actions .show-more{display:inline}
+.comments-toolbar .comment.expanded .comment-actions .show-less{display:inline}
 .comments-toolbar .comment img{width:40px;height:40px}
 .comments-toolbar .comment .commentInfo{display:inline-block;line-height:.2;}
 .comments-toolbar .comment .commentInfo .commentDate{color:#c7c3be}
-.comments-toolbar .comment .js-delete-comment{color:#c7c3be;text-decoration:underline;display:block;cursor:pointer}
+.comments-toolbar .comment .comment-body{width:180px}
+.comments-toolbar .comment .comment-actions{height:16px;position:relative;}
+.comments-toolbar .comment .comment-actions .comment-action{color:#c7c3be;text-decoration:underline;cursor:pointer}
+.comments-toolbar .comment .show-less,.comments-toolbar .comment .show-more{display:none}
 .comments-toolbar .comments{position:absolute;}
 .comments-toolbar .comments .errorMsg{text-align:center;color:#454442;font:12px 'AvenirNextLTPro-Regular','Helvetica Neue',Helvetica,Arial,sans-serif;margin:5px;padding:5px 0;background-color:rgba(216,226,226,0.88)}
 .comments-toolbar .icon-comment{font-size:12pt;color:#c7c3be;width:16px;cursor:pointer}

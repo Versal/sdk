@@ -1764,6 +1764,7 @@ define('models/course',['require','exports','module','backbone','underscore','..
       if (options == null) {
         options = {};
       }
+      options.attrs = {};
       options.url = _.result(this, 'url') + '/start';
       return this.sync('create', this, options);
     };
@@ -1772,6 +1773,7 @@ define('models/course',['require','exports','module','backbone','underscore','..
       if (options == null) {
         options = {};
       }
+      options.attrs = {};
       options.url = _.result(this, 'url') + '/completion';
       return this.sync('update', this, options);
     };
@@ -1949,17 +1951,9 @@ define('models/gadget_project',['require','exports','module','underscore','backb
     };
 
     GadgetProject.prototype.parse = function(attrs, options) {
-      var key, value, _ref;
       if (!attrs.username) {
         if (attrs.type) {
           attrs.username = attrs.type.split('/')[0];
-        }
-      }
-      _ref = attrs.files;
-      for (key in _ref) {
-        value = _ref[key];
-        if (value.slice(0, 4) !== 'http') {
-          attrs.files[key] = this.baseUrl + value;
         }
       }
       return attrs;
@@ -2030,14 +2024,16 @@ define('models/gadget_project',['require','exports','module','underscore','backb
 
 });
 
-define('collections/gadget_projects',['require','exports','module','backbone','underscore','../models/gadget_project'],function (require, exports, module) {(function() {
-  var Backbone, GadgetProject, GadgetProjects, _, _ref,
+define('collections/gadget_projects',['require','exports','module','backbone','underscore','jquery','../models/gadget_project'],function (require, exports, module) {(function() {
+  var $, Backbone, GadgetProject, GadgetProjects, _, _ref,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Backbone = require('backbone');
 
   _ = require('underscore');
+
+  $ = require('jquery');
 
   GadgetProject = require('../models/gadget_project');
 
