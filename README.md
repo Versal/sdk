@@ -5,6 +5,12 @@
 * Node.js (we recommend [nvm](https://github.com/creationix/nvm) or [n](https://github.com/visionmedia/n))
 * git (if you're on a Mac we recommend using [Homebrew](http://brew.sh/))
 
+See also
+
+* [Building and installing Node.js](https://github.com/joyent/node/wiki/Building-and-installing-Node.js)
+
+* [Installing Node.js via package manage](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager)
+
 ## Installation
 
 If you don't need to change SDK, install it with `npm` from github's private repository:
