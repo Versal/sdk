@@ -25,7 +25,9 @@ module.exports = class Bridge
     # will be saved in /usr/var directory.
     # TODO: This is not obvious. Fix this.
     if options?.baseDir
-      options.uploadDir = path.join options.baseDir, 'versal_data/assets'
+      assetsDir = path.join options.baseDir, 'versal_data/assets'
+      if fs.existsSync assetsDir then options.uploadDir = assetsDir
+
     @api.use express.bodyParser options
 
     # set up API routing
