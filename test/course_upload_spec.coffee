@@ -70,3 +70,28 @@ describe 'Course upload', ->
 
     it 'should replace assets', ->
       upload.replaceAssets.called.should.be.true
+
+describe.only 'Asset replacement', ->
+  course = remote_asset = replaced = lesson = null
+
+  before ->
+    course = require './fixtures/cml/upload/replacer_tests.json'
+    remote_asset = x: 73
+    replaced = upload.replaceAssets course, { '/path/to/asset': remote_asset }
+    lesson = replaced.lessons[0]
+
+  it 'should replace assets in image', ->
+    lesson.gadgets[1].config.asset.should.eql remote_asset
+
+  it 'should replace assets in image', ->
+    lesson.gadgets[0].config.myVideo.should.eql remote_asset
+
+  describe 'math', ->
+    it 'should replace assets in question', ->
+      lesson.gadgets[2].config.section.questions[0].image.should.eql remote_asset
+
+    it 'should replace assets in answer', ->
+      lesson.gadgets[2].config.section.questions[0].answers[0].image.should.eql remote_asset
+
+    it 'should replace assets in instructions', ->
+      lesson.gadgets[2].config.section.instructions[2].should.eql remote_asset
