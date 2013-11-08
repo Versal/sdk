@@ -199,15 +199,25 @@ describe 'Bridge HTTP API', ->
             course.save.called.should.be.true
             done()
 
-      it 'update config', (done) ->
-        request(bridge.api).put('/courses/1/lessons/1/gadgets/1/config')
-          .send(content: 'Updated content')
-          .expect 200, (err, res) ->
-            if err then return done err
-            res.body.content.should.eq 'Updated content'
-            res.body.should.eql gadgets.get(1).config.toJSON()
-            course.save.called.should.be.true
-            done()
+      describe 'config', ->
+        it 'updates config values', (done) ->
+          request(bridge.api).put('/courses/1/lessons/1/gadgets/1/config')
+            .send(content: 'Updated content')
+            .expect 200, (err, res) ->
+              if err then return done err
+              res.body.content.should.eq 'Updated content'
+              res.body.should.eql gadgets.get(1).config.toJSON()
+              course.save.called.should.be.true
+              done()
+
+        it 'removes config values', (done) ->
+          request(bridge.api).put('/courses/1/lessons/1/gadgets/1/config')
+            .send(anotherKey: 'Something else')
+            .expect 200, (err, res) ->
+              if err then return done err
+              gadgets.get(1).config.has('content').should.be.false
+              course.save.called.should.be.true
+              done()
 
       it 'update userstate', (done) ->
         request(bridge.api).put('/courses/1/lessons/1/gadgets/1/userstate')

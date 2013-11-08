@@ -23,6 +23,7 @@ module.exports =
     res.send 200
 
   updateConfig: (req, res) ->
+    req.gadget.config.clear()
     req.gadget.config.save req.body
     req.course.save()
     res.send req.gadget.config.toJSON()
