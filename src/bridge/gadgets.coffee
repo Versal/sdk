@@ -29,6 +29,7 @@ module.exports =
     res.send req.gadget.config.toJSON()
 
   updateUserstate: (req, res) ->
+    req.gadget.userState.clear()
     req.gadget.userState.save req.body
     req.course.save()
     res.send req.gadget.userState.toJSON()
