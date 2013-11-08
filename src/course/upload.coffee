@@ -100,6 +100,10 @@ module.exports =
 
     'versal/math@0.0.2': (config, remoteAssets) ->
       for section in _.values config
+        if section.instructions
+          for instruction, i in section.instructions
+            if instruction._path
+              section.instructions[i] = getReplacement instruction, remoteAssets
         if section.questions
           for question in section.questions
             if question.image

@@ -19,9 +19,16 @@
           }
         },
         {
-          "type": "versal/math@0.2.2",
+          "type": "versal/math@0.0.2",
           "config": {
             "section": {
+              "instructions": [
+                "string",
+                "another string",
+                {
+                  "_path": "/path/to/asset"
+                }
+              ],
               "questions": [
                 {
                   "image": {
