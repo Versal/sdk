@@ -23,30 +23,23 @@ describe 'Preview', ->
     it 'should call linkGadget for every dir', ->
       linkGadget.callCount.should.eq 2
 
-  describe 'versal_data', ->
-    bridge = linkGadget = linkCourse = linkAssets = null
+  describe 'versal_data', sinon.test ->
+    bridge = null
     previewPath = path.resolve './test/fixtures/preview'
 
     before (done) ->
       bridge = new Bridge
-      linkGadget = sinon.stub bridge, 'linkGadget'
-      linkCourse = sinon.stub bridge, 'linkCourse'
-      linkAssets = sinon.stub bridge, 'linkAssets'
+      sinon.stub bridge, 'linkGadget'
+      sinon.stub bridge, 'linkCoursePath'
+      sinon.stub bridge, 'linkAssets'
 
       sdk.preview previewPath, { bridge: bridge, test: true }, -> done()
 
-    after ->
-      linkGadget.restore()
-      linkCourse.restore()
-      linkAssets.restore()
-
     it 'should link gadgets', ->
-      linkGadget.callCount.should.eq 2
+      bridge.linkGadget.callCount.should.eq 2
 
     it 'should link course', ->
-      linkCourse.called.should.be.true
-      linkCourse.firstCall.args[0].should.eq "#{previewPath}/versal_data/course.json"
+      bridge.linkCoursePath.calledWith("#{previewPath}/versal_data/course.json", sinon.match.any).should.be.true
 
     it 'should link assets', ->
-      linkAssets.called.should.be.true
-      linkAssets.firstCall.args[0].should.eq "#{previewPath}/versal_data/local_assets.json"
+      bridge.linkAssets.calledWith("#{previewPath}/versal_data/local_assets.json").should.be.true

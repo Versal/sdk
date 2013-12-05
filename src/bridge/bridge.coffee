@@ -121,13 +121,10 @@ module.exports = class Bridge
       collabUrl: null
     res.send _.template template, { config, @port, title }, variable: 'data'
 
-  linkCourse: (coursePath, options) ->
+  linkCoursePath: (coursePath, options) ->
     courseJson = require coursePath
     return unless courseJson
-
     course = new jsapi.Course courseJson
-    unless options?.learn
-      course.set 'isEditable', true
     unless options?.readonly
       course.sync = (method, model) ->
         promise = jsapi.Backbone.$.Deferred()
@@ -137,6 +134,11 @@ module.exports = class Bridge
         return promise
       course.sync = _.debounce course.sync, 250
 
+    @linkCoursePath course, options
+
+  linkCourse: (course, options) ->
+    unless options?.learn
+      course.set 'isEditable', true
     @data.courses.add course
 
   linkAssets: (assetsPath, options) ->
