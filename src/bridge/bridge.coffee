@@ -5,9 +5,10 @@ express = require 'express'
 require 'express-resource'
 shortid = require 'shortid'
 _ = require 'underscore'
+pkg = require '../../package.json'
 
-playerPath = path.join __dirname, '../../player/build/dist'
-
+playerPath = path.join __dirname, '../../node_modules/player/dist'
+indexTemplatePath = path.join __dirname, '../../node_modules/player/app/index.html.tmpl'
 # We don't need default Backbone.sync, we handle saving differently
 jsapi.Backbone.sync = ->
 
@@ -109,14 +110,15 @@ module.exports = class Bridge
 
   index: (req, res) =>
     return res.send 404, 'No local courses found' unless @data.courses.length
-    templatePath = "#{playerPath}/index.html.tmpl"
-    template = fs.readFileSync templatePath, 'utf-8'
-    config =
-      apiUrl: "http://localhost:#{@port}/api"
-      sessionId: ''
+    template = fs.readFileSync indexTemplatePath, 'utf-8'
+    title = "SDK [#{pkg.version}]"
+    config = JSON.stringify
+      api:
+        url: "http://localhost:#{@port}/api"
+        sessionId: ''
       courseId: @data.courses.at(0).id
       collabUrl: null
-    res.send _.template template, config
+    res.send _.template template, { config, @port, title }, variable: 'data'
 
   linkCourse: (coursePath, options) ->
     courseJson = require coursePath
