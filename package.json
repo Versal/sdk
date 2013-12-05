@@ -36,6 +36,7 @@
     "stylus": "~0.37.0",
     "express-resource": "~1.0.0",
     "versal-shared-libs": "git+ssh://git@github.com:Versal/shared-libs#v0.0.3",
+    "player": "git+ssh://git@github.com:Versal/player",
     "js-api": "git+ssh://git@github.com:Versal/js-api#v0.3.4",
     "cml": "git+ssh://git@github.com:Versal/cml",
     "mime": "~1.2.11"
