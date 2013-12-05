@@ -41,7 +41,6 @@
     "mime": "~1.2.11"
   },
   "devDependencies": {
-    "asset-stubs": "git+ssh://git@github.com:Versal/asset-stubs",
     "grunt": "~0.4.0",
     "mocha": "~1.8.1",
     "chai": "~1.5.0",
