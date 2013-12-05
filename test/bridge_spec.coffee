@@ -105,6 +105,9 @@ describe 'Bridge HTTP API', ->
       beforeEach ->
         progress = course.progress
 
+      it 'start', (done) ->
+        request(bridge.api).post('/courses/1/start').expect 200, done
+
       it 'show', (done) ->
         request(bridge.api).get('/courses/1/progress').expect 200, progress.toJSON(), done
 

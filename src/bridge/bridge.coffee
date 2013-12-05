@@ -72,6 +72,7 @@ module.exports = class Bridge
 
     courseController = require './courses'
     courses = api.resource 'courses', courseController
+    courses.map 'post', '/:course/start', courseController.start
     courses.map 'get', '/:course/progress', courseController.showProgress
     courses.map 'put', '/:course/progress', courseController.updateProgress
 

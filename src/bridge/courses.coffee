@@ -15,6 +15,11 @@ module.exports =
     course = fn null, req.datastore.courses.get id
 
   # progress endpoints
+  # POST /courses/1/start
+  start: (req, res) ->
+    res.send 404 unless req.course
+    res.send 200
+
   # GET /courses/1/progress
   showProgress: (req, res) ->
     return res.send 404 unless req.course
