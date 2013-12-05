@@ -71,7 +71,7 @@ describe 'Course upload', ->
     it 'should replace assets', ->
       upload.replaceAssets.called.should.be.true
 
-describe.only 'Asset replacement', ->
+describe 'Asset replacement', ->
   course = remote_asset = replaced = lesson = null
 
   before ->
