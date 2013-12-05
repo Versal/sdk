@@ -14,7 +14,20 @@ module.exports =
 
   # We expect req.datastore to be set in bridge.coffee/setupAPI
   load: (req, id, fn) ->
-    course = fn null, req.datastore.courses.get id
+    # HACKETY HACKERY: populate palette for the course
+    usedTypes = (course) ->
+      _.uniq _.flatten course.lessons.map (l) ->
+        l.gadgets?.map (g) -> g.get('type')
+
+    usedProjects = (course) ->
+      types = usedTypes course
+      req.datastore.projects.filter (p) ->
+        _.contains types, p.type()
+
+    course = req.datastore.courses.get id
+    course.palette.reset usedProjects course
+
+    fn null, course
 
   # progress endpoints
   # POST /courses/1/start
