@@ -1,7 +1,0 @@
-<ul class="table-of-contents student">
-  <% _.each(lessons, function(lesson) { %>
-    <li data-cid="<%- lesson.cid %>" class="js-navigate-lesson <%- !lesson.isAccessible ? 'disabled-lesson' : '' %>">
-      <span title="<%- lesson.title %>"><%- lesson.title %></span>
-    </li>
-  <%})%>
-</ul>
