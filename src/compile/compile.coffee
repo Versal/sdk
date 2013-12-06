@@ -61,8 +61,6 @@ module.exports =
 
   writeManifest: (options) ->
     manifest = _.clone options.manifest
-    unless options.oldcss
-      manifest._newCss = true
     fs.writeJsonSync "#{options.dest}/manifest.json", manifest
 
   writeJs: (options) ->
@@ -139,9 +137,7 @@ module.exports =
 
   writeCss: (options) ->
     css = fs.readFileSync "#{options.src}/gadget.css", 'utf-8'
-    # to disable css processing, use --oldcss
-    unless options.oldcss
-      css = @processCss(css, options.gadget.cssClassName())
+    css = @processCss(css, options.gadget.cssClassName())
     fs.writeFileSync "#{options.dest}/gadget.css", css
 
   processCss: (css, className) ->

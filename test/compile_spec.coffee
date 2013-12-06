@@ -109,8 +109,3 @@ describe 'Compile', ->
     it 'should call processCss', ->
       compile.writeCss options
       compile.processCss.called.should.be.true
-
-    it 'should not call processCss if --oldcss is specified', ->
-      options.oldcss = true
-      compile.writeCss options
-      compile.processCss.called.should.be.false
