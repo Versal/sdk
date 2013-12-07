@@ -321,31 +321,6 @@ describe 'Bridge HTTP API', ->
           .expect('content-type', 'image/png')
           .expect 200, done
 
-    describe 'legacy paths', ->
-      gadgetUrl = null
-      beforeEach ->
-        gadgetUrl = "/gadgets/#{project.id}"
-
-      it 'should serve gadget manifest', (done) ->
-        request(bridge.api).get("#{gadgetUrl}")
-          .expect 200, project.toJSON(), done
-
-      it 'should serve gadget.js', (done) ->
-        request(bridge.api).get("#{gadgetUrl}/gadget.js")
-          .expect('content-type', 'application/javascript')
-          .expect 200, done
-
-      it 'should serve gadget.css', (done) ->
-        request(bridge.api).get("#{gadgetUrl}/gadget.css")
-          .expect('content-type', 'text/css; charset=UTF-8')
-          .expect 200, done
-
-      it 'should serve icon.png', (done) ->
-        request(bridge.api).get("#{gadgetUrl}/assets/icon.png")
-          .expect('content-length', '2696')
-          .expect('content-type', 'image/png')
-          .expect 200, done
-
     describe 'sandbox', ->
       it 'should fetch gadgets', (done) ->
         request(bridge.api).get("/gadgets").send({ user: 'me', catalog: 'sandbox' })

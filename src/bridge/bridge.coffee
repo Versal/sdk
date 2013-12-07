@@ -156,7 +156,7 @@ module.exports = class Bridge
   linkGadget: (gadgetPath) ->
     id = shortid.generate()
     manifest = require path.join gadgetPath, 'manifest.json'
-    return unless manifest
+    return false unless manifest
 
     manifest.id = shortid.generate()
     manifest.catalog = 'sandbox'
@@ -167,8 +167,4 @@ module.exports = class Bridge
     @api.get project.code(), (req, res) -> res.send 200
     @api.get project.compiled(), (req, res) -> res.send 200
     project._gadgetPath = gadgetPath
-
-    # FIXME: Legacy stuff - remove on October 2013
-    @api.get "/gadgets/#{project.id}", (req, res) -> res.send project.toJSON()
-    @api.use "/gadgets/#{project.id}", express.static gadgetPath
     return project
