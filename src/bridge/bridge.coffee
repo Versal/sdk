@@ -119,7 +119,7 @@ module.exports = class Bridge
         sessionId: ''
       courseId: @data.courses.at(0).id
       collabUrl: null
-    res.send _.template template, { config, @port, title }, variable: 'data'
+    res.send _.template template, { config, @port, host: req.header('host'), title }, variable: 'data'
 
   linkCoursePath: (coursePath, options) ->
     courseJson = require coursePath
