@@ -3,7 +3,9 @@ _ = require 'underscore'
 module.exports =
   show: (req, res) ->
     return res.send 404 unless req.course
-    res.send req.course.toJSON { lessons: true, gadgets: true }
+    courseJson = req.course.toJSON { lessons: true, gadgets: true, palette: true }
+    courseJson.assetUrlTemplate = '//localhost:3000/assets/<%= id %>'
+    res.send courseJson
 
   update: (req, res) ->
     return res.send 404 unless req.course
@@ -12,9 +14,27 @@ module.exports =
 
   # We expect req.datastore to be set in bridge.coffee/setupAPI
   load: (req, id, fn) ->
-    course = fn null, req.datastore.courses.get id
+    # HACKETY HACKERY: populate palette for the course
+    usedTypes = (course) ->
+      _.uniq _.flatten course.lessons.map (l) ->
+        l.gadgets?.map (g) -> g.get('type')
+
+    usedProjects = (course) ->
+      types = usedTypes course
+      req.datastore.projects.filter (p) ->
+        _.contains types, p.type()
+
+    course = req.datastore.courses.get id
+    course.palette.reset usedProjects course
+
+    fn null, course
 
   # progress endpoints
+  # POST /courses/1/start
+  start: (req, res) ->
+    res.send 404 unless req.course
+    res.send 200
+
   # GET /courses/1/progress
   showProgress: (req, res) ->
     return res.send 404 unless req.course

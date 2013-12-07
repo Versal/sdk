@@ -1,5 +1,0 @@
-define [], ->
-
-  Helpers = {}
-
-  Helpers

@@ -88,7 +88,13 @@ describe 'Bridge HTTP API', ->
         request(bridge.api).get('/courses/0').expect 404, done
 
       it 'show', (done) ->
-        request(bridge.api).get('/courses/1').expect 200, course.toJSON(lessons: true, gadgets: true), done
+        courseJson = course.toJSON(lessons: true, gadgets: true, palette: true)
+        request(bridge.api).get('/courses/1').expect 200, (err, res) ->
+          # Just copy assetUrlTemplate
+          # We don't make any assumptions about what's in there
+          courseJson.assetUrlTemplate = res.body.assetUrlTemplate
+          res.body.should.eql courseJson
+          done()
 
       it 'update', (done) ->
         request(bridge.api).put('/courses/1').send(title: 'Updated title')
@@ -104,6 +110,9 @@ describe 'Bridge HTTP API', ->
 
       beforeEach ->
         progress = course.progress
+
+      it 'start', (done) ->
+        request(bridge.api).post('/courses/1/start').expect 200, done
 
       it 'show', (done) ->
         request(bridge.api).get('/courses/1/progress').expect 200, progress.toJSON(), done

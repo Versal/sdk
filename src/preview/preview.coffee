@@ -8,6 +8,7 @@ async = require 'async'
 open = require 'open'
 Bridge = require '../bridge/bridge'
 glob = require 'glob'
+jsapi = require 'js-api'
 
 module.exports =
   command: (dirs, options, callback = ->) ->
@@ -25,14 +26,15 @@ module.exports =
       if fs.existsSync gadgetsPath then @addGadgets gadgetsPath
 
       coursePath = "#{baseDir}/versal_data/course.json"
-      if fs.existsSync coursePath then @bridge.linkCourse coursePath, options
+      if fs.existsSync coursePath then @bridge.linkCoursePath coursePath, options
 
       assetsPath = "#{baseDir}/versal_data/local_assets.json"
       if fs.existsSync assetsPath then @bridge.linkAssets assetsPath
 
     # Link default course in readonly mode
     unless @bridge.data.courses.length
-      @bridge.linkCourse path.resolve(__dirname, '../../player/fixtures/course.json'), readonly: true
+      course = new jsapi.Course id: 1
+      @bridge.linkCourse course
 
     @previewGadgets dirs, options, callback
 

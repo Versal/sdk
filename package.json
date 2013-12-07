@@ -14,6 +14,9 @@
   "engines": {
     "node": ">= 0.8.0"
   },
+  "scripts": {
+    "prepublish": "grunt exec:build-player"
+  },
   "preferGlobal": true,
   "dependencies": {
     "watch": "~0.7.0",
@@ -36,7 +39,8 @@
     "stylus": "~0.37.0",
     "express-resource": "~1.0.0",
     "versal-shared-libs": "git+ssh://git@github.com:Versal/shared-libs#v0.0.3",
-    "js-api": "git+ssh://git@github.com:Versal/js-api#v0.3.4",
+    "player": "git+ssh://git@github.com:Versal/player",
+    "js-api": "git+ssh://git@github.com:Versal/js-api",
     "cml": "git+ssh://git@github.com:Versal/cml",
     "mime": "~1.2.11"
   },
