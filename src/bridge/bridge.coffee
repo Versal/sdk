@@ -6,6 +6,7 @@ require 'express-resource'
 shortid = require 'shortid'
 _ = require 'underscore'
 pkg = require '../../package.json'
+compile = require '../compile/compile'
 
 playerPath = path.join __dirname, '../../node_modules/player/dist'
 indexTemplatePath = path.join __dirname, '../../node_modules/player/app/index.html.tmpl'
@@ -163,6 +164,11 @@ module.exports = class Bridge
 
     project = @data.projects.create manifest
     @api.use project.path(), express.static gadgetPath
+    @api.get project.css(), (req, res) ->
+      css = fs.readFileSync path.join(gadgetPath, 'gadget.css'), 'utf-8'
+      compiledCss = compile.processCss css, project.cssClassName()
+      res.set 'Content-Type', 'text/css; charset=UTF-8'
+      res.send compiledCss
     @api.get project.manifest(), (req, res) -> res.send project.toJSON()
     @api.get project.code(), (req, res) -> res.send 200
     @api.get project.compiled(), (req, res) -> res.send 200

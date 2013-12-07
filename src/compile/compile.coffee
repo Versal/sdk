@@ -4,7 +4,7 @@ ncp = require 'ncp'
 path = require 'path'
 requirejs = require 'requirejs'
 async = require 'async'
-stylus = require 'stylus'
+css = require 'css'
 jsapi = require 'js-api'
 
 module.exports =
@@ -136,15 +136,20 @@ module.exports =
     return _.uniq deps
 
   writeCss: (options) ->
-    css = fs.readFileSync "#{options.src}/gadget.css", 'utf-8'
-    css = @processCss(css, options.gadget.cssClassName())
-    fs.writeFileSync "#{options.dest}/gadget.css", css
+    styles = fs.readFileSync "#{options.src}/gadget.css", 'utf-8'
+    styles = @processCss(styles, options.gadget.cssClassName())
+    fs.writeFileSync "#{options.dest}/gadget.css", styles
 
-  processCss: (css, className) ->
-    styl = stylus.convertCSS css
-    # prepend gadget class and indent all lines by two spaces
-    lines = [".#{className}"].concat _.map styl.split('\n'), (line) -> "  #{line}"
-    return stylus(lines.join('\n'), { compress: true }).render()
+  processCss: (styles, className) ->
+    ast = css.parse styles
+    @_namespaceRules ast.stylesheet.rules, className
+    return css.stringify ast, compress: true
+
+  _namespaceRules: (rules, className) ->
+    for rule in rules
+      if rule.rules then @_namespaceRules rule.rules, className
+      if rule.selectors
+        rule.selectors = _.map rule.selectors, (s) -> ".#{className} #{s}"
 
   copyFiles: (src, dest, callback) ->
     # copy assets

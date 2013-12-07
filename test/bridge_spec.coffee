@@ -313,7 +313,10 @@ describe 'Bridge HTTP API', ->
       it 'should serve gadget.css', (done) ->
         request(bridge.api).get(project.css())
           .expect('content-type', 'text/css; charset=UTF-8')
-          .expect 200, done
+          .expect 200, (err, res) ->
+            if err then done err
+            res.text.indexOf(".#{project.cssClassName()}").should.eq 0
+            done()
 
       it 'should serve icon.png', (done) ->
         request(bridge.api).get(project.icon())
