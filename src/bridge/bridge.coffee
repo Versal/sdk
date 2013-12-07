@@ -6,6 +6,7 @@ require 'express-resource'
 shortid = require 'shortid'
 _ = require 'underscore'
 pkg = require '../../package.json'
+compile = require '../compile/compile'
 
 playerPath = path.join __dirname, '../../node_modules/player/dist'
 indexTemplatePath = path.join __dirname, '../../node_modules/player/app/index.html.tmpl'
@@ -156,19 +157,20 @@ module.exports = class Bridge
   linkGadget: (gadgetPath) ->
     id = shortid.generate()
     manifest = require path.join gadgetPath, 'manifest.json'
-    return unless manifest
+    return false unless manifest
 
     manifest.id = shortid.generate()
     manifest.catalog = 'sandbox'
 
     project = @data.projects.create manifest
     @api.use project.path(), express.static gadgetPath
+    @api.get project.css(), (req, res) ->
+      css = fs.readFileSync path.join(gadgetPath, 'gadget.css'), 'utf-8'
+      compiledCss = compile.processCss css, project.cssClassName()
+      res.set 'Content-Type', 'text/css; charset=UTF-8'
+      res.send compiledCss
     @api.get project.manifest(), (req, res) -> res.send project.toJSON()
     @api.get project.code(), (req, res) -> res.send 200
     @api.get project.compiled(), (req, res) -> res.send 200
     project._gadgetPath = gadgetPath
-
-    # FIXME: Legacy stuff - remove on October 2013
-    @api.get "/gadgets/#{project.id}", (req, res) -> res.send project.toJSON()
-    @api.use "/gadgets/#{project.id}", express.static gadgetPath
     return project

@@ -313,35 +313,13 @@ describe 'Bridge HTTP API', ->
       it 'should serve gadget.css', (done) ->
         request(bridge.api).get(project.css())
           .expect('content-type', 'text/css; charset=UTF-8')
-          .expect 200, done
+          .expect 200, (err, res) ->
+            if err then done err
+            res.text.indexOf(".#{project.cssClassName()}").should.eq 0
+            done()
 
       it 'should serve icon.png', (done) ->
         request(bridge.api).get(project.icon())
-          .expect('content-length', '2696')
-          .expect('content-type', 'image/png')
-          .expect 200, done
-
-    describe 'legacy paths', ->
-      gadgetUrl = null
-      beforeEach ->
-        gadgetUrl = "/gadgets/#{project.id}"
-
-      it 'should serve gadget manifest', (done) ->
-        request(bridge.api).get("#{gadgetUrl}")
-          .expect 200, project.toJSON(), done
-
-      it 'should serve gadget.js', (done) ->
-        request(bridge.api).get("#{gadgetUrl}/gadget.js")
-          .expect('content-type', 'application/javascript')
-          .expect 200, done
-
-      it 'should serve gadget.css', (done) ->
-        request(bridge.api).get("#{gadgetUrl}/gadget.css")
-          .expect('content-type', 'text/css; charset=UTF-8')
-          .expect 200, done
-
-      it 'should serve icon.png', (done) ->
-        request(bridge.api).get("#{gadgetUrl}/assets/icon.png")
           .expect('content-length', '2696')
           .expect('content-type', 'image/png')
           .expect 200, done

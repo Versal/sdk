@@ -51,15 +51,11 @@ module.exports =
     # Add gadget from specified directories
     async.map dirs, (dir, cb) =>
       dir = path.resolve dir
-      return cb(null, false) unless fs.existsSync "#{dir}/manifest.json"
+      if fs.existsSync path.join dir, 'manifest.json'
+        cb null, @bridge.linkGadget dir
+      else
+        cb null, false
 
-      sdk.compile dir, options, (err) =>
-        if err then return cb(err)
-        if fs.existsSync "#{dir}/dist"
-          @bridge.linkGadget "#{dir}/dist"
-          cb null, true
-        else
-          cb null, false
     # run server after gadgets were compiled
     , (err, results) =>
       if(err) then return callback err
