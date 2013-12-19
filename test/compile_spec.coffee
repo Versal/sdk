@@ -83,16 +83,17 @@ describe 'Compile', ->
       result.should.match /return require\('gadget'\);\s*}\);$/
 
   describe 'css processing', ->
-    css = result = project = null
-
-    before ->
-      css = 'h1 { color: white; } .blue { color: blue; } p #red { color: red; }'
-      project =
-        cssClassName: -> 'gadget-am-test-001'
-      result = compile.processCss css, project.cssClassName()
+    project = null
 
     it 'should prefix all css rules with gadget class name', ->
-      result.should.eql '.gadget-am-test-001 h1{color:white;}.gadget-am-test-001 .blue{color:blue;}.gadget-am-test-001 p #red{color:red;}'
+      css = 'h1 { color: white; } .blue { color: blue; } p #red { color: red; }'
+      result = compile.processCss css, '_prefix'
+      result.should.eql '._prefix h1{color:white;}._prefix .blue{color:blue;}._prefix p #red{color:red;}'
+
+    it 'should not prefix @font-face', ->
+      css = 'h1 { color: white; } @font-face {color: red; }'
+      result = compile.processCss css, '_prefix'
+      result.should.eql '._prefix h1{color:white;}@font-face{color:red;}'
 
   describe 'writeCss', ->
     options =
