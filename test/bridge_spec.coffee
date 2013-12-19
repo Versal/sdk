@@ -65,6 +65,9 @@ describe 'Bridge HTTP API', ->
     bridge.data.courses.add { id: 1 }
     request(bridge.site).get('/').expect 200, done
 
+  it 'serves player files', (done) ->
+    request(bridge.site).get('/iframe.html').expect 200, done
+
   it 'rewrite styles/assets', (done) ->
     request(bridge.site).get('/styles/assets/font/fontawesome-webfont.eot').expect 200, done
 
