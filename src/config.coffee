@@ -6,26 +6,7 @@ config = (options) ->
   home = options?.home || HOME
   throw new Error "Home directory does not exists at #{home}" unless fs.existsSync home
 
-  base = "#{home}/.versal"
-  # if ~/.versal is a file then migrate it to the new format
-  # TODO: Remove this in October, 2013
-  if fs.existsSync(base) && fs.statSync(base).isFile()
-    sessionId = migrate base
-    config = new Config { base }
-    if sessionId
-      config.set { sessionId }, env: 'default'
-      config.set { sessionId }, env: 'stage'
-    return config
-
-  return new Config { base }
-
-# Move away old .versal file and store SessionId for convenience
-# TODO: Remove this in October, 2013
-migrate = (versalPath) ->
-  oldConfig = fs.readJsonSync versalPath
-  fs.renameSync versalPath, versalPath.replace('.versal', 'versal_old')
-  if oldConfig.sessionIds
-    return oldConfig.sessionIds["https://stack.versal.com/api2"]
+  return new Config base: "#{home}/.versal"
 
 class Config
   _env: 'default'

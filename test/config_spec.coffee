@@ -11,33 +11,7 @@ describe 'Config', ->
   cfg = null
 
   before ->
-    # create temp/config and temp/config/migrate for our experiments
-    fs.mkdirsSync path.join home, 'migrate'
-
-  describe 'migration', ->
-    oldConfig = oldConfigPath = null
-
-    before ->
-      # old config was stored as .versal file in user's $HOME
-      oldConfigPath = path.join home, 'migrate', '.versal'
-      oldConfig =
-        sessionIds:
-          'https://stack.versal.com/api2': 'foo'
-          'http://localhost': 'bar'
-      fs.outputJsonSync oldConfigPath, oldConfig
-      cfg = config { home: path.join home, 'migrate' }
-
-    it 'should rename .versal to versal_old', ->
-      fs.readJsonSync("#{home}/migrate/versal_old").should.eql oldConfig
-
-    it 'should remove .versal file', ->
-      fs.statSync(oldConfigPath).isFile().should.be.false
-
-    it 'should set default:sessionId', ->
-      cfg.get('sessionId').should.eq 'foo'
-
-    it 'should set stage:sessionId', ->
-      cfg.get('sessionId', env: 'stage').should.eq 'foo'
+    fs.mkdirsSync path.join home
 
   describe 'when not exists', ->
     before (done) ->
