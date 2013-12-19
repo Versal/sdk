@@ -164,13 +164,18 @@ module.exports = class Bridge
 
     project = @data.projects.create manifest
     @api.use project.path(), express.static gadgetPath
-    @api.get project.css(), (req, res) ->
-      css = fs.readFileSync path.join(gadgetPath, 'gadget.css'), 'utf-8'
-      compiledCss = compile.processCss css, project.cssClassName()
-      res.set 'Content-Type', 'text/css; charset=UTF-8'
-      res.send compiledCss
+    # Installed gadget
+    if @_installedGadget gadgetPath
+      @api.get project.css(), (req, res) -> res.sendfile path.join(gadgetPath, 'gadget.css')
+    else
+      @api.get project.css(), (req, res) ->
+        css = fs.readFileSync path.join(gadgetPath, 'gadget.css'), 'utf-8'
+        compiledCss = compile.processCss css, project.cssClassName()
+        res.set 'Content-Type', 'text/css; charset=UTF-8'
+        res.send compiledCss
     @api.get project.manifest(), (req, res) -> res.send project.toJSON()
-    @api.get project.code(), (req, res) -> res.send 200
-    @api.get project.compiled(), (req, res) -> res.send 200
     project._gadgetPath = gadgetPath
     return project
+
+  _installedGadget: (gadgetPath) ->
+    gadgetPath?.indexOf('versal_data/') > 0
