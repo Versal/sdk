@@ -149,7 +149,11 @@ module.exports =
     for rule in rules
       if rule.rules then @_namespaceRules rule.rules, className
       if rule.selectors
-        rule.selectors = _.map rule.selectors, (s) -> ".#{className} #{s}"
+        rule.selectors = _.map rule.selectors, _.partial(@_prefixSelector, className)
+
+  _prefixSelector: (prefix, selector) ->
+    return selector if selector[0] == '@'
+    ".#{prefix} #{selector}"
 
   copyFiles: (src, dest, callback) ->
     # copy assets
