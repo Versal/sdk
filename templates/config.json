@@ -1,0 +1,10 @@
+{
+	"default": {
+  	"apiUrl": "https://stack.versal.com/api2",
+  	"authUrl": "https://versal.com/signin"
+	},
+  "stage": {
+    "apiUrl": "https://stagingstack.versal.com/api2",
+    "authUrl": "https://versal.com/signin"
+  }
+}

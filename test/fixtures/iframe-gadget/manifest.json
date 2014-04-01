@@ -1,0 +1,9 @@
+{
+  "name": "iframe-gadget",
+  "version": "0.1.0",
+  "title": "My gadget",
+  "description": "Does nothing just yet",
+  "author": "anonymous",
+  "defaultAttributes": {},
+  "defaultLearnerState": {}
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Space",
+  "version": "0.1.0",
+  "title": "Welcome to space!",
+  "description": "Floating module",
+  "author": "AM",
+  "launcher": "iframe",
+  "defaultConfig": {
+    "duration": 1500,
+    "message": "Open the bay doors, HAL."
+  },
+  "defaultUserState": {}
+}

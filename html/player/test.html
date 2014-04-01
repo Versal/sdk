@@ -1,0 +1,79 @@
+<html>
+  <head>
+  </head>
+  <body style="margin:0">
+    <div class="container">
+      <!-- Version 3: postMessage injection -->
+      <script>
+        (function () {
+          var options = {
+            sid:           'LEARNER_SID',
+            course:        'COURSE_ID',
+            completionUrl: 'COMPLETION_URL'
+          };
+
+          var origin = 'https://stack.versal.com';
+          var handlePlayerEvent = function (data, e) {
+            switch (data.event) {
+
+              // Launch the player for the current course/learner
+              case 'player:ready':
+                options.event = 'player:launch';
+                options.api = origin + '/api2';
+                options.noEditable = true;
+                e.source.postMessage(JSON.stringify(options), origin);
+              break;
+
+              // Redirect to the specified `completionUrl`
+              case 'player:course:completed':
+                var userId = data.user.id;
+                window.location.href = options.completionUrl + '?userId=' + userId;
+              break;
+            }
+          };
+
+          window.addEventListener('message', function (e) {
+            if (e.origin === origin) try {
+              handlePlayerEvent(JSON.parse(e.data), e);
+            } catch (e) {}
+          });
+
+          document.write('<script src="' + origin + '/player2/scripts/versal.js"><\/script>');
+        })();
+      </script>
+
+      <!-- Version 4: lulu -->
+      <!--
+      <iframe id="lulu-frame"></iframe>
+      <script src="http://localhost:3232/scripts/lulu.js"></script>
+      <script>
+
+        // Set options
+        var opts = {
+          course: '6lgckc',
+          api: 'https://stack.versal.com/api2',
+          collabUrl: 'ws://stcollab.versal.com',
+          sid: 'fdc8528a-1fd1-47e1-8896-1d9e818406bd'
+        };
+
+        // Use global `$v` from lulu.js to grab a message-able player
+        var player = $v.launch(document.getElementById('lulu-frame'), opts);
+
+        player.on('player:ready', function () {
+          alert('Player is ready!');
+        });
+
+        player.on('logoClick', function () {
+          alert('Clicked the beach ball!');
+        });
+
+        player.on('publishCourse', function () {
+          alert('Clicked "overview"');
+        });
+      </script>
+      -->
+
+    </div>
+  </body>
+</html>
+

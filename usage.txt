@@ -1,0 +1,19 @@
+Usage: versal <command>
+
+where <command> is one of the following:
+
+#create <name>
+  creates gadget directory from the boilerplate
+
+  options:
+    --template <template> use custom template
+      supported templates: minimal, space
+
+#preview [<directory> <dir2> <dir3> ...]
+  launches preview server in the current directory
+
+#signin
+  sign in as a Versal developer and publish gadgets in a sandbox
+
+#publish [<directory>]
+  publish gadget from the current directory

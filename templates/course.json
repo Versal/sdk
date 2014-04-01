@@ -1,0 +1,19 @@
+{
+  "id": "local",
+  "isEditable": true,
+  "title": "local course",
+  "shortDesc": "",
+  "longDesc": "",
+  "authorBio": "",
+  "tags": [],
+  "catalogs": [],
+  "lessons": [
+    {
+      "id": "1",
+      "title": "Lesson 1",
+      "gadgets": []
+    }
+  ],
+  "progress": { "lesson": 0 },
+  "assetUrlTemplate": "//localhost:3000/api/assets/<%= id %>"
+}
