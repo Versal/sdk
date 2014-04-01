@@ -22,12 +22,20 @@ module.exports = (dir, options, callback) ->
       if err then return callback err
       uploadBundleToRestAPI bundlePath, options, callback
 
+touchLegacyFile = (dir, fileName) ->
+  filePath = path.join dir, fileName
+  unless fs.existsSync filePath
+    fs.writeFileSync filePath, '/* Nothing to see here */'
+
 createBundleZip = (dir, callback) ->
   createIgnoreFilter dir, (err, filter) ->
     if err then return callback err
 
     tmp.dir (err, tmpdir) ->
       if err then return callback err
+
+      # TODO: remove once the rest-api stops asserting that these exist
+      ['gadget.js', 'gadget.css'].map touchLegacyFile.bind @, tmpdir
 
       console.log chalk.yellow('Reading source directory:')
       reader = fstream.Reader({ path: dir, type: 'Directory', filter })
