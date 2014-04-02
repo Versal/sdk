@@ -1,3 +1,10 @@
+# v0.5.3
+
+  * Bump Player to 1.1.2 (fix getPath/setPath behavior)
+  * Use 0.0.1 as default version for new gadgets
+
+---
+
 # v0.5.2
 
   * Generate legacy required files at publish time
