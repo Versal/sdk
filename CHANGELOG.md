@@ -1,3 +1,15 @@
+# v0.6.2
+
+  * Bump Player to 1.2.1 (support for Blob in Asset.upload)
+
+---
+
+# v0.6.1
+
+  * Update templates to accomodate for Player 1.2.0
+
+---
+
 # v0.6.0
 
   * Bump Player to 1.2.0 (prefer /index.html to /assets/index.html)
