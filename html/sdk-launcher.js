@@ -1,6 +1,15 @@
 (function() {
   window.vs || (window.vs = {});
 
+  window.addEventListener('message', function(evt){
+    if(typeof evt == 'object') {
+      var message = evt.data;
+      if(message.event) {
+        console.log('SDK received message from gadget:', message.event, message.data);
+      }
+    }
+  });
+
   require.config({ baseUrl: 'scripts' });
 
   require(['lib/config', 'config'], function(cdn_config, player_config) {

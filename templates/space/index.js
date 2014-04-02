@@ -25,11 +25,11 @@ var propertySheets = {
     message: { type: 'Text' }
   }
 };
-window.parent.postMessage(JSON.stringify(propertySheets), window.location.origin);
-window.parent.postMessage(JSON.stringify({ event: 'setHeight', data: { pixels: 1148 } }), window.location.origin);
+window.parent.postMessage(propertySheets, window.location.origin);
+window.parent.postMessage({ event: 'setHeight', data: { pixels: 1148 } }, window.location.origin);
 
 window.addEventListener('message', function(e){
-  var message = JSON.parse(e.data); // remove this when player is updated
+  var message = e.data;
   console.log(message.event, message.data);
 
   switch(message.event) {
