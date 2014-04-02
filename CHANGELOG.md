@@ -1,3 +1,9 @@
+# v0.6.0
+
+  * Bump Player to 1.2.0 (prefer /index.html to /assets/index.html)
+
+---
+
 # v0.5.3
 
   * Bump Player to 1.1.2 (fix getPath/setPath behavior)
