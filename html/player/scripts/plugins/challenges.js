@@ -2,7 +2,14 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   define(['cdn.underscore', 'models/json_asset', 'plugins/scoring', 'plugins/vs.api', 'plugins/sum_array'], function(_, JsonAsset, scoring, api, sumArray) {
-    var Challenges;
+    var Challenges, blobifyObj;
+    blobifyObj = function(_obj) {
+      var obj;
+      obj = JSON.stringify(_obj);
+      return new Blob([obj], {
+        type: 'application/json'
+      });
+    };
     return Challenges = (function() {
       Challenges.prototype.defaultScores = {
         scores: [],
@@ -103,7 +110,7 @@
         this._challenges = _challenges;
         attributes = {
           title: 'challenge bank',
-          content: JSON.stringify({
+          content: blobifyObj({
             resources: this._challenges
           }),
           contentType: 'application/json'

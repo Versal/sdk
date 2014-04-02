@@ -1,6 +1,6 @@
 /*!
- * js-api v0.5.13
- * lovingly baked from aa49d82 on 02. January 2014
+ * js-api v0.5.19
+ * lovingly baked from 793f46c on 02. April 2014
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -13,7 +13,6 @@
     }
     root.vs.api = factory();
 }(this, function () {
-
 /**
  * almond 0.2.5 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -627,8 +626,6 @@ define('models/asset',['require','exports','module','backbone','../collections/a
 
     Asset.prototype.urlRoot = '/assets';
 
-    Asset.prototype.validTypes = ['image', 'video'];
-
     Asset.prototype.defaults = {
       tags: []
     };
@@ -708,8 +705,8 @@ define('models/asset',['require','exports','module','backbone','../collections/a
         if (!attrs.content) {
           return 'content is required to upload an asset';
         }
-        if (!(attrs.contentType && _.contains(this.validTypes, attrs.contentType.split('/')[0]))) {
-          return 'contentType should contain valid content type';
+        if (!attrs.contentType) {
+          return 'contentType is required to upload an asset';
         }
       }
       if (!attrs.title) {
@@ -1208,6 +1205,8 @@ define('models/gadget',['require','exports','module','backbone','underscore','./
       Gadget.__super__.constructor.call(this, attrs, options);
     }
 
+    Gadget.prototype._locals = ['uploadPercent'];
+
     Gadget.prototype.parse = function(attrs) {
       if (!attrs) {
         return;
@@ -1237,7 +1236,7 @@ define('models/gadget',['require','exports','module','backbone','underscore','./
       if (this.userState) {
         json.userState = this.userState.toJSON();
       }
-      return json;
+      return _.omit(json, this._locals);
     };
 
     Gadget.prototype.validate = function(attrs) {
@@ -1752,6 +1751,9 @@ define('models/user',['require','exports','module','backbone','underscore'],func
     };
 
     User.prototype.fetch = function(options) {
+      if (options == null) {
+        options = {};
+      }
       if (options.self) {
         options.url = '/user';
       }
@@ -1760,7 +1762,7 @@ define('models/user',['require','exports','module','backbone','underscore'],func
 
     User.prototype.toJSON = function() {
       return _.extend({}, this.attributes, {
-        orgs: this.orgs
+        orgs: this.orgs.toJSON()
       });
     };
 
@@ -2001,11 +2003,6 @@ define('models/course',['require','exports','module','backbone','underscore','./
           parse: true
         });
       }
-      if (attrs.users) {
-        this.users.set(attrs.users, {
-          parse: true
-        });
-      }
       if (attrs.revisions) {
         this.revisions.set(attrs.revisions, {
           parse: true
@@ -2026,7 +2023,7 @@ define('models/course',['require','exports','module','backbone','underscore','./
           lessonIndex: attrs.currentPosition.currentLesson
         });
       }
-      return _.omit(attrs, 'lessons', 'authors', 'revisions', 'head', 'users', 'progress', 'palette');
+      return _.omit(attrs, 'lessons', 'authors', 'revisions', 'head', 'progress', 'palette');
     };
 
     Course.prototype.toJSON = function(options) {
@@ -2428,12 +2425,19 @@ define('adapters/browser',['require','exports','module','backbone','underscore']
       });
       for (key in _ref) {
         val = _ref[key];
-        if (!(val instanceof File) && (_.isArray(val) || _.isObject(val))) {
-          val = JSON.stringify(val);
-        }
-        formData.append(key, val);
+        formData.append(key, this.normalizeValue(val));
       }
       return formData;
+    };
+
+    BrowserUploadAdapter.prototype.normalizeValue = function(val) {
+      if (val instanceof File || val instanceof Blob) {
+        return val;
+      }
+      if (_.isArray(val) || _.isObject(val)) {
+        return JSON.stringify(val);
+      }
+      return val;
     };
 
     BrowserUploadAdapter.prototype.sendRequest = function(options) {};
@@ -2617,6 +2621,7 @@ define('api',['require','exports','module','backbone','jquery','./pagination','u
 }).call(this);
 
 });
+
   define('underscore', [], function(){
     return window._;
   });
