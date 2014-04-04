@@ -8,9 +8,7 @@ Dependencies: npm
 
 The Versal SDK is now published as a node.js package. To install:
 
-    npm install -g versal-sdk
-
-(If this gives a permission error on your system, run `sudo npm install -g versal-sdk`. However, it is better to avoid using `sudo` for `npm`, if it is possible on your system.)
+  npm install -g versal-sdk
 
 If all goes well, you should now have be able to use the `versal` command-line
 tool.  If that didn't work, make sure your `$PATH` is set appropriately to
