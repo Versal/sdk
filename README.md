@@ -1,4 +1,4 @@
-# Versal Gadget SDK
+# Versal Gadget SDK [![Travis CI](https://travis-ci.org/Versal/sdk.svg)](https://travis-ci.org/Versal/sdk)
 
 ## Dependencies
 
