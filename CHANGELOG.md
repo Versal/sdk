@@ -1,3 +1,11 @@
+# v0.6.3
+
+  * Add Travis CI
+  * Minor fixes (bugs and documentation)
+  * Bump Player to 1.2.2 (fix sync events, iframe border, asset reps, etc...)
+
+---
+
 # v0.6.2
 
   * Bump Player to 1.2.1 (support for Blob in Asset.upload)
