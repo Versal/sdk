@@ -45,20 +45,20 @@ information.
 
 ### versal signin
 
-This command will sign you in to Versal.com. You will be asked your versal email and password.
+Sign you in to Versal.com. You will be asked for your Versal email and password.
 The session ID will be stored in `~/.versal/config.json`.
 
 ### versal create \<name\> [--template template-name]
 
-Creates a gadget boilerplate in the named directory. If this directory already exists, the command `versal create` will not do anything.
+Creates a gadget boilerplate in a new directory with the given name. If this directory already exists, the command `versal create` will not do anything.
 
-Use the `--template` option to use a custom template. Supported templates: `minimal`, `space`.
+The `--template` option allows you to choose a template. Supported templates: `minimal` (default), `space`.
 
 ### versal preview [\<directory1\> \<directory2\> \<directory3\> ...]
 
-Launches a local Player and API server for testing your new gadget in the "sandbox". If multiple
+Launches a local Player and API server for testing your new gadget. If multiple
 gadget directories are specified, any gadgets with valid `manifest.json` files
-will be added to your "sandbox" tray.
+will be added to your local tray.
 
 If no directory is specified, the current working directory will be used.
 
