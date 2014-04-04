@@ -7,7 +7,6 @@ prompt = require('prompt')
 pkg = require '../package.json'
 fs = require 'fs'
 
-cmd = argv._.shift() || 'help'
 if argv.env then config.env argv.env
 
 cli =
@@ -111,5 +110,6 @@ cli =
     console.log 'Enter your Versal credentials to sign in:'
     prompt.get promptParams, callback
 
+cmd = argv._.shift() || 'help'
 if typeof cli[cmd] == 'function'
   cli[cmd](argv)
