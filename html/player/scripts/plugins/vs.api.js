@@ -1,6 +1,6 @@
 /*!
- * js-api v0.5.19
- * lovingly baked from 793f46c on 02. April 2014
+ * js-api v0.5.20
+ * lovingly baked from e7a64db on 02. April 2014
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -13,6 +13,7 @@
     }
     root.vs.api = factory();
 }(this, function () {
+
 /**
  * almond 0.2.5 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -2433,11 +2434,11 @@ define('adapters/browser',['require','exports','module','backbone','underscore']
     BrowserUploadAdapter.prototype.normalizeValue = function(val) {
       if (val instanceof File || val instanceof Blob) {
         return val;
-      }
-      if (_.isArray(val) || _.isObject(val)) {
+      } else if (_.isArray(val) || _.isObject(val)) {
         return JSON.stringify(val);
+      } else {
+        return val;
       }
-      return val;
     };
 
     BrowserUploadAdapter.prototype.sendRequest = function(options) {};
@@ -2621,7 +2622,6 @@ define('api',['require','exports','module','backbone','jquery','./pagination','u
 }).call(this);
 
 });
-
   define('underscore', [], function(){
     return window._;
   });
