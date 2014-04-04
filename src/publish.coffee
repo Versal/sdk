@@ -91,7 +91,7 @@ uploadBundleToRestAPI = (bundlePath, options, callback) ->
 
   requestOptions =
     multipart: true
-    timeout: 73000
+    timeout: if options.timeout then parseInt(options.timeout) else 120000
     headers:
       SID: sessionId
 
