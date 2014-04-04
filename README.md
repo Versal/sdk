@@ -1,4 +1,4 @@
-# Versal Gadget SDK [![Travis CI](https://travis-ci.org/Versal/sdk.svg)](https://travis-ci.org/Versal/sdk) [![Code Climate](https://codeclimate.com/github/Versal/sdk.png)](https://codeclimate.com/github/Versal/sdk)
+# Versal Gadget SDK [![Travis CI](https://travis-ci.org/Versal/sdk.svg)](https://travis-ci.org/Versal/sdk)
 
 ## Dependencies
 
