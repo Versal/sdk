@@ -1,7 +1,5 @@
 # Versal Gadget SDK
 
-## Short summary
-
 The Versal SDK is published as a node.js package. To install:
 
     npm install -g versal-sdk
