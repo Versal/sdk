@@ -14,13 +14,20 @@ cli =
   help: (argv) ->
     if argv.v || argv.version then return console.log pkg.version
 
-    fs.readFile path.join(__dirname, '../usage.txt'), 'utf-8', (err, content) ->
-      if err then return console.log chalk.red err
-      content.split('\n').forEach (l) ->
-        if l.indexOf('#') == 0
-          console.log chalk.yellow l.slice(1)
-        else
-          console.log l
+    console.log """
+      #{chalk.yellow("versal create <name> [--template <template>]")}
+        creates gadget directory from the boilerplate
+        options:
+          --template <template> use custom template
+            supported templates: minimal, space
+      #{chalk.yellow("versal preview [<directory> <dir2> <dir3> ...]")}
+        launches preview server in the current directory
+      #{chalk.yellow("versal signin")}
+        sign in as a Versal developer and publish gadgets in a sandbox
+      #{chalk.yellow("versal publish [<directory>]")}
+        publish gadget from the current directory
+      #{chalk.green("For more help, see https://github.com/Versal/sdk")}
+    """
 
   create: (argv) ->
     create = require('./create')
