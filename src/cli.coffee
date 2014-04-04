@@ -103,13 +103,13 @@ commands =
       }
       {
         name: "password"
-        message: "Password at Versal.com:"
+        message: "Password:"
         required: true
         hidden: true
       }
     ]
 
-    console.log 'Enter your Versal credentials to sign in:'
+    console.log 'Enter your Versal.com credentials to sign in:'
     prompt.get promptParams, callback
 
 command = argv._.shift() || 'help'
