@@ -9,7 +9,7 @@ The session ID will be stored in `~/.versal/config.json`.
 
 Creates a gadget boilerplate in the named directory. If this directory already exists, the command `versal create` will not do anything.
 
-### versal create \<name\> --template ttt
+### versal create \<name\> [--template ttt]
 
 Use a custom template for creating a new gadget project.
 
@@ -31,6 +31,5 @@ Publishes your gadget to versal.com. The following steps are taken:
 - Ensures a valid Session ID is specified in your config file.
 - Compresses the gadget folder to an archive, excluding files and folders specified in your `.versalignore` file.
 - Uploads the archive to the stack.versal.com API.
-
 
 If no directory is specified, the current working directory will be used.
