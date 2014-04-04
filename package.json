@@ -14,8 +14,9 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "test": "mocha test/*.coffee --compilers coffee:coffee-script/register",
-    "coveralls": "mocha test/*.coffee --require blanket --reporter mocha-coveralls-reporter",
+    "test": "mocha test/*.coffee --require blanket",
+    "test-with-coverage": "mocha test/*.coffee --require blanket --reporter travis-cov",
+    "html-coverage": "mocha test/*.coffee --require blanket --reporter html-cov > coverage.html",
     "copy-player": "cp -r ../player/dist/ ./html/player/"
   },
   "config": {
@@ -23,6 +24,9 @@
       "pattern": ".coffee",
       "data-cover-never": "node_modules",
       "loader": "./node-loaders/coffee-script"
+    },
+    "travis-cov": {
+      "threshold": 93
     }
   },
   "preferGlobal": true,
@@ -50,10 +54,10 @@
     "blanket": "^1.1.6",
     "chai": "~1.5.0",
     "mocha": "~1.9",
-    "mocha-coveralls-reporter": "0.0.5",
     "sinon": "~1.7.2",
     "superagent": "~0.14.9",
     "supertest": "~0.7.1",
-    "tmp": "0.0.23"
+    "tmp": "0.0.23",
+    "travis-cov": "^0.2.5"
   }
 }

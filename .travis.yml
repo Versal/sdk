@@ -3,4 +3,5 @@ node_js:
   - "0.11"
   - "0.10"
   - "0.8"
-after_success: npm run-script coveralls
+script: npm run-script test-with-coverage
+after_failure: npm test
