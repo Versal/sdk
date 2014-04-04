@@ -9,7 +9,7 @@ fs = require 'fs'
 
 if argv.env then config.env argv.env
 
-cli =
+commands =
   help: (argv) ->
     if argv.v || argv.version then return console.log pkg.version
 
@@ -110,6 +110,6 @@ cli =
     console.log 'Enter your Versal credentials to sign in:'
     prompt.get promptParams, callback
 
-cmd = argv._.shift() || 'help'
-if typeof cli[cmd] == 'function'
-  cli[cmd](argv)
+command = argv._.shift() || 'help'
+if typeof commands[command] == 'function'
+  commands[command](argv)
