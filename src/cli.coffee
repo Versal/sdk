@@ -42,10 +42,12 @@ commands =
 
   preview: (argv) ->
     preview = require('./preview')
-    dirs = argv._
-    dirs.push process.cwd() unless dirs.length
+    if argv._.length == 0
+      dirs = [process.cwd()]
+    else
+      dirs = argv._
 
-    preview argv._, (err, cnt, port) ->
+    preview dirs, (err, cnt, port) ->
       if err then return console.log chalk.red(err)
       console.log chalk.green("\\\\\\  ///  Versal SDK preview is started")
       console.log chalk.yellow(" \\\\\\///   ") + chalk.white("open http://localhost:#{port} in your favorite browser")
