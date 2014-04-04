@@ -5,15 +5,11 @@
 This command will sign you in to Versal.com. You will be asked your versal email and password.
 The session ID will be stored in `~/.versal/config.json`.
 
-### versal create \<name\>
+### versal create \<name\> [--template template-name]
 
 Creates a gadget boilerplate in the named directory. If this directory already exists, the command `versal create` will not do anything.
 
-### versal create \<name\> [--template ttt]
-
-Use a custom template for creating a new gadget project.
-
-Supported templates: `minimal`, `space`
+Use the `--template` option to use a custom template. Supported templates: `minimal`, `space`.
 
 ### versal preview [\<directory1\> \<directory2\> \<directory3\> ...]
 
