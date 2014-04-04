@@ -15,7 +15,7 @@
   },
   "scripts": {
     "test": "mocha test/*.coffee --compilers coffee:coffee-script/register",
-    "coveralls": "mocha test/*.coffee --require blanket --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js",
+    "coveralls": "mocha test/*.coffee --require blanket --reporter mocha-coveralls-reporter",
     "copy-player": "cp -r ../player/dist/ ./html/player/"
   },
   "config": {
@@ -37,7 +37,6 @@
     "fs-extra": "~0.6.3",
     "fstream": "~0.1.25",
     "minimatch": "~0.2.14",
-    "mocha-lcov-reporter": "0.0.1",
     "needle": "~0.6.0",
     "optimist": "~0.3.5",
     "prompt": "~0.2.12",
@@ -48,13 +47,13 @@
     "underscore": "~1.5.1"
   },
   "devDependencies": {
+    "blanket": "^1.1.6",
     "chai": "~1.5.0",
-    "mocha": "~1.8.2",
+    "mocha": "~1.9",
+    "mocha-coveralls-reporter": "0.0.5",
     "sinon": "~1.7.2",
     "superagent": "~0.14.9",
     "supertest": "~0.7.1",
-    "tmp": "0.0.23",
-    "blanket": "^1.1.6",
-    "coveralls": "^2.10.0"
+    "tmp": "0.0.23"
   }
 }
