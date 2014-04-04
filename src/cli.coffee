@@ -7,10 +7,9 @@ prompt = require('prompt')
 pkg = require '../package.json'
 fs = require 'fs'
 
-cmd = argv._.shift() || 'help'
 if argv.env then config.env argv.env
 
-cli =
+commands =
   help: (argv) ->
     if argv.v || argv.version then return console.log pkg.version
 
@@ -43,10 +42,12 @@ cli =
 
   preview: (argv) ->
     preview = require('./preview')
-    dirs = argv._
-    dirs.push process.cwd() unless dirs.length
+    if argv._.length == 0
+      dirs = [process.cwd()]
+    else
+      dirs = argv._
 
-    preview argv._, (err, cnt, port) ->
+    preview dirs, (err, cnt, port) ->
       if err then return console.log chalk.red(err)
       console.log chalk.green("\\\\\\  ///  Versal SDK preview is started")
       console.log chalk.yellow(" \\\\\\///   ") + chalk.white("open http://localhost:#{port} in your favorite browser")
@@ -102,14 +103,15 @@ cli =
       }
       {
         name: "password"
-        message: "Password at Versal.com:"
+        message: "Password:"
         required: true
         hidden: true
       }
     ]
 
-    console.log 'Enter your Versal credentials to sign in:'
+    console.log 'Enter your Versal.com credentials to sign in:'
     prompt.get promptParams, callback
 
-if typeof cli[cmd] == 'function'
-  cli[cmd](argv)
+command = argv._.shift() || 'help'
+if typeof commands[command] == 'function'
+  commands[command](argv)
