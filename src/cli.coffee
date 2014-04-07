@@ -53,15 +53,6 @@ commands =
       console.log chalk.yellow(" \\\\\\///   ") + chalk.white("open http://localhost:#{port} in your favorite browser")
       console.log chalk.red("  \\\\\\/    ") + chalk.grey("ctrl + C to stop")
 
-  # Legacy
-  compile: (argv) ->
-    compile = require './compile'
-    dir = argv._.shift() || process.cwd()
-
-    compile dir, {}, (err) ->
-      if err then console.log err
-      else console.log chalk.green('compile ok')
-
   signin: (argv) ->
     this.promptCredentials argv, (err, credentials) ->
       if err then return callback err
