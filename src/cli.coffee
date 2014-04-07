@@ -70,12 +70,10 @@ commands =
       else console.log chalk.green('compile ok')
 
   signin: (argv) ->
-    this.promptCredentials argv, (err, credentials) ->
-      if err then return callback err
-      credentials.authUrl = argv.authUrl || config.get 'authUrl'
-
-      restapi.signin credentials, (err, sessionId) ->
-        if err then return console.log chalk.red err
+    argv.authUrl ?= config.get 'authUrl'
+    console.log "Signing in to #{argv.authUrl}"
+    signin argv, (err, sessionId) ->
+      if err then return logError err
         config.set 'sessionId', sessionId
         console.log chalk.green 'You have signed in successfully'
 
