@@ -6,20 +6,17 @@ async = require 'async'
 HTML_PATH = path.join(__dirname, '../html')
 PLAYER_PATH = path.join(HTML_PATH, 'player')
 
-preview = (dirs, options, callback = ->) ->
+module.exports = (dirs, options, callback = ->) ->
   if typeof dirs == 'string' then dirs = [dirs]
-  if typeof options == 'function' then callback = options
-
   api = new LocalAPI()
-  port = options.port || 3000
 
-  async.reduce dirs, 0, api.linkGadgetReduce.bind(api), (err, cnt) ->
+  async.map dirs, api.linkGadget.bind(api), (err, results) ->
     if err then return callback err
-    if cnt == 0 then return callback new Error('Could not find any gadget manifests to preview.')
-    preview.startServer api, port
-    callback null, cnt, port
+    if options.port then startServer api, options.port
 
-preview.startServer = (api, port) ->
+    callback null, results
+
+startServer = (api, port) ->
   server = express()
     .use(express.json())
     .use(express.urlencoded())
@@ -30,5 +27,3 @@ preview.startServer = (api, port) ->
     .use(express.logger())
 
   server.listen port
-
-module.exports = preview

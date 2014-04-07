@@ -15,7 +15,7 @@
   },
   "scripts": {
     "test": "mocha test/*.coffee --require blanket --reporter spec",
-    "test-with-coverage": "mocha test/*.coffee --require blanket --reporter travis-cov",
+    "test-coverage": "mocha test/*.coffee --require blanket --reporter travis-cov",
     "html-coverage": "mocha test/*.coffee --require blanket --reporter html-cov > coverage.html",
     "copy-player": "cp -r ../player/dist/ ./html/player/"
   },
