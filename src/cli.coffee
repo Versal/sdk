@@ -74,8 +74,9 @@ commands =
     console.log "Signing in to #{argv.authUrl}"
     signin argv, (err, sessionId) ->
       if err then return logError err
-        config.set 'sessionId', sessionId
-        console.log chalk.green 'You have signed in successfully'
+
+      config.set 'sessionId', sessionId
+      console.log chalk.green 'You have signed in successfully'
 
   upload: (argv) ->
     upload = require('./upload')
@@ -84,15 +85,16 @@ commands =
     manifest.readManifest dir, (err, manifest) ->
       if err then return logError err
 
-    argv.apiUrl ?= config.get 'apiUrl'
+      argv.apiUrl ?= config.get 'apiUrl'
       unless argv.sessionId
         argv.sessionId = argv.sid || config.get 'sessionId'
 
-    if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
-    if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
+      if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
+      if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
 
       console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
-    restapi.getUserDetails argv, (err, user) ->
+
+      restapi.getUserDetails argv, (err, user) ->
         if err then return logError err
 
         upload dir, argv, (err, manifest) ->
