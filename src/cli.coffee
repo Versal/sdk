@@ -1,9 +1,10 @@
-path = require('path')
-chalk = require('chalk')
+path = require 'path'
+chalk = require 'chalk'
 argv = require('optimist').argv
 config = require('./config')()
-restapi = require('./restapi')
-prompt = require('prompt')
+signin = require './signin'
+restapi = require './restapi'
+manifest = require './manifest'
 pkg = require '../package.json'
 fs = require 'fs'
 
@@ -14,7 +15,7 @@ commands =
     if argv.v || argv.version then return console.log pkg.version
 
     fs.readFile path.join(__dirname, '../usage.txt'), 'utf-8', (err, content) ->
-      if err then return console.log chalk.red err
+      if err then return logError err
       content.split('\n').forEach (l) ->
         if l.indexOf('#') == 0
           console.log chalk.yellow l.slice(1)
@@ -26,7 +27,7 @@ commands =
     name = argv._.shift()
 
     create name, argv, (err) ->
-      if err then return console.log chalk.red(err)
+      if err then return logError err
       console.log chalk.green(name + ' created. Have fun.')
       console.log chalk.grey('cd ' + name + ' && versal preview')
 
@@ -47,11 +48,17 @@ commands =
     else
       dirs = argv._
 
-    preview dirs, (err, cnt, port) ->
-      if err then return console.log chalk.red(err)
+    argv.port ?= 3000
+
+    preview dirs, argv, (err, projects) ->
+      if err then return logError err
+
       console.log chalk.green("\\\\\\  ///  Versal SDK preview is started")
-      console.log chalk.yellow(" \\\\\\///   ") + chalk.white("open http://localhost:#{port} in your favorite browser")
+      console.log chalk.yellow(" \\\\\\///   ") + chalk.white("open http://localhost:#{argv.port} in your favorite browser")
       console.log chalk.red("  \\\\\\/    ") + chalk.grey("ctrl + C to stop")
+
+      projects.forEach (p) ->
+        console.log chalk.grey(p.name + '@' + p.version + ' is connected')
 
   # Legacy
   compile: (argv) ->
@@ -59,7 +66,7 @@ commands =
     dir = argv._.shift() || process.cwd()
 
     compile dir, {}, (err) ->
-      if err then console.log err
+      if err then console.error err
       else console.log chalk.green('compile ok')
 
   signin: (argv) ->
@@ -72,46 +79,31 @@ commands =
         config.set 'sessionId', sessionId
         console.log chalk.green 'You have signed in successfully'
 
-  publish: (argv) ->
-    publish = require('./publish')
+  upload: (argv) ->
+    upload = require('./upload')
     dir = argv._.shift() || process.cwd()
 
+    manifest.readManifest dir, (err, manifest) ->
+      if err then return logError err
+
     argv.apiUrl ?= config.get 'apiUrl'
-    argv.sessionId ?= config.get 'sessionId'
+      unless argv.sessionId
+        argv.sessionId = argv.sid || config.get 'sessionId'
 
     if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
     if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
 
+      console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
     restapi.getUserDetails argv, (err, user) ->
-      if err then return console.log chalk.red(err)
+        if err then return logError err
 
-      publish dir, argv, (err, manifest) ->
-        if err then return console.log chalk.red(err)
-        console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully published")
-
-  promptCredentials: (options, callback) ->
-    if options.email && options.password then return callback null, options
-
-    prompt.message = ''
-    prompt.delimiter = ''
-
-    promptParams = [
-      {
-        name: "email"
-        message: "Email address:"
-        required: true
-      }
-      {
-        name: "password"
-        message: "Password:"
-        required: true
-        hidden: true
-      }
-    ]
-
-    console.log 'Enter your Versal.com credentials to sign in:'
-    prompt.get promptParams, callback
+        upload dir, argv, (err, manifest) ->
+          if err then return logError err
+          console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
 command = argv._.shift() || 'help'
+
 if typeof commands[command] == 'function'
   commands[command](argv)
+
+logError = (err) -> console.error chalk.red(err)
