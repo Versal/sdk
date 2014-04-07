@@ -1,14 +1,18 @@
 prompt = require 'prompt'
-querystring = require 'querystring'
-needle = require 'needle'
+qs = require 'querystring'
+request = require 'request'
+_ = require 'underscore'
 chalk = require 'chalk'
 
 restapi =
   signin: (options, callback) ->
     if !options.authUrl then return callback new Error 'auth url not defined. Check ~/.versal/config.json'
-    credentials = { email: options.email, password: options.password }
 
-    needle.post options.authUrl, querystring.stringify(credentials), (err, res, body) ->
+    opts =
+      url: options.authUrl
+      json: _.pick options, 'email', 'password'
+
+    request.post opts, (err, res, body) ->
       if err then return callback err
       if res.statusCode != 200
         message = body.message || "sign in failed. response code: #{res.statusCode}"
@@ -17,11 +21,12 @@ restapi =
       callback null, body.sessionId
 
   getUserDetails: (options, callback) ->
-    requestOptions =
+    opts =
+      url: "#{options.apiUrl}/user"
       headers:
         SID: options.sessionId
 
-    needle.get "#{options.apiUrl}/user", requestOptions, (err, res, body) ->
+    request.get opts, (err, res, body) ->
       if err then return callback err
       if res.statusCode == 200 then return callback null, body
 

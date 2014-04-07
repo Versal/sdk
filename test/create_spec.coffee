@@ -28,3 +28,8 @@ describe 'versal create', ->
         assert err
         done()
 
+  describe 'without a name', ->
+    it 'throws an error', (done) ->
+      create null, (err) ->
+        assert err
+        done()

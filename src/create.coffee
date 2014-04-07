@@ -9,12 +9,12 @@ manifest = require('./manifest')
 #     cwd:        where to create gadget. default - process.cwd()
 #   callback:     obvious thing
 module.exports = (name, options = {}, callback) ->
-  unless name
-    return callback(new Error('Name of the gadget is required'))
-
   if typeof options == 'function'
     callback = options
     options = {}
+
+  unless name
+    return callback(new Error('Name of the gadget is required'))
 
   template = options.template || 'minimal'
   cwd = options.cwd || process.cwd()
