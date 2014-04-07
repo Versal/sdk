@@ -15,5 +15,5 @@ where <command> is one of the following:
 #signin
   sign in as a Versal developer and publish gadgets in a sandbox
 
-#publish [<directory>]
-  publish gadget from the current directory
+#upload [<directory>]
+  uploads gadget from the current directory to you sandbox at Versal.com

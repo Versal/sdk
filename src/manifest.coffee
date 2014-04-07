@@ -19,22 +19,3 @@ module.exports =
   lookup: (paths, dir, callback) ->
     paths = paths.map (p) -> path.join dir, p
     async.detectSeries paths, fs.exists, callback
-
-  create: (template) ->
-    manifest =
-      name: 'my-gadget'
-      version: '0.1.0'
-      title: 'My gadget'
-      description: 'Does nothing just yet'
-      author: 'anonymous'
-      launcher: 'iframe'
-
-      defaultConfig: {}
-      defaultUserState: {}
-      #defaultAttributes: {}
-      #defaultLearnerState: {}
-
-    Object.getOwnPropertyNames(template).forEach (key) ->
-      manifest[key] = template[key]
-
-    return manifest
