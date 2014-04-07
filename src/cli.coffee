@@ -102,8 +102,10 @@ commands =
           console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
 command = argv._.shift() || 'help'
+if typeof commands[command] != 'function'
+  console.log 'Unknown command:', command
+  command = 'help'
 
-if typeof commands[command] == 'function'
-  commands[command](argv)
+commands[command].call this, argv
 
 logError = (err) -> console.error chalk.red(err)
