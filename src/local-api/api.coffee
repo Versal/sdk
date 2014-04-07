@@ -53,26 +53,15 @@ module.exports = class LocalAPI
 
   middleware: -> this.app
 
-  linkGadgetReduce: (cnt, dir, callback) ->
-    this.linkGadget dir, (err, project) ->
-      if err
-        console.log chalk.red(err.message)
-        return callback err
-
-      if project
-        console.log chalk.grey(project.name + '@' + project.version + ' is connected')
-        return callback null, ++cnt
-      return callback null, cnt
-
-  linkGadget: (dir, callback = ->) ->
+  linkGadget: (dir, callback) ->
     manifest.readManifest dir, (err, manifest) =>
       if err then return callback err
-      if !manifest then return callback null, null
 
       project = this.mapManifest(manifest)
       this.data.projects.push project
 
-      this.app.get project.manifest(), (req, res) -> res.json _.omit(project, 'manifest', 'path')
+      this.app.get project.manifest(), (req, res) ->
+        res.json _.omit(project, 'manifest', 'path')
       this.app.use project.path(), express.static(dir)
 
       callback null, project
