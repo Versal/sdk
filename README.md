@@ -18,7 +18,7 @@ Run `versal -v` to see the current version of the SDK installed. Run `versal` fo
 Sign you in to Versal.com. You will be asked for your Versal email and password.
 The session ID will be stored in `~/.versal/config.json`.
 
-### versal create \<name\> [--template template-name]
+### versal create \<name\> [--template \<template-name\>]
 
 Creates a gadget boilerplate in a new directory with the given name. If this directory already exists, the command `versal create` will not do anything.
 
