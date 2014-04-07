@@ -15,8 +15,6 @@ describe 'versal preview', ->
       assert.equal cnt, 1
       done()
 
-  it 'does not start server when no gadgets found', (done) ->
-    preview ['/non/existing/path'], (err) ->
-      assert err
-      done()
-
+  it 'does not start server when no gadgets found', ->
+    assert.throws ->
+      preview ['/non/existing/path']

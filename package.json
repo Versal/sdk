@@ -14,7 +14,7 @@
     "node": ">= 0.10.0"
   },
   "scripts": {
-    "test": "mocha test/*.coffee --require blanket",
+    "test": "mocha test/*.coffee --require blanket --reporter spec",
     "test-with-coverage": "mocha test/*.coffee --require blanket --reporter travis-cov",
     "html-coverage": "mocha test/*.coffee --require blanket --reporter html-cov > coverage.html",
     "copy-player": "cp -r ../player/dist/ ./html/player/"
@@ -41,14 +41,14 @@
     "fs-extra": "~0.6.3",
     "fstream": "~0.1.25",
     "minimatch": "~0.2.14",
-    "needle": "~0.6.0",
     "optimist": "~0.3.5",
     "prompt": "~0.2.12",
     "requirejs": "~2.1.11",
     "shortid": "~1.0.9",
     "stylus": "~0.37.0",
     "tmp": "0.0.23",
-    "underscore": "~1.5.1"
+    "underscore": "~1.5.1",
+    "request": "~2.34.0"
   },
   "devDependencies": {
     "blanket": "^1.1.6",
