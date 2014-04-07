@@ -32,16 +32,9 @@ will be added to your local tray.
 
 If no directory is specified, the current working directory will be used.
 
-### versal publish [\<directory\>]
+### versal upload [\<directory\>] [--apiUrl https://stack.versal.com/api2]
 
-Publishes your gadget to versal.com. The following steps are taken:
-
-- Ensures the presence of a `manifest.json` file.
-- Ensures a valid Session ID is specified in your config file.
-- Compresses the gadget folder to an archive, excluding files and folders specified in your `.versalignore` file.
-- Uploads the archive to the stack.versal.com API.
-
-If no directory is specified, the current working directory will be used.
+Compresses your gadget and uploads it to Versal platform. If no directory is specified, the current working directory will be used. Gadget directory must have a manifest. To upload gadget you need a valid session ID. If uploading fails, use versal signin to obtain a new session ID.
 
 ## Installation in depth
 

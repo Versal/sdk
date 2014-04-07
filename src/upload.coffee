@@ -12,13 +12,11 @@ manifest = require './manifest'
 IGNORE_FILE = '.versalignore'
 
 module.exports = (dir, options, callback) ->
-  manifest.readManifest dir, (err, manifest) ->
+  # If we could fix receiving endpoint, we could do
+  # reader.pipe(tar.Pack()).pipe(request.post(...))
+  createBundleZip dir, (err, bundlePath) ->
     if err then return callback err
-    console.log("Publishing #{manifest.name}@#{manifest.version}")
-
-    createBundleZip dir, (err, bundlePath) ->
-      if err then return callback err
-      uploadBundleToRestAPI bundlePath, options, callback
+    uploadBundleToRestAPI bundlePath, options, callback
 
 touchLegacyFile = (dir, fileName) ->
   filePath = path.join dir, fileName
