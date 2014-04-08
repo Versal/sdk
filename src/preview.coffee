@@ -4,7 +4,6 @@ LocalAPI = require './local-api/api'
 async = require 'async'
 
 HTML_PATH = path.join(__dirname, '../html')
-PLAYER_PATH = path.join(HTML_PATH, 'player')
 
 module.exports = (dirs, options, callback = ->) ->
   if typeof dirs == 'string' then dirs = [dirs]
@@ -12,18 +11,20 @@ module.exports = (dirs, options, callback = ->) ->
 
   async.map dirs, api.linkGadget.bind(api), (err, results) ->
     if err then return callback err
-    if options.port then startServer api, options.port
 
+    options.player ?= 'player'
+    options.playerPath = path.join(HTML_PATH, options.player)
+    if options.port then startServer api, options
     callback null, results
 
-startServer = (api, port) ->
+startServer = (api, options) ->
   server = express()
     .use(express.json())
     .use(express.urlencoded())
 
-    .use(express.static(PLAYER_PATH))
+    .use(express.static(options.playerPath))
     .use(express.static(HTML_PATH))
     .use('/api', api.middleware())
     .use(express.logger())
 
-  server.listen port
+  server.listen options.port
