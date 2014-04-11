@@ -12,12 +12,17 @@ module.exports = (dirs, options, callback = ->) ->
   async.map dirs, api.linkGadget.bind(api), (err, results) ->
     if err then return callback err
 
-    if options.player
-      options.playerPath = path.resolve(options.player)
-    else
-      options.playerPath = path.join(HTML_PATH, 'player')
+    if options.port
+      serverOptions =
+        port: options.port
+        apiMiddleware: api.middleware()
+        playerPath: path.join(HTML_PATH, 'player')
 
-    if options.port then startServer api, options
+      if options.player
+        serverOptions.playerPath = path.resolve(options.player)
+
+      startServer api, serverOptions
+
     callback null, results
 
 startServer = (api, options) ->
