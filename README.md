@@ -72,6 +72,14 @@ If you want to contribute to SDK development, install it from source:
     npm link
     npm test
 
+### Updating player
+
 A copy of the [Player](/Versal/player) is bundled in the "html" folder. To
 update Player or use a custom branch, clone player next to `sdk`, build it,
 and then `npm run copy-player` from within the SDK folder.
+
+### Using development branch of the player
+
+If you want to use development branch of the player, you can run `versal preview` with `--player` option:
+
+    versal preview --player ~/versal/player/dist
