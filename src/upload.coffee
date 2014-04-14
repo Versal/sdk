@@ -37,9 +37,11 @@ createBundleZip = (dir, callback) ->
       reader = fstream.Reader({ path: dir, type: 'Directory', filter })
       reader.on 'error', callback
       reader.on 'entry', (e) -> console.log chalk.grey(e.path.slice(e.dirname.length))
-      reader.on 'end', zipFilesInFolder.bind(this, tmpdir, callback)
 
       reader.pipe(fstream.Writer({ path: tmpdir, type: 'Directory' }))
+        .on('error', callback)
+        .on('end', zipFilesInFolder.bind(this, tmpdir, callback))
+
 
 zipFilesInFolder = (tmpdir, callback) ->
   console.log chalk.yellow('Creating bundle.zip')
