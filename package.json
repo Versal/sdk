@@ -25,7 +25,7 @@
       "loader": "./node-loaders/coffee-script"
     },
     "travis-cov": {
-      "threshold": 94
+      "threshold": 90
     }
   },
   "preferGlobal": true,
