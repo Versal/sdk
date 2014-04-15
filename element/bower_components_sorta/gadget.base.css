@@ -1,0 +1,77 @@
+/* Base */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font: 20px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  word-wrap: break-word;
+  color: #524e47;
+}
+
+html, button, input, select, textarea {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #7c7975;
+}
+
+/* Typography */
+h1 {
+  font-size: 200%;
+}
+
+h2 {
+  font-size: 180%;
+}
+
+
+h3 {
+  font-size: 160%;
+}
+
+
+h4 {
+  font-size: 140%;
+}
+
+
+h5 {
+  font-size: 120%;
+}
+
+
+h6 {
+  font-size: 100%;
+}
+
+
+/* Buttons */
+button {
+  font-size: 18px;
+  -webkit-transition: background-color 0.2s ease-out;
+  transition: background-color 0.2s ease-out;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 2px;
+  background: rgba(124,121,117,0.7);
+  border: 0;
+  color: #fff;
+  padding: 4px 1em;
+  margin: 0px 0.5%;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: #524e47;
+}
+
+/* Form elements */
+textarea,
+select,
+input,
+input[type="text"] {
+  font-size: 18px;
+  border-radius: 1px;
+  border: 1px solid #e5e5e5;
+  box-shadow: inset 0 1px 2px rgba(#d4d4d4, 0.65);
+}

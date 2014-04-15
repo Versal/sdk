@@ -1,0 +1,11 @@
+{
+  "name": "versal-launcher",
+  "version": "0.0.1",
+  "description": "Versal launcher",
+  "scripts": {
+    "start": "nws --port 3000"
+  },
+  "launcher": "element",
+  "author": "Dylan Pyle <dylan@versal.com>, Andrey Mereskin <am@versal.com>",
+  "license": "MIT"
+}
