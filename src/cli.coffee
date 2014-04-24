@@ -53,8 +53,6 @@ commands =
     preview dirs, argv, (err, projects) ->
       if err then return logError err
 
-    preview argv._, (err, cnt, port) ->
-      if err then return console.log chalk.red(err)
       localIPOrNull = require('./local-ip')()
       localIpString = if localIPOrNull then " or http://#{localIPOrNull}:#{argv.port}" else ""
       console.log chalk.green("\\\\\\  ///  Versal SDK preview is started")
