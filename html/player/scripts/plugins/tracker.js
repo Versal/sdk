@@ -53,7 +53,6 @@
       function Tracker(_source) {
         this._source = _source;
         this._addTypes = __bind(this._addTypes, this);
-        this._mixin = {};
       }
 
       Tracker.prototype.track = function(name, data) {
@@ -63,7 +62,7 @@
         queue.push(this._addTypes({
           source: this._source,
           event: name,
-          data: _.extend({}, this._mixin, data),
+          data: _.extend({}, this._metadata, data),
           ts_dt: Math.round((new Date).getTime() / 1000)
         }));
         return throttledSave();
@@ -89,8 +88,8 @@
         });
       };
 
-      Tracker.prototype.setMixin = function(_mixin) {
-        this._mixin = _mixin;
+      Tracker.prototype.setMetadata = function(_metadata) {
+        this._metadata = _metadata;
       };
 
       Tracker.prototype.timeXHR = function(jqXHR, name, data) {
