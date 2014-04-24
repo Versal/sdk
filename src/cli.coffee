@@ -53,17 +53,9 @@ commands =
     preview dirs, argv, (err, projects) ->
       if err then return logError err
 
-    getLocalIP = () ->
-      ifaces = require('os').networkInterfaces()
-      for ifaceName in Object.keys(ifaces)
-        for iface in ifaces[ifaceName]
-          console.log('examining iface: internal='+iface.internal + ', family=' + iface.family + ', address=' + iface.address)
-          if !iface.internal && (iface.family == 'IPv4') then return iface.address
-      null # return null if not found
-
     preview argv._, (err, cnt, port) ->
       if err then return console.log chalk.red(err)
-      localIPOrNull = getLocalIP()
+      localIPOrNull = require('./local-ip')()
       localIpString = if localIPOrNull then " or http://#{localIPOrNull}:#{argv.port}" else ""
       console.log chalk.green("\\\\\\  ///  Versal SDK preview is started")
       console.log chalk.yellow(" \\\\\\///   ") + chalk.white("open http://localhost:#{argv.port}#{localIpString} in your browser")
