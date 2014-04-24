@@ -4,8 +4,7 @@
 
 module.exports = () ->
   ifaces = require('os').networkInterfaces()
-  for ifaceName in Object.keys(ifaces)
-    for iface in ifaces[ifaceName]
-      console.log('examining iface: internal='+iface.internal + ', family=' + iface.family + ', address=' + iface.address)
+  for ifaceName, ifaceGroup of ifaces
+    for iface in ifaceGroup
       if !iface.internal && (iface.family == 'IPv4') then return iface.address
   null
