@@ -16,9 +16,12 @@
     require.config(cdn_config);
     require.config(player_config);
     return require(['cdn.underscore', 'player'], function(_, PlayerApplication) {
-      window.onunload = (function() {});
-
-      var config = { courseId: 'local', api: { url: 'api', sessionId: '' } };
+      var noEditable = !!window.location.search.match(/learn=true/);
+      var config = {
+        courseId: 'local',
+        api: { url: 'api', sessionId: '' },
+        noEditable: noEditable
+      };
       return window.Player = new PlayerApplication(config);
     });
   });

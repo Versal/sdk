@@ -1,7 +1,7 @@
 {
   "name": "versal-sdk",
   "description": "Versal Gadget SDK with command-line interface.",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "author": "Versal team <support@versal.com>",
   "repository": {
     "type": "git",
@@ -11,11 +11,22 @@
     "versal": "bin/versal"
   },
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">= 0.10.0"
   },
   "scripts": {
-    "test": "mocha test/*.coffee --compilers coffee:coffee-script/register",
+    "test": "mocha test/*.coffee --require blanket --reporter travis-cov || mocha test/*.coffee --require blanket --reporter spec",
+    "html-coverage": "mocha test/*.coffee --require blanket --reporter html-cov > coverage.html",
     "copy-player": "cp -r ../player/dist/ ./html/player/"
+  },
+  "config": {
+    "blanket": {
+      "pattern": ".coffee",
+      "data-cover-never": "node_modules",
+      "loader": "./node-loaders/coffee-script"
+    },
+    "travis-cov": {
+      "threshold": 90
+    }
   },
   "preferGlobal": true,
   "dependencies": {
@@ -29,21 +40,23 @@
     "fs-extra": "~0.6.3",
     "fstream": "~0.1.25",
     "minimatch": "~0.2.14",
-    "needle": "~0.6.0",
     "optimist": "~0.3.5",
     "prompt": "~0.2.12",
     "requirejs": "~2.1.11",
     "shortid": "~1.0.9",
     "stylus": "~0.37.0",
+    "tmp": "0.0.23",
     "underscore": "~1.5.1",
-    "tmp": "0.0.23"
+    "request": "~2.34.0"
   },
   "devDependencies": {
+    "blanket": "^1.1.6",
     "chai": "~1.5.0",
-    "mocha": "~1.8.2",
+    "mocha": "~1.9",
     "sinon": "~1.7.2",
     "superagent": "~0.14.9",
     "supertest": "~0.7.1",
-    "tmp": "0.0.23"
+    "tmp": "0.0.23",
+    "travis-cov": "^0.2.5"
   }
 }

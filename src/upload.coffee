@@ -6,21 +6,17 @@ tmp = require 'tmp'
 chalk = require 'chalk'
 fstream = require 'fstream'
 minimatch = require 'minimatch'
-needle = require 'needle'
+request = require 'request'
 manifest = require './manifest'
 
 IGNORE_FILE = '.versalignore'
 
 module.exports = (dir, options, callback) ->
-  manifest.readManifest dir, (err, manifest) ->
+  # If we could fix receiving endpoint, we could do
+  # reader.pipe(tar.Pack()).pipe(request.post(...))
+  createBundleZip dir, (err, bundlePath) ->
     if err then return callback err
-    console.log("Publishing #{manifest.name}@#{manifest.version}")
-
-    # If we could fix receiving endpoint, we could do
-    # reader.pipe(tar.Pack()).pipe(request.post(...))
-    createBundleZip dir, (err, bundlePath) ->
-      if err then return callback err
-      uploadBundleToRestAPI bundlePath, options, callback
+    uploadBundleToRestAPI bundlePath, options, callback
 
 touchLegacyFile = (dir, fileName) ->
   filePath = path.join dir, fileName
@@ -41,9 +37,11 @@ createBundleZip = (dir, callback) ->
       reader = fstream.Reader({ path: dir, type: 'Directory', filter })
       reader.on 'error', callback
       reader.on 'entry', (e) -> console.log chalk.grey(e.path.slice(e.dirname.length))
-      reader.on 'end', zipFilesInFolder.bind(this, tmpdir, callback)
 
       reader.pipe(fstream.Writer({ path: tmpdir, type: 'Directory' }))
+        .on('error', callback)
+        .on('end', zipFilesInFolder.bind(this, tmpdir, callback))
+
 
 zipFilesInFolder = (tmpdir, callback) ->
   console.log chalk.yellow('Creating bundle.zip')
@@ -76,29 +74,17 @@ lookupIgnoreFile = (dir, callback) ->
   async.detectSeries ignoreCandidates, fs.exists, callback
 
 uploadBundleToRestAPI = (bundlePath, options, callback) ->
-  # That's ridiculous
-  buffer = fs.readFileSync bundlePath
-  content_type = 'application/zip'
-
-  url = options.apiUrl + '/gadgets'
-  sessionId = options.sessionId
-
-  # This is not the best idea, to read file sync into buffer, but thats how
-  # REST API works now. (https://github.com/Versal/rest-api/issues/494)
-  requestData =
-    content: { 'bundle.zip', buffer, content_type }
-    contentType: content_type
-
-  requestOptions =
-    multipart: true
-    timeout: 73000
+  opts =
+    url: options.apiUrl + '/gadgets'
     headers:
-      SID: sessionId
+      SID: options.sessionId
 
-  console.log chalk.yellow("Uploading file to #{url}")
+  console.log chalk.yellow "Uploading file to #{opts.url}"
 
-  needle.post url, requestData, requestOptions, (err, res, body) ->
-    handleRestApiResponse err, res, body, callback
+  req = request.post opts, (err, res, body) ->
+    handleRestApiResponse err, res, JSON.parse(body), callback
+
+  req.form().append 'content', fs.createReadStream bundlePath
 
 handleRestApiResponse = (err, res, body, callback) ->
   if err then return callback err

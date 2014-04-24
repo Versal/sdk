@@ -1,21 +1,21 @@
-path = require('path')
-chalk = require('chalk')
+path = require 'path'
+chalk = require 'chalk'
 argv = require('optimist').argv
 config = require('./config')()
-restapi = require('./restapi')
-prompt = require('prompt')
+signin = require './signin'
+restapi = require './restapi'
+manifest = require './manifest'
 pkg = require '../package.json'
 fs = require 'fs'
 
-cmd = argv._.shift() || 'help'
 if argv.env then config.env argv.env
 
-cli =
+commands =
   help: (argv) ->
     if argv.v || argv.version then return console.log pkg.version
 
     fs.readFile path.join(__dirname, '../usage.txt'), 'utf-8', (err, content) ->
-      if err then return console.log chalk.red err
+      if err then return logError err
       content.split('\n').forEach (l) ->
         if l.indexOf('#') == 0
           console.log chalk.yellow l.slice(1)
@@ -27,7 +27,7 @@ cli =
     name = argv._.shift()
 
     create name, argv, (err) ->
-      if err then return console.log chalk.red(err)
+      if err then return logError err
       console.log chalk.green(name + ' created. Have fun.')
       console.log chalk.grey('cd ' + name + ' && versal preview')
 
@@ -43,8 +43,15 @@ cli =
 
   preview: (argv) ->
     preview = require('./preview')
-    dirs = argv._
-    dirs.push process.cwd() unless dirs.length
+    if argv._.length == 0
+      dirs = [process.cwd()]
+    else
+      dirs = argv._
+
+    argv.port ?= 3000
+
+    preview dirs, argv, (err, projects) ->
+      if err then return logError err
 
     getLocalIP = () ->
       ifaces = require('os').networkInterfaces()
@@ -57,10 +64,13 @@ cli =
     preview argv._, (err, cnt, port) ->
       if err then return console.log chalk.red(err)
       localIPOrNull = getLocalIP()
-      localIpString = if localIPOrNull then " or http://#{localIPOrNull}:#{port}" else ""
+      localIpString = if localIPOrNull then " or http://#{localIPOrNull}:#{argv.port}" else ""
       console.log chalk.green("\\\\\\  ///  Versal SDK preview is started")
-      console.log chalk.yellow(" \\\\\\///   ") + chalk.white("open http://localhost:#{port}#{localIpString} in your browser")
+      console.log chalk.yellow(" \\\\\\///   ") + chalk.white("open http://localhost:#{argv.port}#{localIpString} in your browser")
       console.log chalk.red("  \\\\\\/    ") + chalk.grey("ctrl + C to stop")
+
+      projects.forEach (p) ->
+        console.log chalk.grey(p.name + '@' + p.version + ' is connected')
 
   # Legacy
   compile: (argv) ->
@@ -68,58 +78,46 @@ cli =
     dir = argv._.shift() || process.cwd()
 
     compile dir, {}, (err) ->
-      if err then console.log err
+      if err then console.error err
       else console.log chalk.green('compile ok')
 
   signin: (argv) ->
-    this.promptCredentials argv, (err, credentials) ->
-      if err then return callback err
-      credentials.authUrl = argv.authUrl || config.get 'authUrl'
+    argv.authUrl ?= config.get 'authUrl'
+    console.log "Signing in to #{argv.authUrl}"
+    signin argv, (err, sessionId) ->
+      if err then return logError err
 
-      restapi.signin credentials, (err, sessionId) ->
-        if err then return console.log chalk.red err
-        config.set 'sessionId', sessionId
-        console.log chalk.green 'You have signed in successfully'
+      config.set 'sessionId', sessionId
+      console.log chalk.green 'You have signed in successfully'
 
-  publish: (argv) ->
-    publish = require('./publish')
+  upload: (argv) ->
+    upload = require('./upload')
     dir = argv._.shift() || process.cwd()
 
-    argv.apiUrl ?= config.get 'apiUrl'
-    argv.sessionId ?= config.get 'sessionId'
+    manifest.readManifest dir, (err, manifest) ->
+      if err then return logError err
 
-    if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
-    if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
+      argv.apiUrl ?= config.get 'apiUrl'
+      unless argv.sessionId
+        argv.sessionId = argv.sid || config.get 'sessionId'
 
-    restapi.getUserDetails argv, (err, user) ->
-      if err then return console.log chalk.red(err)
+      if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
+      if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
 
-      publish dir, argv, (err, manifest) ->
-        if err then return console.log chalk.red(err)
-        console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully published")
+      console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
 
-  promptCredentials: (options, callback) ->
-    if options.email && options.password then return callback null, options
+      restapi.getUserDetails argv, (err, user) ->
+        if err then return logError err
 
-    prompt.message = ''
-    prompt.delimiter = ''
+        upload dir, argv, (err, manifest) ->
+          if err then return logError err
+          console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
-    promptParams = [
-      {
-        name: "email"
-        message: "Email address:"
-        required: true
-      }
-      {
-        name: "password"
-        message: "Password at Versal.com:"
-        required: true
-        hidden: true
-      }
-    ]
+command = argv._.shift() || 'help'
+if typeof commands[command] != 'function'
+  console.log 'Unknown command:', command
+  command = 'help'
 
-    console.log 'Enter your Versal credentials to sign in:'
-    prompt.get promptParams, callback
+commands[command].call this, argv
 
-if typeof cli[cmd] == 'function'
-  cli[cmd](argv)
+logError = (err) -> console.error chalk.red(err)

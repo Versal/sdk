@@ -1,6 +1,6 @@
 /*!
  * js-collab v0.1.12
- * lovingly baked from 83e2521 on 11. March 2014
+ * lovingly baked from a5b76f8 on 10. April 2014
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -13,6 +13,7 @@
     }
     root.vs.collab = factory();
 }(this, function () {
+
 /**
  * almond 0.2.5 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -909,6 +910,70 @@ define('collections/gadget_comments',['require','exports','module','../models/ga
 
 });
 
+define('collections/collapsible_gadget_comments',['require','exports','module','./gadget_comments','backbone'],function (require, exports, module) {(function() {
+  var Backbone, CollapsibleGadgetComments, GadgetComments, _ref,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  GadgetComments = require('./gadget_comments');
+
+  Backbone = require('backbone');
+
+  CollapsibleGadgetComments = (function(_super) {
+    __extends(CollapsibleGadgetComments, _super);
+
+    function CollapsibleGadgetComments() {
+      _ref = CollapsibleGadgetComments.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    CollapsibleGadgetComments.prototype.initialize = function() {
+      this._shadowedCollection = new GadgetComments;
+      return this._shadowedCollection.listenTo(this, 'all', this._onModelEvent);
+    };
+
+    CollapsibleGadgetComments.prototype.collapseDeletedComments = function(model) {
+      var index,
+        _this = this;
+      if (!model || model instanceof Backbone.Collection) {
+        this.models.forEach(function(model) {
+          return _this.collapseDeletedComments(model);
+        });
+        return;
+      }
+      index = this.models.indexOf(model);
+      if (index === -1) {
+        return;
+      }
+      if (!model.get('deleted')) {
+        return;
+      }
+      model._deletedStreak = [1, -1].reduce(function(streak, offset) {
+        var neighborModel;
+        neighborModel = _this.at(index + offset);
+        if (neighborModel && neighborModel.get('deleted')) {
+          _this.remove(neighborModel);
+          if (neighborModel._deletedStreak != null) {
+            return streak + neighborModel._deletedStreak;
+          }
+          return streak + 1;
+        } else {
+          return streak;
+        }
+      }, 1);
+      return model.trigger('change');
+    };
+
+    return CollapsibleGadgetComments;
+
+  })(GadgetComments);
+
+  module.exports = CollapsibleGadgetComments;
+
+}).call(this);
+
+});
+
 define('collections/gadget_locks',['require','exports','module','../models/gadget_lock','backbone'],function (require, exports, module) {(function() {
   var Backbone, GadgetLock, GadgetLocks, _ref,
     __hasProp = {}.hasOwnProperty,
@@ -938,7 +1003,7 @@ define('collections/gadget_locks',['require','exports','module','../models/gadge
 
 });
 
-define('collab',['require','exports','module','underscore','backbone','./handlers/users','./handlers/locks','./handlers/comments','./handlers/updates','./models/gadget_comment','./collections/gadget_comments','./models/gadget_lock','./collections/gadget_locks'],function (require, exports, module) {(function() {
+define('collab',['require','exports','module','underscore','backbone','./handlers/users','./handlers/locks','./handlers/comments','./handlers/updates','./models/gadget_comment','./collections/gadget_comments','./collections/collapsible_gadget_comments','./models/gadget_lock','./collections/gadget_locks'],function (require, exports, module) {(function() {
   var Backbone, Collab, CommentsHandler, LocksHandler, UpdatesHandler, UsersHandler, _,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -969,6 +1034,8 @@ define('collab',['require','exports','module','underscore','backbone','./handler
     Collab.prototype.GadgetComment = require('./models/gadget_comment');
 
     Collab.prototype.GadgetComments = require('./collections/gadget_comments');
+
+    Collab.prototype.CollapsibleGadgetComments = require('./collections/collapsible_gadget_comments');
 
     Collab.prototype.GadgetLock = require('./models/gadget_lock');
 
@@ -1157,7 +1224,6 @@ define('collab',['require','exports','module','underscore','backbone','./handler
 }).call(this);
 
 });
-
   define('underscore', [], function(){
     return window._;
   });
