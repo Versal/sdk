@@ -1,0 +1,92 @@
+body {
+  background: #fbfaf6;
+  padding: 0 20px;
+  max-width: 720px;
+  display: block;
+  margin: auto;
+}
+
+.container {
+  min-height: 40px;
+  background: #fff;
+  margin: auto;
+}
+
+.container:empty:before {
+  content: 'Click on gadget icon to preview it';
+  line-height: 50px;
+  color: lightgray;
+  text-align: center;
+}
+
+.container > * {
+  display: block;
+}
+
+.toolbar {
+  line-height: 50px;
+  background: rgba(215, 221, 66, 0.34);
+}
+
+.palette {
+  max-width: 720px;
+  width: 100%;
+}
+
+.palette > .icon {
+  height: 52px;
+  width: 52px;
+  margin: 3px;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.asset-picker {
+  z-index: 101;
+  top: -200px;
+  left: 50%;
+  margin-left: -160px;
+  width: 320px;
+  background: #fff;
+  box-shadow: 0 0 10px #777;
+  position: absolute;
+  padding: 15px;
+  transition: top 250ms;
+}
+
+.asset-picker:before {
+  content: 'Asset picker';
+}
+
+.asset-picker input[type=file] {
+  margin: 15px 0;
+  width: 300px;
+  display: block;
+}
+
+.asset-picker.visible {
+  top: 0;
+}
+
+.saving {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  line-height: 30px;
+  background: green;
+  color: white;
+  opacity: 0;
+  transition: opacity 250ms;
+  padding: 0 1em;
+}
+
+.saving:before {
+  content: 'saving ';
+}
+
+.saving.visible {
+  opacity: 1;
+  transition: opacity 250ms;
+}

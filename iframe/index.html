@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<!-- these things will be delivered via bower, but for now... -->
+<script src="bower_components_sorta/versal-runtime.js"></script>
+<link rel="stylesheet" href="bower_components_sorta/gadget.base.css" />
+<link rel="import" href="bower_components_sorta/versal-iframe-launcher/index.html" />
+
+<link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+
+<!-- This is a player mock. It even has an asset picker. -->
+<div class="palette"></div>
+<div class="saving"></div>
+<div class="toolbar">
+  <label><input type="checkbox" id="editable" checked /> Editable</label>
+</div>
+<div class="container"></div>
+
+<form class="asset-picker" action="/api/assets">
+  <input type="file" name="content" />
+  <button type="submit">Upload</button>
+  <button type="reset">Cancel</button>
+</form>
+
+<script src="index.js"></script>
+
+</body>
+</html>

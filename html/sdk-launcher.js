@@ -10,9 +10,7 @@
     }
   });
 
-  require.config({ baseUrl: 'scripts' });
-
-  require(['lib/config', 'config'], function(cdn_config, player_config) {
+  require(['scripts/lib/config', 'scripts/config'], function(cdn_config, player_config) {
     require.config(cdn_config);
     require.config(player_config);
     return require(['cdn.underscore', 'player'], function(_, PlayerApplication) {

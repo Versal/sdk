@@ -1,0 +1,3 @@
+[submodule "iframe/bower_components_sorta/versal-iframe-launcher"]
+	path = iframe/bower_components_sorta/versal-iframe-launcher
+	url = git@github.com:Versal/iframe-launcher.git

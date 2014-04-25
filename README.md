@@ -24,13 +24,15 @@ Creates a gadget boilerplate in a new directory with the given name. If this dir
 
 The `--template` option allows you to choose a template. Supported templates: `minimal` (default), `space`.
 
-### versal preview [\<directory1\> \<directory2\> \<directory3\> ...]
+### versal preview [\<directory1\> \<directory2\> \<directory3\> ...] [--iframe]
 
 Launches a local Player and API server for testing your new gadget. If multiple
 gadget directories are specified, any gadgets with valid `manifest.json` files
 will be added to your local tray.
 
 If no directory is specified, the current working directory will be used.
+
+Use `--iframe` option to preview gadget in a standalone launcher.
 
 ### versal upload [\<directory\>] [--apiUrl https://stack.versal.com/api2]
 

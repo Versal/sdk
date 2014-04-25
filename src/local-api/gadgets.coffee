@@ -8,18 +8,16 @@ gadgets.load = (req, res, next) ->
   id = req.param('gadgetid')
   if id && req.lesson
     req.gadget = _.findWhere req.lesson.gadgets, { id }
+  if !req.gadget then return res.send 404, "Gadget not found"
   next()
 
 gadgets.get '/courses/:courseid/lessons/:lessonid/gadgets', (req, res) ->
-  return res.send 404 unless req.lesson
   res.json req.lesson.gadgets
 
 gadgets.get '/courses/:courseid/lessons/:lessonid/gadgets/:gadgetid', (req, res) ->
-  return res.send 404 unless req.gadget
   res.json req.gadget
 
 gadgets.post '/courses/:courseid/lessons/:lessonid/gadgets', (req, res) ->
-  return res.send 404 unless req.lesson
   gadget = req.body
   gadget.id = shortid()
   req.lesson.gadgets.push gadget
