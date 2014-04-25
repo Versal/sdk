@@ -10,7 +10,9 @@ fs = require 'fs-extra'
 module.exports = (dirs, options, callback = ->) ->
   if typeof dirs == 'string' then dirs = [dirs]
 
-  if options.player
+  if options.iframe
+    launchPath = path.resolve __dirname, '../iframe'
+  else if options.player
     launchPath = path.resolve __dirname, options.player
   else
     launchPath = path.resolve __dirname, '../html/player'
