@@ -60,7 +60,7 @@ describe 'versal cli', ->
 
     it 'with credentials', (done) ->
       args = ['signin',
-        '--authUrl', 'versal-api',
+        '--authUrl', 'http://versal-api',
         '--email', 'foo',
         '--password', 'bar']
       signin = spawn versal, args, { cwd }
@@ -83,7 +83,7 @@ describe 'versal cli', ->
       if upload && !upload.killed then upload.kill()
 
     it 'with credentials', (done) ->
-      upload = spawn versal, ['upload', 'foo', '--apiUrl', 'versal-api', '--sid', 'foo'], { cwd }
+      upload = spawn versal, ['upload', 'foo', '--apiUrl', 'http://versal-api', '--sid', 'foo'], { cwd }
 
       upload.stdout.on 'data', (data) ->
         if data.toString().indexOf('foo@0.0.1 to versal-api') > 0
