@@ -5,15 +5,15 @@ async = require 'async'
 module.exports =
   readManifest: (dir, callback) ->
     this.lookupManifest dir, (manifestPath) ->
-      if !manifestPath
-        return callback new Error('manifest.json not found in ' + dir)
+      return callback() unless manifestPath
 
       fs.readJSON manifestPath, (err, manifest) ->
         if err then return callback err
+
         callback null, manifest
 
   lookupManifest: (dir, callback) ->
-    candidates = ['manifest.json', 'manifest.webapp']
+    candidates = ['manifest.json', 'manifest.webapp', 'package.json']
     this.lookup candidates, dir, callback
 
   lookup: (paths, dir, callback) ->
