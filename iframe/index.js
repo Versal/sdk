@@ -37,7 +37,7 @@ var initPalette = function(manifests){
 
   palette.addEventListener('click', function(e){
     var manifest = JSON.parse(e.target.getAttribute('data-manifest'));
-    var element = 'versal-launcher';
+    var element = 'versal-iframe-launcher';
 
     var elt = document.createElement(element);
     elt.setAttribute('src', assetPath(manifest, 'index.html'));
