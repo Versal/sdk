@@ -46,17 +46,13 @@ linkManifestDir = (app, dir, callback) ->
     if err then return callback(err)
     return callback() unless json
 
-    manifest = mapManifest json
+    man = mapManifest json
     linkPath = path.resolve dir
 
-    if manifest.launcher == 'element'
-      elementPath = path.join('elements', manifest.name, manifest.version)
-      app.use '/' + elementPath, express.static(linkPath)
-    else
-      gadgetPath = "api/gadgets/#{manifest.username}/#{manifest.name}/#{manifest.version}/"
-      app.use '/' + gadgetPath, express.static(linkPath)
+    gadgetPath = "api/gadgets/#{man.username}/#{man.name}/#{man.version}/"
+    app.use '/' + gadgetPath, express.static(linkPath)
 
-    callback null, manifest
+    callback null, man
 
 mapManifest = (manifest) ->
   manifest.id = shortid.generate()
