@@ -8,10 +8,11 @@ assets = express()
 
 assets.get '/:id', (req, res) ->
   id = req.param('id')
-  if req.datastore.representations[id]
-    return res.sendfile req.datastore.representations[id]
-  else
-    return res.json _.findWhere req.datastore.assets, { id }
+  if req.representations[id]
+    return res.sendfile req.representations[id]
+  else if asset = _.findWhere req.assets, { id }
+    return res.json asset
+  else return res.send 404, "Asset #{id} not found"
 
 assets.post '/', (req, res) ->
   form = new formidable.IncomingForm()
@@ -31,11 +32,10 @@ assets.post '/', (req, res) ->
         contentType: file.type
         available: true
         original: true
-        scale: '800x600'
       ]
 
-    req.datastore.assets.push asset
-    req.datastore.representations[repid] = file.path
+    req.assets.push asset
+    req.representations[repid] = file.path
     res.send 201, asset
 
 module.exports = assets

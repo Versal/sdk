@@ -1,6 +1,6 @@
 express = require 'express'
 path = require 'path'
-LocalAPI = require './local-api/api'
+LocalAPI = require './local-api/index'
 async = require 'async'
 
 HTML_PATH = path.join(__dirname, '../html')
