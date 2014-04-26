@@ -59,4 +59,8 @@ mapManifest = (manifest) ->
   manifest.catalog = 'sandbox'
   manifest.username = 'local'
   manifest.latestVersion = manifest.version
+
+  manifest.icon ?= 'assets/icon.png'
+  manifest.main ?= 'index.html'
+
   return manifest
