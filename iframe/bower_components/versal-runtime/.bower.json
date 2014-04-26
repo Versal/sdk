@@ -1,0 +1,33 @@
+{
+  "name": "versal-runtime",
+  "homepage": "https://github.com/Versal/versal-runtime",
+  "authors": [
+    "Versal Team <support@versal.com>"
+  ],
+  "description": "versal-runtime is a collection of polyfills to run web components on Versal platform",
+  "main": "dist/versal-runtime.min.js",
+  "keywords": [
+    "versal-runtime",
+    "polyfills"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src",
+    "polyfills",
+    "package.json",
+    "bower.json"
+  ],
+  "_release": "c8167902a0",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "c8167902a01ddae0feb231082c71840fc59b5032"
+  },
+  "_source": "git://github.com/versal/versal-runtime.git",
+  "_target": "*",
+  "_originalSource": "versal/versal-runtime",
+  "_direct": true
+}

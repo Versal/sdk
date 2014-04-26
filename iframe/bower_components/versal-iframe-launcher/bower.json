@@ -1,0 +1,21 @@
+{
+  "name": "versal-iframe-launcher",
+  "version": "0.0.1",
+  "author": "Versal team <support@versal.com>",
+  "description": "Launcher for iframe gadgets on versal.com",
+  "main": "index.html",
+  "license": "MIT",
+  "homepage": "http://github.com/Versal/iframe-launcher",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "package.json"
+  ],
+  "devDependencies": {
+    "mocha": "~1.18",
+    "chai": "~1.9",
+    "versal-runtime": "Versal/versal-runtime"
+  }
+}

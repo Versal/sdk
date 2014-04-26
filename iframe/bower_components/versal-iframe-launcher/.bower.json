@@ -1,0 +1,30 @@
+{
+  "name": "versal-iframe-launcher",
+  "author": "Versal team <support@versal.com>",
+  "description": "Launcher for iframe gadgets on versal.com",
+  "main": "index.html",
+  "license": "MIT",
+  "homepage": "http://github.com/Versal/iframe-launcher",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "package.json"
+  ],
+  "devDependencies": {
+    "mocha": "~1.18",
+    "chai": "~1.9",
+    "versal-runtime": "Versal/versal-runtime"
+  },
+  "_release": "ccd3ba88c9",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "ccd3ba88c95d7f75329b51b8d6a5022835effbf6"
+  },
+  "_source": "git://github.com/versal/iframe-launcher.git",
+  "_target": "*",
+  "_originalSource": "versal/iframe-launcher",
+  "_direct": true
+}
