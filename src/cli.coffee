@@ -55,12 +55,15 @@ commands =
 
       localIPOrNull = require('./local-ip')()
       localIpString = if localIPOrNull then " or http://#{localIPOrNull}:#{argv.port}" else ""
-      console.log chalk.green("\\\\\\  ///  Versal SDK preview is started")
-      console.log chalk.yellow(" \\\\\\///   ") + chalk.white("open http://localhost:#{argv.port}#{localIpString} in your browser")
-      console.log chalk.red("  \\\\\\/    ") + chalk.grey("ctrl + C to stop")
-
+      console.log chalk.green("\\\\\\  ///  versal #{pkg.version}")
+      console.log chalk.yellow(" \\\\\\///   http://localhost:#{argv.port}#{localIpString}")
+      console.log chalk.red("  \\\\\\/    ctrl + C to stop")
+      console.log ''
       projects.forEach (p) ->
-        console.log chalk.grey(p.name + '@' + p.version + ' is connected')
+        return unless p
+
+        launcher = p.launcher || 'legacy'
+        console.log chalk.grey("#{launcher} #{p.name}/@#{p.version}")
 
   # Legacy
   compile: (argv) ->
