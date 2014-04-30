@@ -14,7 +14,8 @@
     "node": ">= 0.10.0"
   },
   "scripts": {
-    "test": "mocha test/*.coffee --require blanket --reporter travis-cov || mocha test/*.coffee --require blanket --reporter spec",
+    "test": "mocha test/*.coffee --compilers coffee:coffee-script/register",
+    "prepublish": "mocha test/*.coffee --require blanket --reporter travis-cov || mocha test/*.coffee --require blanket --reporter spec",
     "html-coverage": "mocha test/*.coffee --require blanket --reporter html-cov > coverage.html",
     "copy-player": "cp -r ../player/dist/ ./html/player/"
   },

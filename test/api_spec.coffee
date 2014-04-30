@@ -3,21 +3,28 @@ request = require 'supertest'
 sinon = require 'sinon'
 fs = require 'fs-extra'
 path = require 'path'
-LocalAPI = require '../src/local-api/api'
+Api = require '../src/local-api/index'
 
 describe 'Local API', ->
-  localapi = api = null
+  api = null
+  data =
+    manifests: [{ username: 'am', name: 'foo', version: '1' }]
+    assets: []
+    representations: {}
+    course: {
+      id: 'local',
+      title: 'test'
+      lessons: [{
+        id: '1',
+        title: 'First lesson',
+        gadgets: []
+        }]
+    }
 
-  before (done) ->
-    localapi = new LocalAPI()
-    localapi.linkGadget path.resolve('./test/fixtures/iframe-gadget'), ->
-      api = localapi.middleware()
-      done()
+  before ->
+    api = Api data
 
   describe 'courses', ->
-    it '404', (done) ->
-      request(api).get('/courses/foo').expect 404, done
-
     it 'show', (done) ->
       request(api).get('/courses/local').expect 200, done
 
@@ -38,7 +45,7 @@ describe 'Local API', ->
     newLessonId = null
 
     before ->
-      lessons = -> localapi.data.course.lessons
+      lessons = -> data.course.lessons
 
     it '404', (done) ->
       request(api).get('/courses/local/lessons/0').expect 404, done
@@ -80,7 +87,7 @@ describe 'Local API', ->
     newGadgetId = null
 
     before ->
-      gadgets = -> localapi.data.course.lessons[0].gadgets
+      gadgets = -> data.course.lessons[0].gadgets
 
     it '404', (done) ->
       request(api).get('/courses/local/lessons/1/gadgets/0')
@@ -151,7 +158,7 @@ describe 'Local API', ->
     before ->
       filePath = './test/fixtures/education.jpg'
       fileSize = fs.statSync(filePath).size
-      assets = localapi.data.assets
+      assets = data.assets
 
     it 'create', (done) ->
       request(api).post('/assets')
@@ -162,7 +169,7 @@ describe 'Local API', ->
           if err then return done err
           asset = assets[0]
           rep = asset.representations[0]
-          fs.existsSync(localapi.data.representations[rep.id]).should.be.true
+          fs.existsSync(data.representations[rep.id]).should.be.true
           done()
 
     # get asset metadata
@@ -176,22 +183,12 @@ describe 'Local API', ->
         .expect('content-length', fileSize.toString())
         .expect 200, done
 
-  describe 'gadget projects', ->
-    project = null
-
-    before ->
-      project = localapi.data.projects[0]
-
+  describe 'manifests', ->
     it 'index', (done) ->
-      request(api).get("/gadgets")
+      request(api).get('/manifests')
+        .expect 200, data.manifests, done
+
+    it 'legacy index', (done) ->
+      request(api).get('/gadgets')
         .send({ user: 'me', catalog: 'sandbox' })
-        .expect 200, done
-
-    it 'show', (done) ->
-      request(api).get(project.manifest()).expect 200, done
-
-    it 'files', (done) ->
-      request(api).get(project.path('assets/icon.png'))
-        .expect('content-length', '2696')
-        .expect('content-type', 'image/png')
         .expect 200, done

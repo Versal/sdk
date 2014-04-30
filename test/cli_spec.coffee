@@ -60,13 +60,13 @@ describe 'versal cli', ->
 
     it 'with credentials', (done) ->
       args = ['signin',
-        '--authUrl', 'versal-api',
+        '--authUrl', 'http://versal-api',
         '--email', 'foo',
         '--password', 'bar']
       signin = spawn versal, args, { cwd }
 
       signin.stdout.on 'data', (data) ->
-        if data.toString().indexOf('Signing in to versal-api') == 0
+        if data.toString().indexOf('Signing in to http://versal-api') == 0
           signin.kill 'SIGINT'
           assert true
           done()
@@ -76,17 +76,17 @@ describe 'versal cli', ->
 
   # We terminate the process after manifest is found and
   # apiUrl is established
-  describe 'upload', ->
+  describe 'upload foo', ->
     upload = null
 
     after ->
       if upload && !upload.killed then upload.kill()
 
     it 'with credentials', (done) ->
-      upload = spawn versal, ['upload', 'foo', '--apiUrl', 'versal-api', '--sid', 'foo'], { cwd }
+      upload = spawn versal, ['upload', 'foo', '--apiUrl', 'http://versal-api', '--sid', 'foo'], { cwd }
 
       upload.stdout.on 'data', (data) ->
-        if data.toString().indexOf('foo@0.0.1 to versal-api') > 0
+        if data.toString().indexOf('foo@0.0.1 to http://versal-api') > 0
           upload.kill 'SIGINT'
           assert true
           done()
