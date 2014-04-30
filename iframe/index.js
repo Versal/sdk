@@ -140,38 +140,3 @@ container.addEventListener('requestAsset', function(evt){
     assetPicker.classList.remove('visible');
   }
 });
-
-/*
-
-var createLauncher = function(element, data){
-  var launcher = document.createElement(element);
-  Object.keys(data).forEach(function(key){
-    launcher.setAttribute(key, data[key]);
-  });
-  return launcher;
-};
-
-var linkElement = function(manifest){
-  var link = document.createElement('link');
-  link.rel = 'import';
-  var href = elementPath(manifest, (manifest.launcher_path || 'index.html'))
-  link.href = href;
-  link.onload = registerManifest;
-  document.head.appendChild(link);
-};
-
-var registerManifest = function(evt) {
-  var link = evt.target;
-  if(link.import) {
-    var icon = link.import.querySelector('.icon');
-    var element = link.import.querySelector('versal-element');
-    var span = createIcon(icon.src);
-    span.setAttribute('data-element', element.getAttribute('name'));
-    palette.appendChild(span);
-  }
-};
-
-var elementPath = function(manifest, file) {
-  return '/elements/' + manifest.name + '/' + manifest.version + '/' + file;
-};
-*/

@@ -34,6 +34,7 @@ module.exports = (dirs, options, callback = ->) ->
       course.isEditable = true
 
       app.use('/api', api({ manifests, course, assets: [], representations: {} }))
+        .use('/components', express.static(path.join(__dirname, '../bower_components')))
         .use(express.static(launchPath))
         .use(express.static(path.join(__dirname, '../html')))
         .use(express.logger())
