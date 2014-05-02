@@ -53,8 +53,10 @@ commands =
     preview dirs, argv, (err, projects) ->
       if err then return logError err
 
+      localIp = require('./local-ip')()
+      localIpString = if localIp then " or http://#{localIp}:#{argv.port}" else ""
       console.log chalk.green("\\\\\\  ///  versal #{pkg.version}")
-      console.log chalk.yellow(" \\\\\\///   http://localhost:#{argv.port}")
+      console.log chalk.yellow(" \\\\\\///   http://localhost:#{argv.port}#{localIpString}")
       console.log chalk.red("  \\\\\\/    ctrl + C to stop")
       console.log ''
       projects.forEach (p) ->
