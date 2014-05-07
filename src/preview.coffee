@@ -10,7 +10,9 @@ fs = require 'fs-extra'
 module.exports = (dirs, options, callback = ->) ->
   if typeof dirs == 'string' then dirs = [dirs]
 
-  if options.player
+  if options.iframe
+    launchPath = path.resolve __dirname, '../iframe'
+  else if options.player
     launchPath = path.resolve __dirname, options.player
   else
     launchPath = path.resolve __dirname, '../html/player'
@@ -32,6 +34,7 @@ module.exports = (dirs, options, callback = ->) ->
       course.isEditable = true
 
       app.use('/api', api({ manifests, course, assets: [], representations: {} }))
+        .use('/components', express.static(path.join(__dirname, '../bower_components')))
         .use(express.static(launchPath))
         .use(express.static(path.join(__dirname, '../html')))
         .use(express.logger())
@@ -57,4 +60,8 @@ mapManifest = (manifest) ->
   manifest.catalog = 'sandbox'
   manifest.username = 'local'
   manifest.latestVersion = manifest.version
+
+  manifest.icon ?= 'assets/icon.png'
+  manifest.main ?= 'index.html'
+
   return manifest
