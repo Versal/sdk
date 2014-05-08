@@ -24,6 +24,10 @@ describe 'Local API', ->
   before ->
     api = Api data
 
+  describe 'sandbox', ->
+    it 'upload', (done) ->
+      request(api).put('/sandbox').send({ name: 'foo', _path: './foo' }).expect 200, done
+
   describe 'courses', ->
     it 'show', (done) ->
       request(api).get('/courses/local').expect 200, done
