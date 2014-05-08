@@ -3,6 +3,7 @@ courses = require './courses'
 lessons = require './lessons'
 gadgets = require './gadgets'
 assets = require './assets'
+sandbox = require './sandbox'
 _ = require 'underscore'
 
 module.exports = (data) ->
@@ -29,6 +30,11 @@ module.exports = (data) ->
   api.use lessons
   api.use courses
   api.use '/assets', assets
+
+  api.put '/sandbox', (req, res, next) ->
+    req.manifests = data.manifests
+    next()
+  api.use '/sandbox', sandbox
 
   #TODO: Legacy endpoint
   api.get '/gadgets', (req, res) => res.json data.manifests
