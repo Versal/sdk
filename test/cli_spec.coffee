@@ -44,13 +44,10 @@ describe 'versal cli', ->
       preview.stdout.on 'data', (data) ->
         if data.toString().indexOf('localhost:3073') > 0
           preview.kill 'SIGINT'
+          done()
 
       preview.stderr.on 'data', (err) ->
         done new Error err.toString()
-
-      preview.on 'close', (code,signal) ->
-        assert.equal code, 130
-        done()
 
   describe 'signin', ->
     signin = null
