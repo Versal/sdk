@@ -1,6 +1,6 @@
 {
   "name": "versal-sdk",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "homepage": "https://github.com/Versal/sdk",
   "authors": [
     "Versal Team <support@versal.com>"
@@ -24,7 +24,7 @@
     "tests"
   ],
   "dependencies": {
-    "versal-component-runtime": "~0.2.0",
-    "versal-iframe-launcher": "~0.1.0"
+    "versal-component-runtime": "~0.2.1",
+    "versal-iframe-launcher": "~0.2.1"
   }
 }
