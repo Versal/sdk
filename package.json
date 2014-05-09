@@ -49,8 +49,8 @@
     "stylus": "~0.37.0",
     "tmp": "0.0.23",
     "underscore": "~1.5.1",
-    "versal-component-runtime": "git+ssh://git@github.com:Versal/component-runtime.git#v0.2.2",
-    "versal-iframe-launcher": "git+ssh://git@github.com:Versal/iframe-launcher.git#v0.2.2"
+    "versal-component-runtime": "git+https://github.com/Versal/component-runtime.git#v0.2.2",
+    "versal-iframe-launcher": "git+https://github.com/Versal/iframe-launcher.git#v0.2.2"
   },
   "devDependencies": {
     "blanket": "^1.1.6",
