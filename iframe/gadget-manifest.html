@@ -1,0 +1,68 @@
+<style>
+gadget-manifest {
+  border: 1px solid grey;
+  display: inline-block;
+}
+
+gadget-manifest > .icon {
+  width: 52px;
+  height: 52px;
+}
+
+gadget-manifest > * {
+  float: left;
+}
+
+gadget-manifest > div > span {
+  clear: left;
+}
+</style>
+
+<template>
+  <img class="icon" src="" />
+  <div>
+  <div class="name"></div>
+  <div class="version"></div>
+  <div class="catalog"></div>
+  <button class="preview">Preview</button>
+  <button class="upload">Upload to sandbox</button>
+  </div>
+</template>
+
+<script>
+(function(){
+  var _doc = (document._currentScript || document.currentScript).ownerDocument;
+  var _template = _doc.querySelector('template');
+
+  var GadgetManifest = Object.create(HTMLElement.prototype, {
+    manifest: {
+      get: function(){ return JSON.parse(this.getAttribute('data-manifest')); }
+    },
+
+    icon: {
+      get: function(){ return this.getAttribute('data-icon'); }
+    }
+  });
+
+  GadgetManifest.attachedCallback = function(){
+    this.appendChild(_template.content.cloneNode(true));
+
+    this.querySelector('.icon').src = this.icon;
+    this.querySelector('.name').textContent = this.manifest.name;
+    this.querySelector('.version').textContent = this.manifest.version;
+    this.querySelector('.catalog').textContent = this.manifest.catalog;
+
+    this.querySelector('.upload').addEventListener('click', function(){
+      this.dispatchEvent(new CustomEvent('upload', { bubbles: true }));
+    }.bind(this));
+
+    this.querySelector('.preview').addEventListener('click', function(){
+      this.dispatchEvent(new CustomEvent('preview', { bubbles: true }));
+    }.bind(this));
+  };
+
+  document.registerElement('gadget-manifest', { prototype: GadgetManifest });
+})();
+</script>
+
+<gadget-manifest data-manifest='{ "name": "foo-bar", "version":"0.1.0" }' data-icon="/api/gadgets/foo.png"></gadget-manifest>

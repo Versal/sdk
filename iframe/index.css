@@ -1,15 +1,22 @@
 body {
   background: #fbfaf6;
-  padding: 0 20px;
-  max-width: 720px;
+  padding: 0 10px;
   display: block;
   margin: auto;
+  max-width: 760px;
+}
+
+.gbox {
+  position: relative;
+  margin: auto;
+  background: gray;
 }
 
 .container {
   min-height: 40px;
-  background: #fff;
-  margin: auto;
+  max-width: 720px;
+  margin-left: 42px;
+  background: white;
 }
 
 .container:empty:before {
@@ -26,6 +33,8 @@ body {
 .toolbar {
   line-height: 50px;
   background: rgba(215, 221, 66, 0.34);
+  float: left;
+  width: 42px;
 }
 
 .palette {
