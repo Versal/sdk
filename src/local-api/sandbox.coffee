@@ -11,7 +11,7 @@ sandbox.put '/', (req, res) ->
   path = manifest._path
   options =
     apiUrl: config.get 'apiUrl'
-    sid: config.get 'sessionId'
+    sessionId: config.get 'sessionId'
 
   console.log 'uploading ', path, options
   upload path, options, (err, body) ->
