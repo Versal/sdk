@@ -1,31 +1,25 @@
 <style>
 gadget-manifest {
-  border: 1px solid grey;
   display: inline-block;
+  min-width: 320px;
 }
 
 gadget-manifest > .icon {
   width: 52px;
   height: 52px;
-}
-
-gadget-manifest > * {
   float: left;
-}
-
-gadget-manifest > div > span {
-  clear: left;
+  cursor: move;
 }
 </style>
 
 <template>
-  <img class="icon" src="" />
+  <img class="icon" src="" draggable="true" />
   <div>
-  <div class="name"></div>
-  <div class="version"></div>
-  <div class="catalog"></div>
-  <button class="preview">Preview</button>
-  <button class="upload">Upload to sandbox</button>
+  <span class="name"></span>
+  <span class="version"></span>
+  </div>
+  <div>
+    <button class="upload">Upload to sandbox</button>
   </div>
 </template>
 
@@ -50,14 +44,17 @@ gadget-manifest > div > span {
     this.querySelector('.icon').src = this.icon;
     this.querySelector('.name').textContent = this.manifest.name;
     this.querySelector('.version').textContent = this.manifest.version;
-    this.querySelector('.catalog').textContent = this.manifest.catalog;
 
     this.querySelector('.upload').addEventListener('click', function(){
       this.dispatchEvent(new CustomEvent('upload', { bubbles: true }));
     }.bind(this));
 
-    this.querySelector('.preview').addEventListener('click', function(){
+    this.querySelector('.icon').addEventListener('dblclick', function(){
       this.dispatchEvent(new CustomEvent('preview', { bubbles: true }));
+    }.bind(this));
+
+    this.querySelector('.icon').addEventListener('dragstart', function(e){
+      e.dataTransfer.setData('application/json', JSON.stringify(this.manifest));
     }.bind(this));
   };
 
@@ -65,4 +62,4 @@ gadget-manifest > div > span {
 })();
 </script>
 
-<gadget-manifest data-manifest='{ "name": "foo-bar", "version":"0.1.0" }' data-icon="/api/gadgets/foo.png"></gadget-manifest>
+<gadget-manifest data-manifest='{ "name": "foo-bar", "version":"0.1.0" }' data-icon="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></gadget-manifest>
