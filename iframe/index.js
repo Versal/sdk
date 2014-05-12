@@ -2,10 +2,9 @@ var _each = Array.prototype.forEach;
 var URL = window.webkitURL || window.URL;
 
 var palette = document.querySelector('.palette');
-var container = document.querySelector('.container');
+var container = document.querySelector('.lesson');
 var assetPicker = document.querySelector('.asset-picker');
 var saving = document.querySelector('.saving');
-var editable = document.querySelector('#editable');
 
 var get = function(url, callback) {
   var request = new XMLHttpRequest();
@@ -52,12 +51,14 @@ var initPalette = function(manifests){
 
   palette.addEventListener('preview', function(e){
     var manifest = JSON.parse(e.target.getAttribute('data-manifest'));
-    var
+    var gbox = createGbox(manifest);
+    container.appendChild(gbox);
   });
 
   palette.addEventListener('upload', function(e){
     put('/api/sandbox?id=' + e.target.manifest.id, function(error, response){
       if(error) {
+        alert(error);
         return console.error(error);
       }
 
@@ -66,27 +67,23 @@ var initPalette = function(manifests){
   });
 };
 
-var previewGadget = function(element, attributes){
+var createGbox = function(manifest){
+  var gbox = document.createElement('gadget-box');
+  var launcher = createLauncher('versal-iframe-launcher', manifest)
+  gbox.appendChild(launcher);
+  return gbox;
+};
+
+var createLauncher = function(element, manifest){
   var elt = document.createElement(element);
 
   elt.id = Math.random().toString(36).substr(2,6);
   elt.setAttribute('src', assetPath(manifest, manifest.main));
   elt.setAttribute('data-environment', JSON.stringify(window.env));
+  elt.setAttribute('data-config', JSON.stringify(manifest.defaultConfig || {}));
+  elt.setAttribute('data-userstate', JSON.stringify(manifest.defaultUserState || {}));
 
-  if(editable.checked) {
-    elt.setAttribute('editable', 'true');
-  };
-
-  Object.keys(attributes).forEach(function(key){
-    elt.setAttribute(key, attributes[key]);
-  });
-
-  Object.keys(userstate).forEach(function(key){
-    elt.setAttribute(key, userstate[key]);
-  });
-
-  container.innerHTML = '';
-  container.appendChild(elt);
+  return elt;
 };
 
 var linkManifest = function(manifest) {
@@ -113,14 +110,19 @@ var persistenceObserver = new MutationObserver(function(records){
   })
 });
 
-editable.addEventListener('change', function(){
-  _each.call(container.children, function(elt){
-    if(editable.checked) {
-      elt.setAttribute('editable', 'true');
-    } else {
-      elt.removeAttribute('editable');
-    }
-  })
+container.addEventListener('dragenter', function(e){
+  e.preventDefault();
+});
+container.addEventListener('dragover', function(e){
+  e.preventDefault();
+});
+
+container.addEventListener('drop', function(e){
+  console.log(e);
+  var manifest = JSON.parse(e.dataTransfer.getData('application/json'));
+  var gbox = createGbox(manifest);
+  e.target.appendChild(gbox);
+  e.preventDefault();
 });
 
 container.addEventListener('requestAsset', function(evt){

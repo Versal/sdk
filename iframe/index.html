@@ -4,11 +4,11 @@
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="stylesheet" href="index.css" />
-<!-- these things will be delivered via bower, but for now... -->
-<script src="/components/versal-component-runtime/dist/runtime.min.js"></script>
 
+<script src="/components/versal-component-runtime/dist/runtime.min.js"></script>
 <link rel="import" href="/components/versal-iframe-launcher/index.html" />
 <link rel="import" href="./gadget-manifest.html" />
+<link rel="import" href="./gadget-box.html" />
 </head>
 
 <body>
@@ -17,13 +17,7 @@
 <div class="palette"></div>
 <div class="saving"></div>
 
-<div class="gbox">
-  <aside class="toolbar">
-    <label><input type="checkbox" id="editable" checked /> Editable</label>
-  </aside>
-
-  <div class="container"></div>
-</div>
+<div class="lesson"></div>
 
 <form class="asset-picker" action="/api/assets">
   <input type="file" name="content" />
