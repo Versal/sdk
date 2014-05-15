@@ -31,6 +31,8 @@ sandbox.put '/', (req, res) ->
     if !exists then return res.send 404, 'Gadget files were not found in the specified directory'
 
     _fetchMySandbox (err, sandbox) ->
+      if err then return res.send 500, err.message
+
       remoteManifest = _findManifestInSandbox manifest, sandbox
       if remoteManifest && semver.gt(remoteManifest.latestVersion, manifest.version)
         return res.send 500, "Upload failed.\n\nLatest version of sandboxed gadget is: #{remoteManifest.latestVersion}.\n You must bump version in manifest.json to upload this gadget."
@@ -44,9 +46,13 @@ _fetchMySandbox = (callback) ->
   url = opts.apiUrl + '/gadgets?catalog=sandbox&user=me'
   headers = sid: opts.sessionId
 
-  request { url, headers}, (err, response, body) ->
+  if !opts.sessionId then return callback new Error 'Session id not found. Run versal signin first.'
+
+  request { url, headers}, (err, res, body) ->
     if err then return callback err
-    callback null, JSON.parse(body)
+    data = JSON.parse body
+    if res.statusCode != 200 then return callback data
+    callback null, data
 
 _findManifestInSandbox = (manifest, sandbox) ->
   query = { name: manifest.name, version: manifest.version }

@@ -61,10 +61,10 @@ var initPalette = function(manifests){
     put('/api/sandbox?id=' + e.target.manifest.id, function(error, response){
       e.target.enableUpload();
        if(error) {
-        return notify(error.message);
+        return notify(error.message, 'notification-error');
       }
 
-      notify('Gadget uploaded successfully!');
+      notify('Gadget uploaded successfully!', 'notification-success');
     });
   });
 };
@@ -72,6 +72,7 @@ var initPalette = function(manifests){
 var notify = function(message, className){
   var div = document.createElement('sdk-notification');
   div.textContent = message;
+  if(className){ div.classList.add(className); }
   document.body.insertBefore(div, document.body.firstChild);
 };
 

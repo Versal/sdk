@@ -69,3 +69,11 @@ body {
   opacity: 1;
   transition: opacity 250ms;
 }
+
+.notification-success {
+  color: green;
+}
+
+.notification-error {
+  color: red;
+}
