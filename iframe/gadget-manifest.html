@@ -19,7 +19,7 @@ gadget-manifest > .icon {
   <span class="version"></span>
   </div>
   <div>
-    <button class="upload">Upload to sandbox</button>
+    <button class="js-upload">Upload to sandbox</button>
   </div>
 </template>
 
@@ -45,7 +45,7 @@ gadget-manifest > .icon {
     this.querySelector('.name').textContent = this.manifest.name;
     this.querySelector('.version').textContent = this.manifest.version;
 
-    this.querySelector('.upload').addEventListener('click', function(){
+    this.querySelector('.js-upload').addEventListener('click', function(){
       this.dispatchEvent(new CustomEvent('upload', { bubbles: true }));
     }.bind(this));
 
@@ -56,6 +56,14 @@ gadget-manifest > .icon {
     this.querySelector('.icon').addEventListener('dragstart', function(e){
       e.dataTransfer.setData('application/json', JSON.stringify(this.manifest));
     }.bind(this));
+  };
+
+  GadgetManifest.disableUpload = function(){
+    this.querySelector('.js-upload').setAttribute('disabled', true);
+  };
+
+  GadgetManifest.enableUpload = function(){
+    this.querySelector('.js-upload').removeAttribute('disabled');
   };
 
   document.registerElement('gadget-manifest', { prototype: GadgetManifest });

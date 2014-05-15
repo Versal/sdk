@@ -1,7 +1,7 @@
 var _each = Array.prototype.forEach;
 var URL = window.webkitURL || window.URL;
 
-var palette = document.querySelector('.palette');
+var palette = document.querySelector('#palette');
 var container = document.querySelector('.lesson');
 var assetPicker = document.querySelector('.asset-picker');
 var saving = document.querySelector('.saving');
@@ -52,19 +52,27 @@ var initPalette = function(manifests){
   palette.addEventListener('preview', function(e){
     var manifest = JSON.parse(e.target.getAttribute('data-manifest'));
     var gbox = createGbox(manifest);
+    gbox.setAttribute('draggable', true);
     container.appendChild(gbox);
   });
 
   palette.addEventListener('upload', function(e){
+    e.target.disableUpload();
     put('/api/sandbox?id=' + e.target.manifest.id, function(error, response){
-      if(error) {
-        alert(error);
-        return console.error(error);
+      e.target.enableUpload();
+       if(error) {
+        return notify(error.message);
       }
 
-      console.log(response);
+      notify('Gadget uploaded successfully!');
     });
   });
+};
+
+var notify = function(message, className){
+  var div = document.createElement('sdk-notification');
+  div.textContent = message;
+  document.body.insertBefore(div, document.body.firstChild);
 };
 
 var createGbox = function(manifest){
@@ -113,16 +121,20 @@ var persistenceObserver = new MutationObserver(function(records){
 container.addEventListener('dragenter', function(e){
   e.preventDefault();
 });
+
 container.addEventListener('dragover', function(e){
   e.preventDefault();
 });
 
 container.addEventListener('drop', function(e){
-  console.log(e);
   var manifest = JSON.parse(e.dataTransfer.getData('application/json'));
   var gbox = createGbox(manifest);
   e.target.appendChild(gbox);
   e.preventDefault();
+});
+
+container.addEventListener('track', function(e){
+  console.log('track', e);
 });
 
 container.addEventListener('requestAsset', function(evt){

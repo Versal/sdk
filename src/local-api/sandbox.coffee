@@ -20,25 +20,24 @@ sandbox.get '/', (req, res) ->
 
 sandbox.put '/', (req, res) ->
   id = req.param('id')
+
   manifest = _.findWhere req.manifests, { id }
+  if !manifest then return res.send 404, 'Manifest not found'
+
   gadgetPath = manifest._path
-  if !gadgetPath then return res.send 404, "Gadget path is undefined"
+  if !gadgetPath then return res.send 404, 'Gadget path is undefined'
 
   fs.exists gadgetPath, (exists) ->
-    if !exists then return res.send 404, "Gadget files were not found in the specified path"
+    if !exists then return res.send 404, 'Gadget files were not found in the specified directory'
 
-    manHelper.readManifest gadgetPath, (err, manifest) ->
-      if err then return res.send 500, err
-      if !manifest then return res.send 404, "Manifest not found"
+    _fetchMySandbox (err, sandbox) ->
+      remoteManifest = _findManifestInSandbox manifest, sandbox
+      if remoteManifest && semver.gt(remoteManifest.latestVersion, manifest.version)
+        return res.send 500, "Upload failed.\n\nLatest version of sandboxed gadget is: #{remoteManifest.latestVersion}.\n You must bump version in manifest.json to upload this gadget."
 
-      _fetchMySandbox (err, sandbox) ->
-        remote = _findManifestInSandbox manifest, sandbox
-        if remote && semver.gt(remote.latestVersion, manifest.version)
-          return res.send 500, "Latest version of sandboxed gadget is: #{remote.latestVersion}. You have to bump version in manifest.json"
-
-        upload gadgetPath, options(), (err, body) ->
-          if err then return res.send 500, err
-          res.json body
+      upload gadgetPath, options(), (err, body) ->
+        if err then return res.send 500, err
+        res.json body
 
 _fetchMySandbox = (callback) ->
   opts = options()

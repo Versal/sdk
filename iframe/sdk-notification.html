@@ -1,0 +1,22 @@
+<style>
+sdk-notification {
+  display: block;
+  line-height: 1.7em;
+  padding: 1.5em;
+  margin: 1em auto;
+  max-width: 720px;
+  box-sizing: border-box;
+}
+</style>
+
+<script>
+var Notification = Object.create(HTMLElement.prototype);
+
+Notification.attachedCallback = function(){
+  this.addEventListener('click', function(){
+    this.parentNode.removeChild(this);
+  }.bind(this));
+};
+
+document.registerElement('sdk-notification', { prototype: Notification });
+</script>
