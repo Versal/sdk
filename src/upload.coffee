@@ -51,8 +51,9 @@ zipFilesInFolder = (tmpdir, callback) ->
     if err
       return callback new Error "zip process exited with code #{err.code}"
 
-    console.log chalk.grey 'bundle path:', bundlePath
-    callback null, bundlePath
+    process.nextTick ->
+      console.log chalk.grey 'bundle path:', bundlePath
+      callback null, bundlePath
 
 createIgnoreFilter = (dir, callback) ->
   lookupIgnoreFile dir, (ignorePath) ->
@@ -79,15 +80,19 @@ uploadBundleToRestAPI = (bundlePath, options, callback) ->
     headers:
       SID: options.sessionId
 
-  console.log chalk.yellow "Uploading file to #{opts.url}"
+  fs.stat bundlePath, (err, stats) ->
+    if err then return callback err
 
-  req = request.post opts, (err, res, body) ->
-    handleRestApiResponse err, res, JSON.parse(body), callback
+    size = parseInt(stats.size / 1024, 10)
+    console.log chalk.yellow "Uploading #{size}KB to #{opts.url}"
 
-  req.form().append 'content', fs.createReadStream bundlePath
+    req = request.post opts, (err, res, body) ->
+      handleRestApiResponse err, res, JSON.parse(body), callback
+
+    req.form().append('content', fs.createReadStream(bundlePath))
 
 handleRestApiResponse = (err, res, body, callback) ->
   if err then return callback err
-  if res.statusCode >= 300 then return callback new Error body.message
+  if res.statusCode >= 300 then return callback new Error(body.message)
 
   callback(null, body)

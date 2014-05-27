@@ -1,0 +1,73 @@
+<style>
+gadget-manifest {
+  display: inline-block;
+  min-width: 320px;
+}
+
+gadget-manifest > .icon {
+  width: 52px;
+  height: 52px;
+  float: left;
+  cursor: move;
+}
+</style>
+
+<template>
+  <img class="icon" src="" draggable="true" />
+  <div>
+  <span class="name"></span>
+  <span class="version"></span>
+  </div>
+  <div>
+    <button class="js-upload">Upload to sandbox</button>
+  </div>
+</template>
+
+<script>
+(function(){
+  var _doc = (document._currentScript || document.currentScript).ownerDocument;
+  var _template = _doc.querySelector('template');
+
+  var GadgetManifest = Object.create(HTMLElement.prototype, {
+    manifest: {
+      get: function(){ return JSON.parse(this.getAttribute('data-manifest')); }
+    },
+
+    icon: {
+      get: function(){ return this.getAttribute('data-icon'); }
+    }
+  });
+
+  GadgetManifest.attachedCallback = function(){
+    this.appendChild(_template.content.cloneNode(true));
+
+    this.querySelector('.icon').src = this.icon;
+    this.querySelector('.name').textContent = this.manifest.name;
+    this.querySelector('.version').textContent = this.manifest.version;
+
+    this.querySelector('.js-upload').addEventListener('click', function(){
+      this.dispatchEvent(new CustomEvent('upload', { bubbles: true }));
+    }.bind(this));
+
+    this.querySelector('.icon').addEventListener('dblclick', function(){
+      this.dispatchEvent(new CustomEvent('preview', { bubbles: true }));
+    }.bind(this));
+
+    this.querySelector('.icon').addEventListener('dragstart', function(e){
+      e.dataTransfer.setData('application/json', JSON.stringify(this.manifest));
+    }.bind(this));
+  };
+
+  GadgetManifest.disableUpload = function(){
+    this.querySelector('.js-upload').setAttribute('disabled', true);
+  };
+
+  GadgetManifest.enableUpload = function(){
+    this.querySelector('.js-upload').removeAttribute('disabled');
+  };
+
+  document.registerElement('gadget-manifest', { prototype: GadgetManifest });
+})();
+</script>
+
+<gadget-manifest data-manifest='{ "name": "foo-bar", "version":"0.1.0" }' data-icon="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></gadget-manifest>

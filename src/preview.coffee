@@ -48,16 +48,16 @@ linkManifestDir = (app, dir, callback) ->
     return callback() unless json
 
     man = mapManifest json
-    linkPath = path.resolve dir
+    man._path = path.resolve dir
 
     gadgetPath = "api/gadgets/#{man.username}/#{man.name}/#{man.version}/"
-    app.use '/' + gadgetPath, express.static(linkPath)
+    app.use '/' + gadgetPath, express.static(man._path)
 
     callback null, man
 
 mapManifest = (manifest) ->
   manifest.id = shortid.generate()
-  manifest.catalog = 'sandbox'
+  manifest.catalog = 'local'
   manifest.username = 'local'
   manifest.latestVersion = manifest.version
 

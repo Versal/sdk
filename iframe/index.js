@@ -1,15 +1,29 @@
 var _each = Array.prototype.forEach;
-var URL = webkitURL || URL;
+var URL = window.webkitURL || window.URL;
 
-var palette = document.querySelector('.palette');
-var container = document.querySelector('.container');
+var palette = document.querySelector('#palette');
+var container = document.querySelector('.lesson');
 var assetPicker = document.querySelector('.asset-picker');
 var saving = document.querySelector('.saving');
-var editable = document.querySelector('#editable');
 
 var get = function(url, callback) {
   var request = new XMLHttpRequest();
   request.open('GET', url, true);
+  request.send();
+
+  request.onload = function(){
+    if(request.status != 200) { return callback(new Error(request.response)); }
+    callback(null, JSON.parse(request.response));
+  };
+
+  request.onerror = function(err){
+    callback(err);
+  };
+};
+
+var put = function(url, callback) {
+  var request = new XMLHttpRequest();
+  request.open('PUT', url, true);
   request.send();
 
   request.onload = function(){
@@ -35,76 +49,93 @@ get('/api/courses/local', function(err, course){
 var initPalette = function(manifests){
   _each.call(manifests, linkManifest);
 
-  palette.addEventListener('click', function(e){
+  palette.addEventListener('preview', function(e){
     var manifest = JSON.parse(e.target.getAttribute('data-manifest'));
-    var element = 'versal-iframe-launcher';
+    var gbox = createGbox(manifest);
+    gbox.setAttribute('draggable', true);
+    container.appendChild(gbox);
+  });
 
-    var elt = document.createElement(element);
-    elt.setAttribute('src', assetPath(manifest, manifest.main));
-    elt.setAttribute('data-environment', JSON.stringify(window.env));
+  palette.addEventListener('upload', function(e){
+    e.target.disableUpload();
+    put('/api/sandbox?id=' + e.target.manifest.id, function(error, response){
+      e.target.enableUpload();
+       if(error) {
+        return notify(error.message, 'notification-error');
+      }
 
-    if(editable.checked) {
-      elt.setAttribute('editable', 'true');
-    };
-
-    if(manifest.defaultConfig) {
-      console.warn('defaultConfig is a subject to deprecation. Consider providing default configuration in the gadget.');
-      elt.setAttribute('data-config', JSON.stringify(manifest.defaultConfig));
-    }
-
-    if(manifest.defaultUserstate) {
-      console.warn('defaultUserstate is a subject to deprecation. Consider providing default userstate within the gadget.');
-      elt.setAttribute('data-userstate', JSON.stringify(manifest.defaultUserstate));
-    }
-
-    container.innerHTML = '';
-    container.appendChild(elt);
-
-    persistenceObserver.disconnect();
-    persistenceObserver.observe(elt, {
-      attributes: true,
-      attributeFilter: ['data-config', 'data-userstate']
+      notify('Gadget uploaded successfully!', 'notification-success');
     });
   });
 };
 
-var linkManifest = function(manifest) {
-  var icon = createIcon(assetPath(manifest, manifest.icon));
-  icon.setAttribute('data-manifest', JSON.stringify(manifest));
-  palette.appendChild(icon);
+var notify = function(message, className){
+  var div = document.createElement('sdk-notification');
+  div.textContent = message;
+  if(className){ div.classList.add(className); }
+  document.body.insertBefore(div, document.body.firstChild);
 };
 
-var createIcon = function(src){
-  var span = document.createElement('span');
-  span.className = 'icon';
-  span.style.backgroundImage = 'url(' + src + ')';
-  return span;
-}
+var createGbox = function(manifest){
+  var gbox = document.createElement('gadget-box');
+  var launcher = createLauncher('versal-iframe-launcher', manifest)
+  gbox.appendChild(launcher);
+  return gbox;
+};
+
+var createLauncher = function(element, manifest){
+  var elt = document.createElement(element);
+
+  elt.id = Math.random().toString(36).substr(2,6);
+  elt.setAttribute('src', assetPath(manifest, manifest.main));
+  elt.setAttribute('data-environment', JSON.stringify(window.env));
+  elt.setAttribute('data-config', JSON.stringify(manifest.defaultConfig || {}));
+  elt.setAttribute('data-userstate', JSON.stringify(manifest.defaultUserState || {}));
+
+  return elt;
+};
+
+var linkManifest = function(manifest) {
+  var icon = document.createElement('gadget-manifest');
+  icon.setAttribute('data-manifest', JSON.stringify(manifest));
+  icon.setAttribute('data-icon', assetPath(manifest, manifest.icon))
+  palette.appendChild(icon);
+};
 
 var assetPath = function(manifest, file) {
   return '/api/gadgets/' + manifest.username + '/' + manifest.name + '/' + manifest.version + '/' + file;
 };
 
-var persistenceObserver = new MutationObserver(function(mx){
-  mx.forEach(function(mutation){
-    if(mutation.type == 'attributes') {
-      saving.textContent = mutation.attributeName.slice(5);
-      saving.classList.add('visible');
-      setTimeout(function(){
-        saving.classList.remove('visible');
-      }, 500);
-    }
+var persistenceObserver = new MutationObserver(function(records){
+  records.forEach(function(mr){
+    var attr = mr.attributeName;
+    sessionStorage[attr] = mr.target.getAttribute(attr);
+
+    saving.textContent = attr.slice(5);
+    saving.classList.add('visible');
+    setTimeout(function(){
+      saving.classList.remove('visible');
+    }, 500);
   })
 });
 
-editable.addEventListener('change', function(){
-  _each.call(container.children, function(elt){
-    if(editable.checked) {
-      elt.setAttribute('editable', 'true');
-    } else {
-      elt.removeAttribute('editable');
-    }
-  })
+container.addEventListener('dragenter', function(e){
+  e.preventDefault();
+});
+
+container.addEventListener('dragover', function(e){
+  e.preventDefault();
+});
+
+container.addEventListener('drop', function(e){
+  var manifest = JSON.parse(e.dataTransfer.getData('application/json'));
+  var gbox = createGbox(manifest);
+  e.target.appendChild(gbox);
+  e.preventDefault();
+});
+
+container.addEventListener('track', function(e){
+  console.log('track', e);
 });
 
 container.addEventListener('requestAsset', function(evt){

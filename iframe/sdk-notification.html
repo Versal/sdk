@@ -1,0 +1,46 @@
+<style>
+sdk-notification {
+  display: block;
+  line-height: 1.7em;
+  font-size: 1.7em;
+  padding: 0.5em;
+  margin: 0 auto;
+  max-width: 720px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+sdk-notification .close {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+
+sdk-notification .close:before {
+  content: 'X';
+}
+</style>
+
+<template>
+  <div class="close js-close" />
+</template>
+
+<script>
+var _doc = (document._currentScript || document.currentScript).ownerDocument;
+var _template = _doc.querySelector('template');
+
+var Notification = Object.create(HTMLElement.prototype);
+
+Notification.attachedCallback = function(){
+  this.appendChild(_template.content.cloneNode(true));
+
+  this.querySelector('.js-close').addEventListener('click', function(){
+    this.parentNode.removeChild(this);
+  }.bind(this));
+};
+
+document.registerElement('sdk-notification', { prototype: Notification });
+</script>

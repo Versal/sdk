@@ -3,22 +3,21 @@
 <head>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-
-<!-- these things will be delivered via bower, but for now... -->
-<script src="/components/versal-component-runtime/dist/runtime.min.js"></script>
-<link href="/components/versal-iframe-launcher/index.html" rel="import" />
 <link rel="stylesheet" href="index.css" />
+
+<script src="/components/versal-component-runtime/dist/runtime.min.js"></script>
+<link rel="import" href="/components/versal-iframe-launcher/index.html" />
+<link rel="import" href="./gadget-manifest.html" />
+<link rel="import" href="./gadget-box.html" />
+<link rel="import" href="./sdk-notification.html" />
 </head>
 
 <body>
-
 <!-- This is a player mock. It even has an asset picker. -->
-<div class="palette"></div>
+<section id="palette"></section>
 <div class="saving"></div>
-<div class="toolbar">
-  <label><input type="checkbox" id="editable" checked /> Editable</label>
-</div>
-<div class="container"></div>
+
+<div class="lesson"></div>
 
 <form class="asset-picker" action="/api/assets">
   <input type="file" name="content" />

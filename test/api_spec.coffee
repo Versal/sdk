@@ -8,7 +8,7 @@ Api = require '../src/local-api/index'
 describe 'Local API', ->
   api = null
   data =
-    manifests: [{ username: 'am', name: 'foo', version: '1' }]
+    manifests: [{ id: 1, username: 'am', name: 'foo', version: '1' }]
     assets: []
     representations: {}
     course: {
@@ -23,6 +23,11 @@ describe 'Local API', ->
 
   before ->
     api = Api data
+
+  describe 'sandbox', ->
+    it 'upload', (done) ->
+      # 404 is OK for now
+      request(api).put('/sandbox').send({ id: 1 }).expect 404, done
 
   describe 'courses', ->
     it 'show', (done) ->
