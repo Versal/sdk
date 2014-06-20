@@ -1,6 +1,17 @@
 (function() {
   window.vs || (window.vs = {});
 
+  // Polyfill window.location.origin for the inferior browser
+  // See: http://tosbourn.com/a-fix-for-window-location-origin-in-internet-explorer/
+  if (!window.location.origin) {
+    var loc = window.location;
+    var port = '';
+    if (loc.port) {
+      port = loc.port;
+    }
+    window.location.origin = loc.protocol + '//' + loc.hostname;
+  }
+
   window.addEventListener('message', function(evt){
     if(typeof evt == 'object') {
       var message = evt.data;
@@ -18,6 +29,7 @@
     return require(['cdn.underscore', 'player'], function(_, PlayerApplication) {
       var noEditable = !!window.location.search.match(/learn=true/);
       var config = {
+        playerUrl: window.location.origin,
         courseId: 'local',
         api: { url: 'api', sessionId: '' },
         noEditable: noEditable
