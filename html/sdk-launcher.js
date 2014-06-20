@@ -2,6 +2,7 @@
   window.vs || (window.vs = {});
 
   // Polyfill window.location.origin for the inferior browser
+  // See: http://tosbourn.com/a-fix-for-window-location-origin-in-internet-explorer/
   if (!window.location.origin) {
     var loc = window.location;
     var port = '';
