@@ -76,9 +76,7 @@ If you want to contribute to SDK development, install it from source:
 
 ### Updating player
 
-A copy of the [Player](/Versal/player) is bundled in the "html" folder. To
-update Player or use a custom branch, clone player next to `sdk`, build it,
-and then `npm run copy-player` from within the SDK folder.
+A copy of the [Player](/Versal/player) is bundled at `./html/player`. To update Player copy `/path/to/player/dist` to `./html/player`:
 
 ### Using development branch of the player
 
