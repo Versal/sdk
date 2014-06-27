@@ -1,9 +1,10 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  define(['cdn.underscore', 'cdn.jquery', 'models/settings'], function(_, $, settings) {
-    var Timer, Tracker, interval, queue, save, throttledSave, _ref;
+  define(['cdn.underscore', 'cdn.jquery', 'models/settings', 'libs/keen'], function(_, $, settings, Keen) {
+    var Timer, Tracker, interval, queue, save, sessionData, throttledSave, _ref;
     queue = [];
+    sessionData = {};
     interval = ((_ref = settings.get('tracker')) != null ? _ref.interval : void 0) || 20000;
     save = function() {
       var oldQueue, path, _ref1, _ref2;
@@ -20,7 +21,9 @@
         success: function() {
           return queue = _.difference(queue, oldQueue);
         },
-        headers: (_ref2 = settings.get('tracker')) != null ? _ref2.headers : void 0
+        headers: {
+          AUTHSID: (_ref2 = settings.get('api')) != null ? _ref2.sessionId : void 0
+        }
       });
     };
     throttledSave = _.throttle(save, interval, {
@@ -55,17 +58,26 @@
         this._addTypes = __bind(this._addTypes, this);
       }
 
-      Tracker.prototype.track = function(name, data) {
-        if (data == null) {
-          data = {};
+      Tracker.addSessionData = function(data) {
+        return sessionData = _.extend({}, sessionData, data);
+      };
+
+      Tracker.prototype.track = function(name, _data) {
+        var data;
+        if (_data == null) {
+          _data = {};
         }
+        data = _.extend(_data, sessionData);
         queue.push(this._addTypes({
           source: this._source,
           event: name,
           data: _.extend({}, this._metadata, data),
           ts_dt: Math.round((new Date).getTime() / 1000)
         }));
-        return throttledSave();
+        throttledSave();
+        return Keen.addEvent(name, _.extend({}, this._metadata, data, {
+          source: this._source
+        }));
       };
 
       Tracker.prototype.createTimer = function(name, data) {

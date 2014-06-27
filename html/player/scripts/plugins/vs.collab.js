@@ -1,6 +1,6 @@
 /*!
- * js-collab v0.1.12
- * lovingly baked from a5b76f8 on 10. April 2014
+ * js-collab v0.1.15
+ * lovingly baked from df8c754 on 12. May 2014
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -421,42 +421,63 @@ var requirejs, require, define;
 }());
 define("../src/build/almond", function(){});
 
-define('handler',['require','exports','module','./collab'],function (require, exports, module) {(function() {
-  var Handler, collab;
+define('handler',['require','exports','module'],function (require, exports, module) {/*
+Each instance of Handler will listen to two things:
+  1) @mediator -- for events coming from player
+  2) @conn -- for events coming from the collab server
+*/
 
-  collab = require('./collab');
+
+(function() {
+  var Handler;
 
   Handler = (function() {
     function Handler(conn) {
       this.conn = conn;
       this.mediator = this.conn.mediator;
-      this.conn.on('ws:open', this.listenToMediator, this);
-      this.conn.on('ws:close', this.stopListeningToMediator, this);
+      this.conn.on('ws:open', this.listen, this);
+      this.conn.on('ws:close', this.stopListening, this);
     }
 
-    Handler.prototype.listenToMediator = function() {
-      var handler, name, _ref, _results;
-      if (!this.events) {
+    Handler.prototype.listen = function() {
+      var handler, name, _ref, _ref1, _results;
+      if (!this.serverEvents) {
         return;
       }
-      _ref = this.events;
-      _results = [];
+      _ref = this.serverEvents;
       for (name in _ref) {
         handler = _ref[name];
+        this.conn.on(name, this[handler], this);
+      }
+      if (!this.localEvents) {
+        return;
+      }
+      _ref1 = this.localEvents;
+      _results = [];
+      for (name in _ref1) {
+        handler = _ref1[name];
         _results.push(this.mediator.on(name, this[handler], this));
       }
       return _results;
     };
 
-    Handler.prototype.stopListeningToMediator = function() {
-      var handler, name, _ref, _results;
-      if (!this.events) {
+    Handler.prototype.stopListening = function() {
+      var handler, name, _ref, _ref1, _results;
+      if (!this.serverEvents) {
         return;
       }
-      _ref = this.events;
-      _results = [];
+      _ref = this.serverEvents;
       for (name in _ref) {
         handler = _ref[name];
+        this.conn.off(name, this[handler], this);
+      }
+      if (!this.localEvents) {
+        return;
+      }
+      _ref1 = this.localEvents;
+      _results = [];
+      for (name in _ref1) {
+        handler = _ref1[name];
         _results.push(this.mediator.off(name, this[handler], this));
       }
       return _results;
@@ -545,9 +566,12 @@ define('handlers/users',['require','exports','module','underscore','../handler',
       return _ref;
     }
 
-    UsersHandler.prototype.events = {
+    UsersHandler.prototype.localEvents = {
+      'gadget:activity': 'onGadgetActivity'
+    };
+
+    UsersHandler.prototype.serverEvents = {
       'user:me': 'onUserIdentity',
-      'gadget:activity': 'onGadgetActivity',
       'users:list': 'onUsersList',
       'user:add': 'onUserAdd',
       'user:remove': 'onUserRemove'
@@ -640,18 +664,21 @@ define('handlers/locks',['require','exports','module','underscore','../handler',
       return _ref;
     }
 
-    LocksHandler.prototype.events = {
+    LocksHandler.prototype.serverEvents = {
       'locks:list': 'onLocksList',
-      'gadget:editing:start': 'onGadgetEditing',
-      'gadget:editing:stop': 'onGadgetStopEditing',
       'lock:lock': 'onLock',
       'lock:unlock': 'onUnlock'
+    };
+
+    LocksHandler.prototype.localEvents = {
+      'gadget:editing:start': 'onGadgetEditing',
+      'gadget:editing:stop': 'onGadgetStopEditing'
     };
 
     LocksHandler.prototype.onLocksList = function(locks) {
       var _this = this;
       locks.each(function(lock) {
-        return _this.mediator.trigger('lock:lock', lock);
+        return _this.mediator.trigger('collab:lock:lock', lock);
       });
       return this.conn.activeLocks.reset(locks.models);
     };
@@ -666,7 +693,7 @@ define('handlers/locks',['require','exports','module','underscore','../handler',
         user: this.conn.me,
         editable: true
       });
-      return this.mediator.trigger('lock:lock', lock);
+      return this.mediator.trigger('collab:lock:lock', lock);
     };
 
     LocksHandler.prototype.onGadgetStopEditing = function(gadget) {
@@ -676,13 +703,15 @@ define('handlers/locks',['require','exports','module','underscore','../handler',
     };
 
     LocksHandler.prototype.onLock = function(lock) {
-      return this.conn.activeLocks.add(lock);
+      this.conn.activeLocks.add(lock);
+      return this.mediator.trigger('collab:lock:lock', lock);
     };
 
     LocksHandler.prototype.onUnlock = function(lock) {
-      return this.conn.activeLocks.remove(this.conn.activeLocks.findWhere({
+      this.conn.activeLocks.remove(this.conn.activeLocks.findWhere({
         gadgetId: lock.get('gadgetId')
       }));
+      return this.mediator.trigger('collab:lock:unlock', lock);
     };
 
     return LocksHandler;
@@ -714,17 +743,22 @@ define('handlers/comments',['require','exports','module','underscore','../handle
 
     CommentsHandler.prototype._unresolvedIds = {};
 
-    CommentsHandler.prototype.events = {
+    CommentsHandler.prototype.serverEvents = {
       'comments:list': 'onCommentsList',
       'comment:resolve': 'onCommentResolve',
-      'comment:added': 'onCommentAdded',
-      'comment:deleted': 'onCommentDeleted'
+      'comment:add': 'onCommentAdd',
+      'comment:delete': 'onCommentDelete'
+    };
+
+    CommentsHandler.prototype.localEvents = {
+      'comment:deleted': 'onCommentDeleted',
+      'comment:added': 'onCommentAdded'
     };
 
     CommentsHandler.prototype.onCommentsList = function(comments) {
       var _this = this;
       return this._personalizeCollection(comments).each(function(comment) {
-        return _this.mediator.trigger('comment:add', comment);
+        return _this.mediator.trigger('collab:comment:add', comment);
       });
     };
 
@@ -740,18 +774,21 @@ define('handlers/comments',['require','exports','module','underscore','../handle
       }
     };
 
+    CommentsHandler.prototype.onCommentAdd = function(comment) {
+      return this.mediator.trigger('collab:comment:add', comment);
+    };
+
+    CommentsHandler.prototype.onCommentDelete = function(comment) {
+      return this.mediator.trigger('collab:comment:delete', comment);
+    };
+
     CommentsHandler.prototype.onCommentAdded = function(comment) {
       this._pendComment(comment);
-      this.conn.triggerEvent('comment:add', {
+      return this.conn.triggerEvent('comment:add', {
         gadgetId: comment.get('gadgetId'),
         body: comment.get('body'),
         cid: comment.cid
       });
-      comment.set({
-        user: this.conn.me
-      });
-      comment.editable = true;
-      return this.mediator.trigger('comment:add', comment);
     };
 
     CommentsHandler.prototype.onCommentDeleted = function(comment) {
@@ -760,9 +797,7 @@ define('handlers/comments',['require','exports','module','underscore','../handle
         gadgetId: comment.get('gadgetId'),
         commentId: comment.id
       };
-      this.conn.triggerEvent('comment:delete', deletion);
-      comment.deleted = true;
-      return this.mediator.trigger('comment:delete', deletion);
+      return this.conn.triggerEvent('comment:delete', deletion);
     };
 
     CommentsHandler.prototype._personalizeCollection = function(collection) {
@@ -804,8 +839,11 @@ define('handlers/updates',['require','exports','module','../handler'],function (
       return _ref;
     }
 
-    UpdatesHandler.prototype.events = {
-      'course:update': '_onCourseUpdate',
+    UpdatesHandler.prototype.serverEvents = {
+      'course:update': '_onCourseUpdate'
+    };
+
+    UpdatesHandler.prototype.localEvents = {
       'lesson:gadget:added': '_onLessonChanged',
       'lesson:gadget:moved': '_onLessonChanged',
       'lesson:gadget:deleted': '_onLessonChanged',
@@ -1063,7 +1101,9 @@ define('collab',['require','exports','module','underscore','backbone','./handler
       this.enabled = false;
       this.activeLocks = new this.GadgetLocks;
       this.mediator.on('lesson:opened', function(lesson) {
-        return _this.subscribe(lesson.id);
+        if (_this.enabled) {
+          return _this.subscribe(lesson.id);
+        }
       });
       return this.mediator.on('lesson:closed', function(lesson) {
         return _this.unsubscribe(lesson.id);
@@ -1122,7 +1162,7 @@ define('collab',['require','exports','module','underscore','backbone','./handler
       var data, payload;
       payload = JSON.parse(rawPayload.data);
       data = this._dataToModels(payload);
-      this.mediator.trigger(payload.name, data);
+      this.trigger(payload.name, data);
       if (payload.name === 'users:list') {
         return this.onReady();
       }
