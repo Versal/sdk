@@ -7,9 +7,9 @@
     var loc = window.location;
     var port = '';
     if (loc.port) {
-      port = loc.port;
+      port = ':' + loc.port;
     }
-    window.location.origin = loc.protocol + '//' + loc.hostname;
+    window.location.origin = loc.protocol + '//' + loc.hostname + port;
   }
 
   window.addEventListener('message', function(evt){
