@@ -82,6 +82,7 @@ commands =
 
       config.set 'sessionId', sessionId
       console.log chalk.green 'You have signed in successfully'
+      if argv.verbose || argv.v then console.log sessionId
 
   upload: (argv) ->
     upload = require('./upload')
