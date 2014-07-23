@@ -1,6 +1,6 @@
 /*!
- * js-api v0.5.20
- * lovingly baked from e7a64db on 02. April 2014
+ * js-api v0.5.26
+ * lovingly baked from 4a0c8fb on 08. July 2014
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -1075,44 +1075,6 @@ define('models/gadget_userstate',['require','exports','module','backbone','under
 
 });
 
-define('collections/gadget_userstates',['require','exports','module','backbone'],function (require, exports, module) {(function() {
-  var Backbone, GadgetUserstates, _ref,
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  Backbone = require('backbone');
-
-  GadgetUserstates = (function(_super) {
-    __extends(GadgetUserstates, _super);
-
-    function GadgetUserstates() {
-      _ref = GadgetUserstates.__super__.constructor.apply(this, arguments);
-      return _ref;
-    }
-
-    GadgetUserstates.prototype.url = function() {
-      if (this.gadget && this.gadget.collection) {
-        return this.gadget.url() + '/userstates';
-      }
-    };
-
-    GadgetUserstates.prototype.initialize = function(models, options) {
-      if (!(options != null ? options.gadget : void 0)) {
-        throw new Error('Gadget reference is mandatory for GadgetUserstates');
-      }
-      return this.gadget = options.gadget;
-    };
-
-    return GadgetUserstates;
-
-  })(Backbone.Collection);
-
-  module.exports = GadgetUserstates;
-
-}).call(this);
-
-});
-
 define('models/gadget_config',['require','exports','module','backbone','underscore'],function (require, exports, module) {(function() {
   var Backbone, GadgetConfig, _, _ref,
     __hasProp = {}.hasOwnProperty,
@@ -1161,8 +1123,8 @@ define('models/gadget_config',['require','exports','module','backbone','undersco
 
 });
 
-define('models/gadget',['require','exports','module','backbone','underscore','./gadget_userstate','../collections/gadget_userstates','./gadget_config'],function (require, exports, module) {(function() {
-  var Backbone, Gadget, GadgetConfig, GadgetUserstate, GadgetUserstates, _,
+define('models/gadget',['require','exports','module','backbone','underscore','./gadget_userstate','./gadget_config'],function (require, exports, module) {(function() {
+  var Backbone, Gadget, GadgetConfig, GadgetUserstate, _,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1171,8 +1133,6 @@ define('models/gadget',['require','exports','module','backbone','underscore','./
   _ = require('underscore');
 
   GadgetUserstate = require('./gadget_userstate');
-
-  GadgetUserstates = require('../collections/gadget_userstates');
 
   GadgetConfig = require('./gadget_config');
 
@@ -1199,9 +1159,6 @@ define('models/gadget',['require','exports','module','backbone','underscore','./
       this.userState.url = function() {
         return _.result(_this, 'url') + '/userstate';
       };
-      this.userStates = new GadgetUserstates([], {
-        gadget: this
-      });
       options.parse = true;
       Gadget.__super__.constructor.call(this, attrs, options);
     }
@@ -1335,6 +1292,10 @@ define('models/gadget_project',['require','exports','module','underscore','backb
       return type;
     };
 
+    GadgetProject.prototype.shortType = function() {
+      return "" + (this.get('username')) + "/" + (this.get('name'));
+    };
+
     GadgetProject.prototype.cssClassName = function() {
       return ("gadget-" + (this.typeSegments().join('-'))).replace(/[\.\s]+/g, '_');
     };
@@ -1365,7 +1326,7 @@ define('models/gadget_project',['require','exports','module','underscore','backb
       options = {
         config: this.get('defaultConfig'),
         userState: this.get('defaultUserState'),
-        type: this.type()
+        type: this.shortType()
       };
       _.extend(options, attrs);
       return instance = new Gadget(options);
@@ -1678,8 +1639,8 @@ define('collections/lessons',['require','exports','module','backbone','underscor
 
 });
 
-define('models/user',['require','exports','module','backbone','underscore'],function (require, exports, module) {(function() {
-  var Backbone, User, _,
+define('models/subscription',['require','exports','module','backbone','underscore'],function (require, exports, module) {(function() {
+  var Backbone, Subscription, _, _ref,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1687,12 +1648,120 @@ define('models/user',['require','exports','module','backbone','underscore'],func
 
   _ = require('underscore');
 
+  Subscription = (function(_super) {
+    __extends(Subscription, _super);
+
+    function Subscription() {
+      _ref = Subscription.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    Subscription.prototype.idAttribute = 'type';
+
+    Subscription.prototype.save = function(attrs, opts) {
+      if (attrs == null) {
+        attrs = {};
+      }
+      if (opts == null) {
+        opts = {};
+      }
+      opts.type = 'post';
+      opts.url = _.result(this.collection, 'url');
+      return Subscription.__super__.save.call(this, attrs, opts);
+    };
+
+    return Subscription;
+
+  })(Backbone.Model);
+
+  module.exports = Subscription;
+
+}).call(this);
+
+});
+
+define('collections/subscriptions',['require','exports','module','backbone','../models/subscription'],function (require, exports, module) {(function() {
+  var Backbone, Subscription, Subscriptions, _ref,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Backbone = require('backbone');
+
+  Subscription = require('../models/subscription');
+
+  Subscriptions = (function(_super) {
+    __extends(Subscriptions, _super);
+
+    function Subscriptions() {
+      _ref = Subscriptions.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    Subscriptions.prototype.url = '/subscriptions';
+
+    Subscriptions.prototype.model = Subscription;
+
+    return Subscriptions;
+
+  })(Backbone.Collection);
+
+  module.exports = Subscriptions;
+
+}).call(this);
+
+});
+
+define('models/session',['require','exports','module','backbone'],function (require, exports, module) {(function() {
+  var Backbone, Session, _ref,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Backbone = require('backbone');
+
+  Session = (function(_super) {
+    __extends(Session, _super);
+
+    function Session() {
+      _ref = Session.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    Session.prototype.defaults = {
+      expiresIn: 0
+    };
+
+    Session.prototype.urlRoot = '/sessions';
+
+    return Session;
+
+  })(Backbone.Model);
+
+  module.exports = Session;
+
+}).call(this);
+
+});
+
+define('models/user',['require','exports','module','underscore','backbone','../collections/subscriptions','../models/session'],function (require, exports, module) {(function() {
+  var Backbone, Session, Subscriptions, User, _,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  _ = require('underscore');
+
+  Backbone = require('backbone');
+
+  Subscriptions = require('../collections/subscriptions');
+
+  Session = require('../models/session');
+
   User = (function(_super) {
     __extends(User, _super);
 
     User.prototype.urlRoot = '/users';
 
     function User(attrs, options) {
+      var _this = this;
       if (attrs == null) {
         attrs = {};
       }
@@ -1700,6 +1769,11 @@ define('models/user',['require','exports','module','backbone','underscore'],func
         options = {};
       }
       this.orgs = new Backbone.Collection;
+      this.subscriptions = new Subscriptions;
+      this.subscriptions.url = function() {
+        return _.result(_this, 'url') + '/subscriptions';
+      };
+      options.parse = true;
       Backbone.Model.call(this, attrs, options);
     }
 
@@ -1713,12 +1787,20 @@ define('models/user',['require','exports','module','backbone','underscore'],func
     };
 
     User.prototype.signin = function(options) {
+      var session,
+        _this = this;
       if (options == null) {
         options = {};
       }
-      options.url = '/signin/' + this.id;
+      session = new Session({
+        userId: this.id
+      });
       options.useApiKey = true;
-      return this.sync('create', this, options);
+      options.success = _.wrap(options.success, function(success, m, r, o) {
+        _this.set(r.user);
+        return success(r);
+      });
+      return session.save({}, options);
     };
 
     User.prototype.signout = function(options) {
@@ -1989,6 +2071,11 @@ define('models/course',['require','exports','module','backbone','underscore','./
       this.palette = new GadgetPalette([], {
         course: this
       });
+      this.userdata = new Backbone.Collection({}, {
+        url: function() {
+          return _.result(_this, 'url') + '/userdata';
+        }
+      });
       options.parse = true;
       Backbone.Model.call(this, attrs, options);
     }
@@ -2248,6 +2335,105 @@ define('models/partnerkey',['require','exports','module','backbone'],function (r
 
 });
 
+define('models/program_user',['require','exports','module','backbone'],function (require, exports, module) {(function() {
+  var Backbone, ProgramUser, _ref,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Backbone = require('backbone');
+
+  ProgramUser = (function(_super) {
+    __extends(ProgramUser, _super);
+
+    function ProgramUser() {
+      _ref = ProgramUser.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    return ProgramUser;
+
+  })(Backbone.Model);
+
+  module.exports = ProgramUser;
+
+}).call(this);
+
+});
+
+define('collections/program_users',['require','exports','module','backbone','../models/program_user'],function (require, exports, module) {(function() {
+  var Backbone, ProgramUser, ProgramUsers, _ref,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Backbone = require('backbone');
+
+  ProgramUser = require('../models/program_user');
+
+  ProgramUsers = (function(_super) {
+    __extends(ProgramUsers, _super);
+
+    function ProgramUsers() {
+      _ref = ProgramUsers.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    ProgramUsers.prototype.model = ProgramUser;
+
+    return ProgramUsers;
+
+  })(Backbone.Collection);
+
+  module.exports = ProgramUsers;
+
+}).call(this);
+
+});
+
+define('models/program',['require','exports','module','underscore','backbone','../collections/program_users'],function (require, exports, module) {(function() {
+  var Backbone, Program, ProgramUsers, _, _ref,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  _ = require('underscore');
+
+  Backbone = require('backbone');
+
+  ProgramUsers = require('../collections/program_users');
+
+  Program = (function(_super) {
+    __extends(Program, _super);
+
+    function Program() {
+      _ref = Program.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    Program.prototype.initialize = function() {
+      var _this = this;
+      this.users = new ProgramUsers;
+      return this.users.url = function() {
+        return _.result(_this, 'url') + '/users';
+      };
+    };
+
+    Program.prototype.url = function() {
+      return "/programs/" + this.id;
+    };
+
+    Program.prototype.isNew = function() {
+      return true;
+    };
+
+    return Program;
+
+  })(Backbone.Model);
+
+  module.exports = Program;
+
+}).call(this);
+
+});
+
 define('models/tag',['require','exports','module','backbone','underscore'],function (require, exports, module) {(function() {
   var Backbone, Tag, _, _ref,
     __hasProp = {}.hasOwnProperty,
@@ -2451,7 +2637,7 @@ define('adapters/browser',['require','exports','module','backbone','underscore']
 
 });
 
-define('api',['require','exports','module','backbone','jquery','./pagination','underscore','./helpers/backbone_collection_move','./models/asset','./collections/assets','./models/asset_representation','./collections/asset_representations','./models/catalog','./collections/catalogs','./models/course','./collections/courses','./models/course_head','./models/course_progress','./models/course_revision','./collections/course_revisions','./models/gadget','./collections/gadgets','./models/gadget_palette','./models/gadget_project','./collections/gadget_projects','./collections/gadget_userstates','./models/lesson','./collections/lessons','./models/organization','./models/partnerkey','./models/tag','./collections/tags','./models/user','./collections/users','./models/user_role','./collections/user_roles','./models/gadget','./api_errors','./adapters/node','./adapters/browser'],function (require, exports, module) {(function() {
+define('api',['require','exports','module','backbone','jquery','./pagination','underscore','./helpers/backbone_collection_move','./models/asset','./collections/assets','./models/asset_representation','./collections/asset_representations','./models/catalog','./collections/catalogs','./models/course','./collections/courses','./models/course_head','./models/course_progress','./models/course_revision','./collections/course_revisions','./models/gadget','./collections/gadgets','./models/gadget_palette','./models/gadget_project','./collections/gadget_projects','./models/lesson','./collections/lessons','./models/organization','./models/partnerkey','./models/program','./models/program_user','./models/subscription','./collections/subscriptions','./models/session','./models/tag','./collections/tags','./models/user','./collections/users','./models/user_role','./collections/user_roles','./models/gadget','./api_errors','./adapters/node','./adapters/browser'],function (require, exports, module) {(function() {
   var Backbone, Pagination, api, _,
     __slice = [].slice;
 
@@ -2484,11 +2670,15 @@ define('api',['require','exports','module','backbone','jquery','./pagination','u
     GadgetPalette: require('./models/gadget_palette'),
     GadgetProject: require('./models/gadget_project'),
     GadgetProjects: require('./collections/gadget_projects'),
-    GadgetUserStates: require('./collections/gadget_userstates'),
     Lesson: require('./models/lesson'),
     Lessons: require('./collections/lessons'),
     Organization: require('./models/organization'),
     PartnerKey: require('./models/partnerkey'),
+    Program: require('./models/program'),
+    ProgramUser: require('./models/program_user'),
+    Subscription: require('./models/subscription'),
+    Subscriptions: require('./collections/subscriptions'),
+    Session: require('./models/session'),
     Tag: require('./models/tag'),
     Tags: require('./collections/tags'),
     User: require('./models/user'),

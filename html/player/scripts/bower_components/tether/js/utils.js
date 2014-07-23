@@ -25,7 +25,7 @@
       if (style == null) {
         return parent;
       }
-      if (/(auto|scroll)/.test(style['overflow'] + style['overflow-y'] + style['overflow-x'])) {
+      if (/(auto|scroll)/.test(style['overflow'] + style['overflowY'] + style['overflowX'])) {
         if (position !== 'absolute' || ((_ref = style['position']) === 'relative' || _ref === 'absolute' || _ref === 'fixed')) {
           return parent;
         }
@@ -176,7 +176,7 @@
       }
       return _results;
     } else {
-      return el.className = el.className.replace(new RegExp("(^| )" + (name.split(' ').join('|')) + "( |$)", 'gi'), ' ');
+      return el.setAttribute('class', el.getAttribute('class').replace(new RegExp("(^| )" + (name.split(' ').join('|')) + "( |$)", 'gi'), ' '));
     }
   };
 

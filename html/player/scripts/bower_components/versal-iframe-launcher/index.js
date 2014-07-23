@@ -11,6 +11,10 @@ var patch = function(to, from) {
 };
 
 var prototype = Object.create(HTMLElement.prototype, {
+  src: {
+    get: function(){ return this.getAttribute('src') || 'about:blank'; }
+  },
+
   editable: {
     get: function(){ return this.getAttribute('editable') == 'true'; }
   },
@@ -25,6 +29,10 @@ var prototype = Object.create(HTMLElement.prototype, {
 
   userstate: {
     get: function(){ return this.readAttributeAsJson('data-userstate'); }
+  },
+
+  debug: {
+    get: function(){ return this.hasAttribute('debug'); }
   },
 
   apiVersion: {
@@ -42,13 +50,21 @@ prototype.readAttributeAsJson = function(name) {
   return JSON.parse(this.getAttribute(name));
 };
 
+prototype.log = function(dir, event, data) {
+  if(this.debug) { console.log(dir, event, data); }
+};
+
 prototype.attachedCallback = function(){
   this.iframe = document.createElement('iframe');
-  this.iframe.src = this.getAttribute('src');
+  this.iframe.src = this.src;
   this.iframe.addEventListener('message', this.handleMessage.bind(this));
 
   this.appendChild(this.iframe);
 };
+
+prototype.detachedCallback = function(){
+  this.removeChild(this.iframe);
+}
 
 prototype.attributeChangedCallback = function(name){
   switch(name) {
@@ -74,7 +90,7 @@ prototype.handleMessage = function(event) {
     var eventName = event.detail.event;
     var data = event.detail.data;
 
-    console.log('↖', eventName, data);
+    this.log('↖', eventName, data);
 
     var handler = this.messageHandlers[eventName];
     if(handler) {
@@ -91,7 +107,7 @@ prototype.sendMessage = function(eventName, data) {
   if(data) { message.data = data; }
   if(this.iframe && this.iframe.contentWindow) {
     this.iframe.contentWindow.postMessage(message, '*');
-    console.log('↘', message.event, message.data);
+    this.log('↘', message.event, message.data);
   }
 };
 
@@ -108,18 +124,11 @@ prototype.messageHandlers = {
     this.sendMessage('editableChanged', { editable: this.editable });
     // Compat
     this.sendMessage('setEditable', { editable: this.editable });
-    if (this.config['vs-challenges']) {
-      this.sendMessage('challengesChanged', {challenges: this.config['vs-challenges']});
-    }
-    if (this.userstate['vs-scores']) {
-      this.sendMessage('scoresChanged', this.userstate['vs-scores']);
-    }
     this.sendMessage('attached');
   },
 
   setHeight: function(data){
-    var height = Math.min(data.pixels, 720);
-    this.iframe.style.height = height + 'px';
+    this.iframe.style.height = data.pixels + 'px';
   },
 
   setAttributes: function(data){
@@ -148,10 +157,6 @@ prototype.messageHandlers = {
       this.sendMessage('setPath', { url: url});
     }
   },
-
-  // Compat
-  setChallenges: function(challenges){ this.fireCustomEvent('setChallenges', challenges); },
-  scoreChallenges: function(answers){ this.fireCustomEvent('scoreChallenges', answers); },
 
   setPropertySheetAttributes: function(data) { this.fireCustomEvent('setPropertySheetAttributes', data); },
   setEmpty: function(data) { this.fireCustomEvent('setEmpty', data); },
