@@ -1,7 +1,7 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  define(['cdn.jquery', 'cdn.underscore', 'app/mediator', 'plugins/custom_event_polyfill'], function($, _, mediator) {
+  define(['cdn.jquery', 'cdn.underscore', 'app/mediator', 'bower_components/versal-component-runtime/dist/runtime.min'], function($, _, mediator) {
     var ElementSeeingObserver;
     return ElementSeeingObserver = (function() {
       ElementSeeingObserver.prototype._viewportBottomOffset = 28;

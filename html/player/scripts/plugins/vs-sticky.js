@@ -1,126 +1,80 @@
 (function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
   define(['cdn.underscore', 'cdn.jquery'], function(_, $) {
-    var VsSticky;
-    return VsSticky = (function() {
-      VsSticky.prototype.STUCK_Z_INDEX = 98;
+    var StickyHeaders, VENDOR_PREFIXES;
+    VENDOR_PREFIXES = ['', '-webkit-', '-moz-', '-ms-', '-o-'];
+    return StickyHeaders = (function() {
+      StickyHeaders.prototype.selector = '.js-sticky-header';
 
-      function VsSticky($container, selector) {
-        this.$container = $container;
-        this.selector = selector != null ? selector : '.js-sticky-header';
-        this._watchContainer = __bind(this._watchContainer, this);
-        this._scroll = __bind(this._scroll, this);
-        this.scanContainer();
-        this._throttledScroll = _.throttle(this._scroll, 10);
-        $(window).on('scroll', this._throttledScroll);
-        this._watchInterval = setInterval(this._watchContainer, 730);
+      function StickyHeaders(el) {
+        this.el = el;
+        this.refresh = _.throttle(this.refresh.bind(this), 10);
+        this._current = null;
+        this._stickyContainer = $('<div class="vs-sticky-container" />');
+        this.enable();
       }
 
-      VsSticky.prototype.destroy = function() {
-        this._changeCurrentSection(null);
-        $(window).off('scroll', this._throttledScroll);
-        return clearInterval(this._watchInterval);
+      StickyHeaders.prototype.enable = function() {
+        return $(this.el).on('scroll', this.refresh);
       };
 
-      VsSticky.prototype.scanContainer = function() {
-        var $header, $headers, i, prevSection, _i, _ref, _ref1;
-        this._containerTop = this.$container.offset().top;
-        this._containerHeight = this.$container.height();
-        this._changeCurrentSection(null);
-        this._sections = [];
-        $headers = this.$container.find(this.selector);
-        for (i = _i = 0, _ref = $headers.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-          $header = $($headers[i]);
-          $header.css({
-            position: 'relative'
-          });
-          this._sections.push({
-            top: $header.offset().top,
-            headerHeight: $header.outerHeight(),
-            $header: $header
-          });
-          if (i > 0) {
-            prevSection = this._sections[i - 1];
-            prevSection.bottom = $header.offset().top;
+      StickyHeaders.prototype.disable = function() {
+        return $(this.el).off('scroll', this.refresh);
+      };
+
+      StickyHeaders.prototype.refresh = function() {
+        var candidates, current, cutoff, next, _ref;
+        cutoff = this.el.getBoundingClientRect().top;
+        candidates = this.el.querySelectorAll(this.selector);
+        if (!candidates.length) {
+          return this.setStickyHeader(null);
+        }
+        _ref = _.reduce(candidates, _.partial(this.findCurrent, cutoff), null), current = _ref.current, next = _ref.next;
+        if (this._sticky !== current) {
+          this.setStickyHeader(current);
+        }
+        return this.adjustCurrent(cutoff, current, next);
+      };
+
+      StickyHeaders.prototype.findCurrent = function(cutoff, memo, cur) {
+        if (memo == null) {
+          memo = {
+            current: null,
+            next: null
+          };
+        }
+        if (!memo.next) {
+          if (cur.getBoundingClientRect().top <= cutoff) {
+            memo.current = cur;
+          }
+          if (memo.current !== cur) {
+            memo.next = cur;
           }
         }
-        if ((_ref1 = _.last(this._sections)) != null) {
-          _ref1.bottom = this.$container.height();
+        return memo;
+      };
+
+      StickyHeaders.prototype.setStickyHeader = function(current) {
+        this._sticky = current;
+        if (!current) {
+          return this._stickyContainer.detach();
         }
-        return this._scroll();
+        return this._stickyContainer.text(current.textContent).appendTo(this.el);
       };
 
-      VsSticky.prototype._inCurrentSection = function(y) {
-        if (this._currentSection == null) {
-          return false;
-        }
-        return (this._currentSection.top <= y && y < this._currentSection.bottom);
-      };
-
-      VsSticky.prototype._findSectionByCutoff = function(y) {
-        return _.find(this._sections, function(section) {
-          return (section.top <= y && y < section.bottom);
-        });
-      };
-
-      VsSticky.prototype._setHeaderOffset = function(section, y) {
-        var headerOffset;
-        if (this._currentSection == null) {
+      StickyHeaders.prototype.adjustCurrent = function(cutoff, current, next) {
+        var offset, remainingSpace, transform;
+        if (!current) {
           return;
         }
-        headerOffset = y + section.headerHeight - section.bottom;
-        if (headerOffset > 0) {
-          return section.$header.css('top', this._containerTop - headerOffset);
-        } else {
-          return section.$header.css('top', this._containerTop);
-        }
+        remainingSpace = ((next != null ? next.getBoundingClientRect().top : void 0) || this.el.getBoundingClientRect().bottom) - cutoff;
+        offset = remainingSpace - current.getBoundingClientRect().height;
+        transform = offset <= 0 ? "translateY(" + offset + "px)" : 'none';
+        return $(this._stickyContainer).css(_.object(_.map(VENDOR_PREFIXES, function(pref) {
+          return ["" + pref + "transform", transform];
+        })));
       };
 
-      VsSticky.prototype._scroll = function() {
-        var cutoff;
-        cutoff = $(window).scrollTop() + this._containerTop;
-        if (!this._inCurrentSection(cutoff)) {
-          this._changeCurrentSection(this._findSectionByCutoff(cutoff));
-        }
-        return this._setHeaderOffset(this._currentSection, cutoff);
-      };
-
-      VsSticky.prototype._changeCurrentSection = function(section) {
-        if (this._currentSection != null) {
-          this._unwrap(this._currentSection);
-        }
-        if (section != null) {
-          this._wrap(section);
-        }
-        return this._currentSection = section;
-      };
-
-      VsSticky.prototype._wrap = function(section) {
-        var placeholder;
-        section.$header.css({
-          left: section.$header.offset().left,
-          top: this._containerTop
-        });
-        placeholder = $('<div/>').height(section.headerHeight);
-        return section.$header.wrap(placeholder).css({
-          'z-index': this.STUCK_Z_INDEX,
-          position: 'fixed',
-          width: '100%'
-        });
-      };
-
-      VsSticky.prototype._unwrap = function(section) {
-        return section.$header.removeAttr('style').unwrap();
-      };
-
-      VsSticky.prototype._watchContainer = function() {
-        if (this._containerTop !== this.$container.offset().top || this._containerHeight !== this.$container.height()) {
-          return this.scanContainer();
-        }
-      };
-
-      return VsSticky;
+      return StickyHeaders;
 
     })();
   });
