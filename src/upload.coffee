@@ -47,7 +47,7 @@ zipFilesInFolder = (tmpdir, callback) ->
   console.log chalk.yellow('Creating bundle.zip')
   bundlePath = path.join tmpdir, 'bundle.zip'
   # Ugh. Replace with .tar.gz, if we can get platform support
-  zip = exec "zip -r bundle.zip .", cwd: tmpdir, (err) ->
+  zip = exec "zip -r --quiet --exclude=*node_modules* bundle.zip .", cwd: tmpdir, (err) ->
     if err
       return callback new Error "zip process exited with code #{err.code}"
 

@@ -16,7 +16,7 @@
     if(typeof evt == 'object') {
       var message = evt.data;
       if(message.event) {
-        console.log('SDK received message from gadget:', message.event, message.data);
+        //console.log('SDK received message from gadget:', message.event, message.data);
       }
     }
   });
