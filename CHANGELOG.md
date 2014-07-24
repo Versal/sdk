@@ -1,3 +1,9 @@
+# v1.5.0
+
+  * Bump Player to 1.5.2 (from now on we'll keep the SDK minor version in sync with the player minor version)
+
+---
+
 # v0.6.3
 
   * Add Travis CI
