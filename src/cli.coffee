@@ -10,6 +10,8 @@ fs = require 'fs'
 
 if argv.env then config.env argv.env
 
+logError = (err) -> console.error chalk.red(err)
+
 commands =
   help: (argv) ->
     if argv.v || argv.version then return console.log pkg.version
@@ -113,5 +115,3 @@ if typeof commands[command] != 'function'
   command = 'help'
 
 commands[command].call this, argv
-
-logError = (err) -> console.error chalk.red(err)
