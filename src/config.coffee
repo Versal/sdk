@@ -6,19 +6,19 @@ config = (options) ->
   home = options?.home || HOME
   throw new Error "Home directory does not exists at #{home}" unless fs.existsSync home
 
-  return new Config base: "#{home}/.versal"
+  return new Config base: "#{home}/.versal/sdk"
 
 class Config
   _env: 'default'
 
   constructor: (options) ->
-    @configPath = "#{options.base}/config.json"
+    @configPath = "#{options.base}/default.json"
 
-    # create a config if it does not exists
+    # create an default.json if it does not exists
     if fs.existsSync @configPath
       @_data = fs.readJsonSync @configPath
     else
-      @_data = require '../templates/config.json'
+      @_data = require '../templates/default.json'
       @save()
 
   # switch the environment

@@ -16,7 +16,7 @@ Run `versal -v` to see the current version of the SDK installed. Run `versal` fo
 ### versal signin
 
 Sign you in to Versal.com. You will be asked for your Versal email and password.
-The session ID will be stored in `~/.versal/config.json`.
+The session ID will be stored in `~/.versal/sdk/default.json`.
 
 ### versal create \<name\> [--template \<template-name\>]
 

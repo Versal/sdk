@@ -2,7 +2,7 @@ request = require 'request'
 prompt = require 'prompt'
 
 module.exports = (options, callback) ->
-  if !options.authUrl then return callback new Error 'auth url not defined. Check ~/.versal/config.json'
+  if !options.authUrl then return callback new Error 'auth url not defined. Check ~/.versal/sdk/default.json'
 
   promptCredentials options, (err, credentials) ->
     opts =
