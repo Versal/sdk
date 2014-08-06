@@ -1,6 +1,6 @@
 /*!
- * js-api v0.5.26
- * lovingly baked from 4a0c8fb on 08. July 2014
+ * js-api v0.5.27
+ * lovingly baked from 33e72ab on 24. July 2014
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -1910,6 +1910,10 @@ define('models/user_role',['require','exports','module','backbone','underscore',
         json.user = this.user.toJSON();
       }
       return json;
+    };
+
+    UserRole.prototype.userId = function() {
+      return this.get('userId' || this.user.id);
     };
 
     UserRole.prototype.destroy = function(options) {

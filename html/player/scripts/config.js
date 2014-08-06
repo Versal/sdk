@@ -22,9 +22,6 @@
       'libs/backbone.filter': {
         deps: ['cdn.backbone']
       },
-      'plugins/backbone.move': {
-        deps: ['cdn.backbone']
-      },
       'plugins/backbone.prioritize': {
         deps: ['cdn.backbone']
       },

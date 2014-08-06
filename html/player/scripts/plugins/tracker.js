@@ -63,21 +63,27 @@
       };
 
       Tracker.prototype.track = function(name, _data) {
-        var data;
+        var data, keenData, _ref1, _ref2;
         if (_data == null) {
           _data = {};
         }
-        data = _.extend(_data, sessionData);
+        data = _.extend(_data, this._metadata, sessionData);
         queue.push(this._addTypes({
           source: this._source,
           event: name,
-          data: _.extend({}, this._metadata, data),
+          data: data,
           ts_dt: Math.round((new Date).getTime() / 1000)
         }));
         throttledSave();
-        return Keen.addEvent(name, _.extend({}, this._metadata, data, {
+        keenData = _.extend(data, {
           source: this._source
-        }));
+        });
+        if ((_ref1 = settings.get('tracker')) != null ? _ref1.path : void 0) {
+          Keen.addEvent(name, keenData);
+        }
+        if ((_ref2 = settings.get('tracker')) != null ? _ref2.debug : void 0) {
+          return console.log('keen', name, keenData);
+        }
       };
 
       Tracker.prototype.createTimer = function(name, data) {

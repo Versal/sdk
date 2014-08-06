@@ -54,11 +54,17 @@
       };
 
       StickyHeaders.prototype.setStickyHeader = function(current) {
+        var style;
+        if (this._sticky) {
+          $(this._sticky).css('visibility', 'visible');
+        }
         this._sticky = current;
         if (!current) {
           return this._stickyContainer.detach();
         }
-        return this._stickyContainer.text(current.textContent).appendTo(this.el);
+        style = window.getComputedStyle(current);
+        this._stickyContainer.text(current.textContent).css(_.pick(style, 'color', 'fontSize', 'fontFamily', 'fontWeight', 'fontVariant')).appendTo(this.el);
+        return $(this._sticky).css('visibility', 'hidden');
       };
 
       StickyHeaders.prototype.adjustCurrent = function(cutoff, current, next) {
