@@ -4,7 +4,7 @@ assert = require 'assert'
 tmp = require 'tmp'
 fs = require 'fs-extra'
 
-describe.only 'versal codio', ->
+describe 'versal codio', ->
   cwd = null
 
   before (done) ->
