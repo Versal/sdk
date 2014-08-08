@@ -107,6 +107,12 @@ commands =
           if err then return logError err
           console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
+  codio: (argv) ->
+    codio = require('./codio')
+    codio (err) ->
+      if err then return logError err
+      console.log chalk.green '.codio created'
+
 command = argv._.shift() || 'help'
 if typeof commands[command] != 'function'
   console.log 'Unknown command:', command
