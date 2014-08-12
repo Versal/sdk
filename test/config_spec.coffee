@@ -15,11 +15,11 @@ describe 'Config', ->
         cfg = config { home }
         setTimeout done, 50
 
-    it 'should create .versal/config.json', ->
-      fs.existsSync("#{home}/.versal/config.json").should.be.true
+    it 'should create .versal/sdk/default.json', ->
+      fs.existsSync("#{home}/.versal/sdk/default.json").should.be.true
 
     it 'should initialize config with the defaults', ->
-      defaultConfig = require '../templates/config.json'
+      defaultConfig = require '../templates/default.json'
       cfg._data.should.eql defaultConfig
 
   describe 'when exists', ->
@@ -29,7 +29,7 @@ describe 'Config', ->
           x: 73
         foo:
           bar: 'baz'
-      fs.outputJsonSync "#{home}/.versal/config.json", existing
+      fs.outputJsonSync "#{home}/.versal/sdk/default.json", existing
 
       cfg = config { home }
       sinon.stub cfg, 'save'
