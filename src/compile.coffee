@@ -75,7 +75,7 @@ compile =
 
   writeManifest: (options) ->
     manifest = _.clone options.manifest
-    fs.writeJsonSync "#{options.dest}/manifest.json", manifest
+    fs.writeJsonSync "#{options.dest}/versal.json", manifest
 
   writeJs: (options) ->
     # wrap and write gadget.js
