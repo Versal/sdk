@@ -13,7 +13,7 @@ module.exports =
         callback null, manifest
 
   lookupManifest: (dir, callback) ->
-    candidates = ['manifest.json', 'manifest.webapp', 'package.json']
+    candidates = ['versal.json', 'manifest.json', 'manifest.webapp', 'package.json']
     this.lookup candidates, dir, callback
 
   lookup: (paths, dir, callback) ->

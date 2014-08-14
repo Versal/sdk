@@ -5,49 +5,51 @@ requirejs = require 'requirejs'
 async = require 'async'
 css = require 'css'
 fstream = require 'fstream'
+manifestLoader = require('./manifest')
 
 compile =
   # TODO: make compile command return compiled gadget manifest
   command: (dir, options = {}, callback = ->) =>
     src = path.resolve dir
     dest = if options.out then path.resolve(options.out) else "#{src}/dist"
-    manifest = JSON.parse fs.readFileSync "#{src}/manifest.json"
+    manifestLoader.readManifest dir, (err, manifest) ->
+      if err then return callback(err)
 
-    # No need to do anything for iframe gadgets
-    if manifest.launcher == 'iframe' || manifest.defaultConfig?.__launcher == 'iframe'
-      return compile.simplyCopyFilesToDist src, callback
+      # No need to do anything for iframe gadgets
+      if manifest.launcher == 'iframe' || manifest.defaultConfig?.__launcher == 'iframe'
+        return compile.simplyCopyFilesToDist src, callback
 
-    options = _.extend _.clone(options), { src, dest, manifest }
+      options = _.extend _.clone(options), { src, dest, manifest }
 
-    config =
-      baseUrl: src
-      include: ['gadget']
-      optimize: 'none'
-      cjsTranslate: true
-      paths:
-        text: path.resolve("#{__dirname}/../lib/text"),
-        jquery: 'empty:',
-        backbone: 'empty:',
-        underscore: 'empty:',
-        'cdn.backbone': 'empty:',
-        'cdn.marionette': 'empty:',
-        'cdn.jquery': 'empty:',
-        'cdn.underscore': 'empty:',
-        'cdn.lodash': 'empty:',
-        'cdn.processing': 'empty:',
-        'cdn.raphael': 'empty:',
-        'cdn.jqueryui': 'empty:',
-        'cdn.mathjax': 'empty:'
-      stubModules: ['text']
-      out: (code) =>
-        options.code = code
-        compile.createBundle options, callback
+      config =
+        baseUrl: src
+        include: ['gadget']
+        optimize: 'none'
+        cjsTranslate: true
+        paths:
+          text: path.resolve("#{__dirname}/../lib/text"),
+          jquery: 'empty:',
+          backbone: 'empty:',
+          underscore: 'empty:',
+          'cdn.backbone': 'empty:',
+          'cdn.marionette': 'empty:',
+          'cdn.jquery': 'empty:',
+          'cdn.underscore': 'empty:',
+          'cdn.lodash': 'empty:',
+          'cdn.processing': 'empty:',
+          'cdn.raphael': 'empty:',
+          'cdn.jqueryui': 'empty:',
+          'cdn.mathjax': 'empty:'
+        stubModules: ['text']
+        out: (code) =>
+          options.code = code
+          compile.createBundle options, callback
 
-    if manifest.uglify
-      config = _.extend config,
-        optimize: 'uglify2'
+      if manifest.uglify
+        config = _.extend config,
+          optimize: 'uglify2'
 
-    requirejs.optimize config, (->), (err) -> callback err
+      requirejs.optimize config, (->), (err) -> callback err
 
   simplyCopyFilesToDist: (src, callback) ->
     distPath = path.join(src, 'dist')
@@ -73,7 +75,7 @@ compile =
 
   writeManifest: (options) ->
     manifest = _.clone options.manifest
-    fs.writeJsonSync "#{options.dest}/manifest.json", manifest
+    fs.writeJsonSync "#{options.dest}/versal.json", manifest
 
   writeJs: (options) ->
     # wrap and write gadget.js
