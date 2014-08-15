@@ -15,5 +15,5 @@
     }
   ],
   "progress": { "lesson": 0 },
-  "assetUrlTemplate": "//localhost:3000/api/assets/<%= id %>"
+  "assetUrlTemplate": "/api/assets/<%= id %>"
 }
