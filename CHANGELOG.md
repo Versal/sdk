@@ -1,3 +1,9 @@
+# v1.6.0
+
+  * Bump Player to 1.6.3
+
+---
+
 # v1.5.2
 
   * Use relative asset url path in course.json
