@@ -1,11 +1,7 @@
 (function() {
-  var AUTHOR_WIDTH, IFRAME_CLASS_NAME, LEARNER_WIDTH, c, config, deprecationNotice, extractData, found, origin, playerFrame, _i, _len, _ref;
+  var IFRAME_CLASS_NAME, c, config, deprecationNotice, extractData, found, origin, playerFrame, _i, _len, _ref;
 
   IFRAME_CLASS_NAME = 'versal-embed';
-
-  LEARNER_WIDTH = '750px';
-
-  AUTHOR_WIDTH = '1500px';
 
   playerFrame = function(el, url, className) {
     var attr, css, frame, key, val, _i, _len, _ref;
@@ -20,7 +16,6 @@
     css = {
       height: el.offsetHeight + 'px',
       border: '0',
-      minWidth: LEARNER_WIDTH,
       width: '100%',
       height: '100%'
     };
@@ -50,18 +45,6 @@
     result.fullscreen = el.getAttribute('data-fullscreen') === "true";
     return result;
   };
-
-  window.addEventListener('message', function(evt) {
-    var data, e, _ref;
-    try {
-      data = JSON.parse(evt.data);
-      if (data.event === 'player:loaded' && ((_ref = data.course) != null ? _ref.isEditable : void 0)) {
-        return document.querySelector("." + IFRAME_CLASS_NAME).style.minWidth = AUTHOR_WIDTH;
-      }
-    } catch (_error) {
-      e = _error;
-    }
-  });
 
   _ref = document.getElementsByTagName('script');
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {

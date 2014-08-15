@@ -21,21 +21,17 @@
     }
   });
 
-  require.config({ baseUrl: 'scripts' });
+  require.config({ baseUrl: 'scripts', paths: { player: 'player-bundle'} });
 
-  require(['lib/config', 'config'], function(cdn_config, player_config) {
-    require.config(cdn_config);
-    require.config(player_config);
-    return require(['cdn.underscore', 'player'], function(_, PlayerApplication) {
-      var noEditable = !!window.location.search.match(/learn=true/);
-      var config = {
-        playerUrl: window.location.origin,
-        courseId: 'local',
-        api: { url: 'api', sessionId: '' },
-        noEditable: noEditable
-      };
-      return window.Player = new PlayerApplication(config);
-    });
+  require(['player'], function(PlayerApplication) {
+    var noEditable = !!window.location.search.match(/learn=true/);
+    var config = {
+      playerUrl: window.location.origin,
+      courseId: 'local',
+      api: { url: 'api', sessionId: '' },
+      noEditable: noEditable
+    };
+    return window.Player = new PlayerApplication(config);
   });
 
 }).call(this);
