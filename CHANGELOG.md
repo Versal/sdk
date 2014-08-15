@@ -1,8 +1,16 @@
+# v1.5.2
+
+  * Use relative asset url path in course.json
+
+---
+
 # v1.5.1
 
   * Add 'versal codio' command, that creates .codio file in current folder
   * Rename ~/.versal/config.json to ~/.versal/sdk/default.json
   * Use and save versal.json in the compile command
+
+---
 
 # v1.5.0
 
