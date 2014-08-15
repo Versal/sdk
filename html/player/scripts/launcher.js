@@ -1,5 +1,5 @@
 (function() {
-  var baseConfig, e;
+  var baseConfig, config, e;
 
   window.vs || (window.vs = {});
 
@@ -12,28 +12,35 @@
     baseConfig = {};
   }
 
-  require(['lib/config', 'config'], function(cdn_config, player_config) {
-    require.config(cdn_config);
-    require.config(player_config);
-    return require(['cdn.underscore', 'player'], function(_, PlayerApplication) {
-      window.onunload = (function() {});
-      window.addEventListener('message', function(message) {
-        var data;
-        try {
-          data = _.extend({}, baseConfig, JSON.parse(message.data));
-          if (data.event === 'player:launch') {
-            return window.Player = new PlayerApplication(data);
-          }
-        } catch (_error) {
-          e = _error;
+  require.config(config = {
+    waitSeconds: 120,
+    baseUrl: 'scripts',
+    paths: {
+      player: 'player-bundle'
+    }
+  });
+
+  require(['player'], function(PlayerApplication) {
+    window.onunload = (function() {});
+    window.addEventListener('message', function(message) {
+      var data;
+      try {
+        data = JSON.parse(message.data);
+        if (!data.tracker) {
+          data.tracker = baseConfig.tracker;
         }
-      });
-      if (window.parent) {
-        return window.parent.postMessage(JSON.stringify({
-          event: 'player:ready'
-        }), '*');
+        if (data.event === 'player:launch') {
+          return window.Player = new PlayerApplication(data);
+        }
+      } catch (_error) {
+        e = _error;
       }
     });
+    if (window.parent) {
+      return window.parent.postMessage(JSON.stringify({
+        event: 'player:ready'
+      }), '*');
+    }
   });
 
 }).call(this);
