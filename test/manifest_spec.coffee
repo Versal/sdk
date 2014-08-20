@@ -6,7 +6,7 @@ describe 'Manifest helper', ->
 
   it 'should lookup manifest', (done) ->
     manifest.lookupManifest path.resolve('./test/fixtures/iframe-gadget'), (found) ->
-      assert.equal found, path.resolve('./test/fixtures/iframe-gadget/manifest.json')
+      assert.equal found, path.resolve('./test/fixtures/iframe-gadget/versal.json')
       done()
 
   it 'should read manifest', (done) ->

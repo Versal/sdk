@@ -27,7 +27,7 @@ The `--template` option allows you to choose a template. Supported templates: `m
 ### versal preview [\<directory1\> \<directory2\> \<directory3\> ...] [--iframe]
 
 Launches a local Player and API server for testing your new gadget. If multiple
-gadget directories are specified, any gadgets with valid `manifest.json` files
+gadget directories are specified, any gadgets with valid `versal.json` files
 will be added to your local tray.
 
 If no directory is specified, the current working directory will be used.
@@ -36,7 +36,7 @@ Use `--iframe` option to preview gadget in a standalone launcher.
 
 ### versal upload [\<directory\>] [--apiUrl https://stack.versal.com/api2]
 
-Compresses your gadget and uploads it to Versal platform. If no directory is specified, the current working directory will be used. Gadget directory must have a manifest. To upload gadget you need a valid session ID. If uploading fails, use versal signin to obtain a new session ID.
+Compresses your gadget and uploads it to Versal platform. If no directory is specified, the current working directory will be used. Gadget directory must have a `versal.json`. To upload gadget you need a valid session ID. If uploading fails, use versal signin to obtain a new session ID.
 
 ## Installation in depth
 

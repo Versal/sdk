@@ -33,6 +33,6 @@ module.exports = (name, options = {}, callback) ->
         fs.copy source, dir, (err) ->
           if err then return callback err
 
-          fs.readJson path.join(dir, 'manifest.json'), (err, gadgetManifest) ->
+          fs.readJson path.join(dir, 'versal.json'), (err, gadgetManifest) ->
             gadgetManifest.name = name
-            fs.writeJson path.join(dir, 'manifest.json'), gadgetManifest, callback
+            fs.writeJson path.join(dir, 'versal.json'), gadgetManifest, callback
