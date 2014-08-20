@@ -148,7 +148,7 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
     });
     this._userstate.on('change', (function(model, opts) {
       if (opts.source !== 'player') {
-        this._fireCustomEvent('setLearnerState', model.toJSON());
+        this._fireCustomEvent('setLearnerState', this._findDeepChangedAttributes(model.toJSON(), this.userstate));
       }
     }).bind(this));
 
@@ -284,10 +284,17 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
   prototype.setLegacyContainers = function(_containersInterface) {
     this._containersInterface = _containersInterface;
   };
+  prototype._findDeepChangedAttributes = function(newObj, oldObj) {
+    newObjClone = _.clone(newObj);
+    for (var key in newObjClone) {
+      if (_.isEqual(newObjClone[key], oldObj[key])) delete newObjClone[key];
+    }
+    return newObjClone;
+  };
   prototype._onGadgetTriggeredSave = function(model, opts) {
     opts = opts || {};
     if (opts.source !== 'player') {
-      this._fireCustomEvent('setAttributes', model.toJSON());
+      this._fireCustomEvent('setAttributes', this._findDeepChangedAttributes(model.toJSON(), this.config));
     }
   };
   prototype._fireError = function(data) {
