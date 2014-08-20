@@ -1,5 +1,6 @@
 path = require 'path'
 fs = require 'fs-extra'
+spawn = require('child_process').spawn
 
 # Creates .codio file with versal buttons in current folder
 module.exports = (options, callback) ->
@@ -14,3 +15,14 @@ module.exports = (options, callback) ->
   fs.copy source, target, (err) ->
     if err then return callback err
     callback()
+
+  # If bower.json is present, run bower install detached.
+  bowerPath = path.resolve cwd, 'bower.json'
+  fs.exists bowerPath, (exists) ->
+    process.nextTick ->
+      # config.interactive is to prevent bower asking for
+      # permission to collect statistics anonymously
+      child = spawn 'bower',
+        ['install', '--config.interactive=false'],
+        { detached: true }
+      child.unref()
