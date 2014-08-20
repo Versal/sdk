@@ -1,4 +1,6 @@
 fs = require 'fs'
+_ = require 'underscore'
+semver = require 'semver'
 path = require 'path'
 async = require 'async'
 exec = require('child_process').exec
@@ -12,11 +14,14 @@ manifest = require './manifest'
 IGNORE_FILE = '.versalignore'
 
 module.exports = (dir, options, callback) ->
-  # If we could fix receiving endpoint, we could do
-  # reader.pipe(tar.Pack()).pipe(request.post(...))
-  createBundleZip dir, (err, bundlePath) ->
+  validateGadgetProject dir, options, (err) ->
     if err then return callback err
-    uploadBundleToRestAPI bundlePath, options, callback
+
+    # If we could fix receiving endpoint, we could do
+    # reader.pipe(tar.Pack()).pipe(request.post(...))
+    createBundleZip dir, (err, bundlePath) ->
+      if err then return callback err
+      uploadBundleToRestAPI bundlePath, options, callback
 
 touchLegacyFile = (dir, fileName) ->
   filePath = path.join dir, fileName
@@ -96,3 +101,44 @@ handleRestApiResponse = (err, res, body, callback) ->
   if res.statusCode >= 300 then return callback new Error(body.message)
 
   callback(null, body)
+
+getGadgetCatalog = (catalog, options, callback) ->
+  opts =
+    url: options.apiUrl + '/gadgets'
+    qs:
+      catalog: catalog
+      user: 'me'
+    headers:
+      SID: options.sessionId
+
+  req = request.get opts, (err, res, body) ->
+    handleRestApiResponse err, res, JSON.parse(body), callback
+
+versionExists = (manifest, gadgets) ->
+  otherGadgetVersions = _.select gadgets, (gadget) ->
+    manifest.name == gadget.name
+  return _.any otherGadgetVersions, (gadget) ->
+    return semver.gte gadget.version, manifest.version
+
+
+# TODO function and supporting functions are a temporary measure
+# until rest-api#1693 is resolved
+validateGadgetProject = (dir, options, callback) ->
+  console.log chalk.yellow 'Validating gadget'
+
+  async.concat ['approved', 'sandbox'], (catalog, cb) ->
+    getGadgetCatalog catalog, options, cb
+  , (err, gadgets) ->
+
+    manifest.readManifest dir, (err, manifestInfo) ->
+      if err then return callback err
+
+      if versionExists manifestInfo, gadgets
+        manifest.lookupManifest dir, (manifestPath) ->
+          errorMessage = "Version 'v#{manifestInfo.version}' or greater " +
+          "already exists. Bump the version in '#{path.basename manifestPath}' " +
+          "before uploading."
+          return callback(new Error(errorMessage))
+
+      else
+        return callback()
