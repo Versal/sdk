@@ -1,6 +1,6 @@
 {
   "name": "versal-gadget-launchers",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "author": "Versal team <support@versal.com>",
   "description": "Various launchers for gadgets on versal.com",
   "main": "index.html",
@@ -15,7 +15,7 @@
   "devDependencies": {
     "versal-component-runtime": "~0.2.2",
     "underscore": "~1.6.0",
-    "backbone": "~1.1.2",
+    "backbone": "1.0.0",
     "jquery": "~2.1.1"
   }
 }

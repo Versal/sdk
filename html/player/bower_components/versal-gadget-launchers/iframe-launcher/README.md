@@ -6,7 +6,7 @@ This launcher is used to launch Versal iframe gadgets.
 
 1. Install [versal-component-runtime](https://github.com/Versal/component-runtime) and versal-iframe-launcher:
 ```
-bower install versal-component-runtime versal-iframe-launcher
+bower install versal-component-runtime versal-gadget-launchers
 ```
 
 2. Include `versal-component-runtime` as a script in the HEAD section of your page:
@@ -14,9 +14,9 @@ bower install versal-component-runtime versal-iframe-launcher
 <script src="bower_components/versal-component-runtime/dist/runtime.min.js"></script>
 ```
 
-3. Link versal-iframe-launcher in the HEAD section of your page:
+3. Link iframe-launcher.html in the HEAD section of your page:
 ```
-<link rel="import" href="bower_components/versal-iframe-launcher/index.html" />
+<link rel="import" href="bower_components/versal-gadget-launchers/iframe-launcher/iframe-launcher.html" />
 ```
 
 4. Embed `<versal-iframe-launcher>` in the page like this:

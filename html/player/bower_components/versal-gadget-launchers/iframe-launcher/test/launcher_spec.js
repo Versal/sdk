@@ -214,6 +214,27 @@ describe('iframe launcher', function() {
         {event: 'setHeight', data: {pixels: 10000}});
     });
 
+    it('fires "rendered" the first time it receives setHeight', function(done) {
+      var eventCount = 0;
+      launcher.addEventListener('rendered', function() {
+        eventCount++;
+      });
+
+      launcher.addEventListener('track', function() {
+        chai.expect(eventCount).to.equal(1);
+        done();
+      });
+
+      launcher.children[0].contentWindow.sendGadgetEvent(
+        {event: 'setHeight', data: {pixels: 1337}});
+      launcher.children[0].contentWindow.sendGadgetEvent(
+        {event: 'setHeight', data: {pixels: 0}});
+      launcher.children[0].contentWindow.sendGadgetEvent(
+        {event: 'setHeight', data: {pixels: 1337}});
+      launcher.children[0].contentWindow.sendGadgetEvent(
+        {event: 'track'});
+    });
+
     it('passes on some events that are handled by the player', function(done) {
       eventList = ['setPropertySheetAttributes', 'setEmpty', 'track', 'changeBlocking', 'requestAsset'];
       eventsFired = 0;
