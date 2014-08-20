@@ -28,7 +28,7 @@ describe 'versal cli', ->
 
   it 'create foo', (done) ->
     exec "#{versal} create foo", { cwd }, (err, stdout, stderr) ->
-      fs.exists path.join(cwd, 'foo/manifest.json'), (exists) ->
+      fs.exists path.join(cwd, 'foo/versal.json'), (exists) ->
         assert exists
         done()
 

@@ -35,7 +35,7 @@ sandbox.put '/', (req, res) ->
 
       remoteManifest = _findManifestInSandbox manifest, sandbox
       if remoteManifest && semver.gt(remoteManifest.latestVersion, manifest.version)
-        return res.send 500, "Upload failed.\n\nLatest version of sandboxed gadget is: #{remoteManifest.latestVersion}.\n You must bump version in manifest.json to upload this gadget."
+        return res.send 500, "Upload failed.\n\nLatest version of sandboxed gadget is: #{remoteManifest.latestVersion}.\n You must bump version in versal.json to upload this gadget."
 
       upload gadgetPath, options(), (err, body) ->
         if err then return res.send 500, err

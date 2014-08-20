@@ -19,7 +19,7 @@ describe 'versal create', ->
         done()
 
     it 'sets correct name in manifest', (done) ->
-      fs.readJson path.join(cwd, 'foo', 'manifest.json'), (err, manifest) ->
+      fs.readJson path.join(cwd, 'foo', 'versal.json'), (err, manifest) ->
         assert.equal manifest.name, 'foo'
         done()
 
