@@ -91,7 +91,7 @@ uploadBundleToRestAPI = (bundlePath, options, callback) ->
     size = parseInt(stats.size / 1024, 10)
     console.log chalk.yellow "Uploading #{size}KB to #{opts.url}"
 
-    request.post opts, (err, res, body) ->
+    req = request.post opts, (err, res, body) ->
       handleRestApiResponse err, res, JSON.parse(body), callback
 
     req.form().append('content', fs.createReadStream(bundlePath))
@@ -111,7 +111,7 @@ getGadgetCatalog = (catalog, options, callback) ->
     headers:
       SID: options.sessionId
 
-  req = request.get opts, (err, res, body) ->
+  request.get opts, (err, res, body) ->
     handleRestApiResponse err, res, JSON.parse(body), callback
 
 versionExists = (manifest, gadgets) ->
