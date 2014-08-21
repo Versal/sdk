@@ -111,7 +111,7 @@ getGadgetCatalog = (catalog, options, callback) ->
     headers:
       SID: options.sessionId
 
-  req = request.get opts, (err, res, body) ->
+  request.get opts, (err, res, body) ->
     handleRestApiResponse err, res, JSON.parse(body), callback
 
 versionExists = (manifest, gadgets) ->
