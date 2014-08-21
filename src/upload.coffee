@@ -91,7 +91,7 @@ uploadBundleToRestAPI = (bundlePath, options, callback) ->
     size = parseInt(stats.size / 1024, 10)
     console.log chalk.yellow "Uploading #{size}KB to #{opts.url}"
 
-    req = request.post opts, (err, res, body) ->
+    request.post opts, (err, res, body) ->
       handleRestApiResponse err, res, JSON.parse(body), callback
 
     req.form().append('content', fs.createReadStream(bundlePath))
