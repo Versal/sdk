@@ -15,7 +15,7 @@
   window.addEventListener('message', function(evt){
     if(typeof evt == 'object') {
       var message = evt.data;
-      if(message.event) {
+      if(message && message.event) {
         console.log('SDK received message from gadget:', message.event, message.data);
       }
     }
