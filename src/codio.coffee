@@ -19,7 +19,7 @@ module.exports = (options, callback) ->
   # If bower.json is present, run bower install detached.
   bowerPath = path.resolve cwd, 'bower.json'
   fs.exists bowerPath, (exists) ->
-    process.nextTick ->
+    if exists then process.nextTick ->
       # config.interactive is to prevent bower asking for
       # permission to collect statistics anonymously
       child = spawn 'bower',
