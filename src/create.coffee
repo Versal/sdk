@@ -1,6 +1,7 @@
 path = require('path')
 fs = require('fs-extra')
 manifest = require('./manifest')
+spawn = require('child_process').spawn
 
 # Creates gadget from template
 #   name:         the name of the folder to be created
@@ -35,4 +36,25 @@ module.exports = (name, options = {}, callback) ->
 
           fs.readJson path.join(dir, 'versal.json'), (err, gadgetManifest) ->
             gadgetManifest.name = name
-            fs.writeJson path.join(dir, 'versal.json'), gadgetManifest, callback
+            fs.writeJson path.join(dir, 'versal.json'), gadgetManifest, (err) ->
+              if err then return callback err
+
+              # If bower.json is present in target directory, run bower install
+              bowerPath = path.resolve dir, 'bower.json'
+              fs.exists bowerPath, (exists) ->
+                # Provide --noBower to avoid installing bower dependencies
+                return callback() if options.noBower
+                return callback() unless exists
+
+                console.log 'Installing bower dependencies...'
+
+                # config.interactive is to prevent bower asking for
+                # permission to collect statistics anonymously
+                child = spawn 'bower',
+                  ['install', '--config.interactive=false'],
+                  { detached: true, cwd: dir }
+
+                child.on 'close', (code) ->
+                  if code != 0
+                    console.warn 'Having troubles running bower install. npm install -g bower, if you have not installed it yet.'
+                  callback()

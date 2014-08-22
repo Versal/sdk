@@ -11,7 +11,7 @@ describe 'versal create', ->
     before (done) ->
       tmp.dir (err, tmp) ->
         cwd = tmp
-        create 'foo', { cwd }, done
+        create 'foo', { cwd, noBower: true }, done
 
     it 'creates gadget folder', (done) ->
       fs.exists path.join(cwd, 'foo'), (exists) ->
