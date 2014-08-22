@@ -7,7 +7,7 @@ where <command> is one of the following:
 
   options:
     --template <template> use custom template
-      supported templates: minimal, space
+      supported templates: minimal
 
 #preview [<directory> <dir2> <dir3> ...]
   launches preview server in the current directory
