@@ -40,29 +40,67 @@ Compresses your gadget and uploads it to Versal platform. If no directory is spe
 
 ## Installation in depth
 
-You'll need a working local copy of [Node](http://nodejs.org/) and
-[npm](https://www.npmjs.org/).
+### Installing the prerequisites
 
-### Mac OS X:
+To begin developing gadgets, you will need:
+- Windows, Mac OS X, or Linux
+- [git](http://git-scm.com/book/en/Getting-Started-Installing-Git)
+- [node/npm](http://nodejs.org/)  You need `node` version 0.10.21 or newer.
+- a [Versal.com](http://versal.com) account
+
+If you do not have `git` and `node` already, the first step is to install them, and this is different for each OS.
+
+#### Windows
+
+To install `git` and `npm` under MS Windows:
+
+* Install `git` by downloading and running the EXE installer from [msysgit.github.com](http://msysgit.github.com)
+* Install `npm` and `node` from [nodejs.org](http://nodejs.org/download/) by downloading and running the MSI installer. You might need to manually create `~/AppData/Roaming/npm` folder ([more info](http://stackoverflow.com/questions/25093276/nodejs-windows-error-enoent-stat-c-users-rt-appdata-roaming-npm))
+* You need `zip`, for example from the [gnuwin32](http://downloads.sourceforge.net/gnuwin32/zip-3.0-setup.exe) project
+* Start "Git Bash" from the menu; this opens a more Unix-like environment for the command line
+* Copy `zip` executables to the Bash path, for example with the command `cp /c/Program\ Files/GnuWin32/bin/* /usr/local/bin/`. To make sure that the `zip` command is available in your "Git Bash", type `zip`: you should get usage information.
+
+#### Mac OSX
+
+To install `git` and `npm` under Mac OS X:
 
     brew install git
     brew install npm
 
-### Ubuntu Linux:
+#### Linux
+
+To install `git` and `npm` under a recent Ubuntu Linux:
 
     sudo apt-get install --yes git npm curl nodejs-legacy
 
-### Microsoft Windows:
+### Installing the Versal SDK
 
-* Install `git` by downloading and running the EXE installer from [msysgit.github.com](http://msysgit.github.com)
-* Install `npm` and `node` from [nodejs.org](http://nodejs.org/download/) by downloading and running the MSI installer
-* You need `zip`, for example from the [gnuwin32](http://downloads.sourceforge.net/gnuwin32/zip-3.0-setup.exe) project
-* Start "Git Bash" from the menu; this gives a more Unix-like environment for command-line usage.
-* Copy `zip` executables to the Bash path, for example: `cp /c/Program\ Files/GnuWin32/bin/* /usr/bin/`
+Once you have `npm`, you can install the Versal SDK:
 
-If that doesn't help, see [Joyent's installation
-instructions](http://www.joyent.com/blog/installing-node-and-npm/) for more
-information or create an issue in this repository.
+    npm install -g versal-sdk
+
+(If this gives a permission error on your system, run `sudo npm install -g versal-sdk`. However, it is better to avoid using `sudo` for `npm`, if it is possible on your system.)
+
+This will install the system-wide command `versal`. With this command, you can test your gadgets and publish them on the Versal platform.
+
+To check that the Versal SDK has been installed, run the command `versal -v`. This should print the version.
+
+### Testing the hello-world gadget
+
+To verify that your installation works, let's test a sample gadget. This gadget shows a "hello, world" message with a custom word and color inserted by the course author. The learner can click on this word and toggle the italics and boldface font on the message. The gadget also displays an image uploaded by the course author.
+
+Clone the [Versal/hello-world-gadget](https://github.com/Versal/hello-world-gadget) repo:
+
+    git clone https://github.com/Versal/hello-world-gadget.git
+    cd hello-world-gadget
+
+Once in the `hello-world-gadget` directory, run the command:
+
+    versal preview
+
+This will start a local HTTP server on port `3000`. Now open the URL [localhost:3000](http://localhost:3000) in a web browser. You will see an empty lesson and a test gadget in the gadget tray below. Double-click on that gadget; you will see that the gadget has been added to the lesson.
+
+You have now tested the sample gadget!
 
 ## Contributing
 
