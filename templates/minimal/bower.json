@@ -1,0 +1,21 @@
+{
+  "name": "versal-gadget-template",
+  "version": "0.0.1",
+  "authors": [
+    "Anonymous <anonymous@versal.com>"
+  ],
+  "description": "Versal gadget template",
+  "main": "versal.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "versal-player-api": "~0.3.3"
+  }
+}
