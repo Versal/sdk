@@ -22,7 +22,7 @@ The session ID will be stored in `~/.versal/sdk/default.json`.
 
 Creates a gadget boilerplate in a new directory with the given name. If this directory already exists, the command `versal create` will not do anything.
 
-The `--template` option allows you to choose a template. Supported templates: `minimal` (default), `space`.
+The `--template` option allows you to choose a template. Supported templates: `minimal` (currently the only one).
 
 ### versal preview [\<directory1\> \<directory2\> \<directory3\> ...] [--iframe]
 
