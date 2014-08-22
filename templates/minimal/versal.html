@@ -2,6 +2,56 @@
 <html>
 <head>
 <title>Empty gadget</title>
+<script src="bower_components/versal-component-runtime/dist/runtime.min.js"></script>
+<link rel="import" href="bower_components/versal-player-api/index.html" />
 </head>
-<body>Behold your gadget</body>
+
+<body>
+<input type="text" name="greeting" readonly value="What is your name?" />
+<input type="text" name="learnerName" />
+<style>
+input {
+  font-size: 20px;
+  padding: 5px;
+  min-width: 300px;
+}
+input[readonly] {
+  border: 1px solid transparent;
+}
+</style>
+</body>
+
+<script>
+var greeting = document.querySelector('[name=greeting]');
+var learnerName = document.querySelector('[name=learnerName]');
+var player = new VersalPlayerAPI();
+
+greeting.addEventListener('change', function(e){
+  player.setAttribute(greeting.name, greeting.value);
+});
+
+learnerName.addEventListener('change', function(e){
+  player.setLearnerAttribute(learnerName.name, learnerName.value);
+});
+
+player.on('attributesChanged', function(data){
+  if(data.greeting) {
+    greeting.value = data.greeting;
+  };
+});
+
+player.on('learnerStateChanged', function(data){
+  if(data.learnerName) {
+    learnerName.value = data.learnerName;
+  };
+});
+
+player.on('editableChanged', function(editable){
+  greeting.readOnly = !editable.editable;
+  learnerName.readOnly = editable.editable;
+});
+
+player.setHeight(60);
+player.startListening();
+</script>
 </html>
