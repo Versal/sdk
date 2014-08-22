@@ -27,7 +27,7 @@ describe 'versal cli', ->
       done(err)
 
   it 'create foo', (done) ->
-    exec "#{versal} create foo", { cwd }, (err, stdout, stderr) ->
+    exec "#{versal} create foo --noBower", { cwd }, (err, stdout, stderr) ->
       fs.exists path.join(cwd, 'foo/versal.json'), (exists) ->
         assert exists
         done()
