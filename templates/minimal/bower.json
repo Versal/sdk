@@ -16,6 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "versal-player-api": "~0.3.3"
+    "versal-player-api": "~0.3.3",
+    "versal-component-runtime": "~0.2.4"
   }
 }
