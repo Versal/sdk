@@ -18,7 +18,7 @@ gadgets.get '/courses/:courseid/lessons/:lessonid/gadgets/:gadgetid', (req, res)
   res.json req.gadget
 
 gadgets.post '/courses/:courseid/lessons/:lessonid/gadgets', (req, res) ->
-  gadget = req.body
+  gadget = _.pick req.body, 'config', 'userState', 'index', 'type'
   gadget.id = shortid()
   req.lesson.gadgets.push gadget
   res.send 201, gadget
