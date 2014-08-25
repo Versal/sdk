@@ -1,3 +1,20 @@
+# v1.6.2
+
+  * Run `bower install` in `versal create`
+  * Updated templates to new format (`versal.html`, `versal.json`)
+  * Removed broken template "space"
+  * Fixed editing mode not working when clicking the gear
+
+---
+
+# v1.6.1
+
+  * Bump Player to 1.6.4
+  * Use versal.json instead of manifest.json by default
+  * Warn when uploading new version of a gadget without changing the version
+
+---
+
 # v1.6.0
 
   * Bump Player to 1.6.3
