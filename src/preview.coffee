@@ -62,6 +62,6 @@ mapManifest = (manifest) ->
   manifest.latestVersion = manifest.version
 
   manifest.icon ?= 'assets/icon.png'
-  manifest.main ?= 'index.html'
+  manifest.main ?= 'versal.html'
 
   return manifest
