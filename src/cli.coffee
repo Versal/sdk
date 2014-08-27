@@ -1,12 +1,12 @@
 path = require 'path'
 chalk = require 'chalk'
 argv = require('optimist').argv
-config = require('./config')()
 signin = require './signin'
 restapi = require './restapi'
 manifest = require './manifest'
 pkg = require '../package.json'
 fs = require 'fs'
+config = require('./config')()
 
 if argv.env then config.env argv.env
 
@@ -77,37 +77,27 @@ commands =
       else console.log chalk.green('compile ok')
 
   signin: (argv) ->
-    argv.authUrl ?= config.get 'authUrl'
-    console.log "Signing in to #{argv.authUrl}"
-    signin argv, (err, sessionId) ->
+    signin.simpleSignin argv, (err) ->
       if err then return logError err
-
-      config.set 'sessionId', sessionId
-      console.log chalk.green 'You have signed in successfully'
-      if argv.verbose || argv.v then console.log sessionId
 
   upload: (argv) ->
-    upload = require('./upload')
-    dir = argv._.shift() || process.cwd()
-
-    manifest.readManifest dir, (err, manifest) ->
+    signin.addSessionToArgv argv, (err, argv) ->
       if err then return logError err
 
-      argv.apiUrl ?= config.get 'apiUrl'
-      unless argv.sessionId
-        argv.sessionId = argv.sid || config.get 'sessionId'
+      upload = require('./upload')
+      dir = argv._.shift() || process.cwd()
 
-      if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
-      if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
-
-      console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
-
-      restapi.getUserDetails argv, (err, user) ->
+      manifest.readManifest dir, (err, manifest) ->
         if err then return logError err
 
-        upload dir, argv, (err, manifest) ->
+        console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
+
+        restapi.getUserDetails argv, (err, user) ->
           if err then return logError err
-          console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
+
+          upload dir, argv, (err, manifest) ->
+            if err then return logError err
+            console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
   codio: (argv) ->
     codio = require('./codio')
