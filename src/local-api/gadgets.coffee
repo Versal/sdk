@@ -29,11 +29,11 @@ gadgets.delete '/courses/:courseid/lessons/:lessonid/gadgets/:gadgetid', (req, r
 
 gadgets.put '/courses/:courseid/lessons/:lessonid/gadgets/:gadgetid/config', (req, res) ->
   req.gadget.config = req.body
-  res.json req.gadget.config
+  res.json {}
 
 gadgets.put '/courses/:courseid/lessons/:lessonid/gadgets/:gadgetid/userstate', (req, res) ->
   req.gadget.userState = req.body
-  res.send req.gadget.userState
+  res.send {}
 
 gadgets.get '/courses/:courseid/lessons/:lessonid/gadgets/:gadgetid/userstate', (req, res) ->
   res.send req.gadget.userState
