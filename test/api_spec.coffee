@@ -121,9 +121,11 @@ describe 'Local API', ->
         .send(content: 'Updated content')
         .expect 200, (err, res) ->
           if err then return done err
-          res.body.content.should.eq 'Updated content'
-          res.body.should.eql gadgets()[0].config
-          done()
+          request(api).get('/courses/local/lessons/1/gadgets/' + newGadgetId)
+            .expect 200, (err, res) ->
+              if err then return done err
+              res.body.config.content.should.eq 'Updated content'
+              done()
 
     it 'removes config values', (done) ->
       request(api).put('/courses/local/lessons/1/gadgets/' + newGadgetId + '/config')
@@ -138,9 +140,11 @@ describe 'Local API', ->
         .send(x: 73)
         .expect 200, (err, res) ->
           if err then return done err
-          res.body.x.should.eq 73
-          res.body.should.eql gadgets()[0].userState
-          done()
+          request(api).get('/courses/local/lessons/1/gadgets/' + newGadgetId + '/userstate')
+            .expect 200, (err, res) ->
+              if err then return done err
+              res.body.x.should.eq 73
+              done()
 
     it 'removes userstate values', (done) ->
       request(api).put('/courses/local/lessons/1/gadgets/' + newGadgetId + '/userstate')
