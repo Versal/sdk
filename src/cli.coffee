@@ -120,4 +120,6 @@ if typeof commands[command] != 'function'
 
 commands[command].call this, argv
 
-logError = (err) -> console.error chalk.red(err)
+logError = (err) ->
+  console.error chalk.red(err)
+  process.exit(1)
