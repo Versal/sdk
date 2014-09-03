@@ -43,7 +43,7 @@
     "minimatch": "~0.2.14",
     "optimist": "~0.3.5",
     "prompt": "~0.2.12",
-    "request": "~2.34.0",
+    "request": "~2.40.0",
     "requirejs": "~2.1.11",
     "semver": "^2.3.0",
     "shortid": "~1.0.9",
