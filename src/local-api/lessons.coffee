@@ -20,10 +20,12 @@ lessons.post '/courses/:courseid/lessons', (req, res) ->
   req.course.lessons.push lesson
   res.send 201, lesson
 
-lessons.get '/courses/:courseid/lessons/:lessonid', (req, res) -> res.send req.lesson
+lessons.get '/courses/:courseid/lessons/:lessonid', (req, res) ->
+  res.send req.lesson
+
 lessons.put '/courses/:courseid/lessons/:lessonid', (req, res) ->
   _.extend req.lesson, req.body
-  res.json req.lesson
+  res.json {}
 
 lessons.delete '/courses/:courseid/lessons/:lessonid', (req, res) ->
   req.course.lessons = _.without req.course.lessons, req.lesson

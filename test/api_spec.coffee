@@ -77,7 +77,7 @@ describe 'Local API', ->
         .send(title: 'Updated lesson 1')
         .expect 200, (err, res) ->
           if err then return done err
-          res.body.should.eql lessons()[0]
+          res.body.should.eql {}
           done()
 
     it 'destroy', (done) ->
