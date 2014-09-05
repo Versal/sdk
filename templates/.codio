@@ -1,10 +1,10 @@
 {
   "commands": {
-      "Run preview": "versal preview --codio",
+      "Run server": "versal preview",
       "Upload to sandbox": "versal upload"
   },
 
   "preview": {
-        "Open local preview": "http://{{domain}}:3000/"
+        "Preview": "http://{{domain}}:3000/"
   }
 }
