@@ -6,6 +6,8 @@ gadgets = express()
 
 gadgets.load = (req, res, next) ->
   id = req.param('gadgetid')
+  return next() if id == 'order'
+
   if id && req.lesson
     req.gadget = _.findWhere req.lesson.gadgets, { id }
   if !req.gadget then return res.send 404, "Gadget not found"
@@ -13,6 +15,9 @@ gadgets.load = (req, res, next) ->
 
 gadgets.get '/courses/:courseid/lessons/:lessonid/gadgets', (req, res) ->
   res.json req.lesson.gadgets
+
+gadgets.put '/courses/:courseid/lessons/:lessonid/gadgets/order', (req, res) ->
+  res.json {}
 
 gadgets.get '/courses/:courseid/lessons/:lessonid/gadgets/:gadgetid', (req, res) ->
   res.json req.gadget

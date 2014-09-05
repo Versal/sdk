@@ -116,6 +116,11 @@ describe 'Local API', ->
       request(api).get('/courses/local/lessons/1/gadgets/' + newGadgetId)
         .expect 200, done
 
+    it 'order', (done) ->
+      request(api).put('/courses/local/lessons/1/gadgets/order')
+        .send(['foo','bar'])
+        .expect 200, done
+
     it 'updates config values', (done) ->
       request(api).put('/courses/local/lessons/1/gadgets/' + newGadgetId + '/config')
         .send(content: 'Updated content')
