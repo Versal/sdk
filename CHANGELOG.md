@@ -1,3 +1,15 @@
+# v1.6.3
+
+  * Rename codio buttons
+  * Add PUT gadget order
+  * Fix upload bug
+  * Error out with exit 1 when appropriate
+  * Local API fixed to correspond to rest-api
+  * Fix iframe preview
+  * Polish docs
+
+---
+
 # v1.6.2
 
   * Run `bower install` in `versal create`
