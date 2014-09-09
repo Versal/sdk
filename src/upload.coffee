@@ -36,8 +36,8 @@ createBundleArchive = (dir, callback) ->
       reader.on 'entry', (e) -> console.log chalk.grey(e.path.slice(e.dirname.length))
 
       bundlePath = path.join tmpdir, 'bundle.tar.gz'
-      reader.pipe(tar.Pack()).pipe(zlib.createGzip()).pipe(fstream.Writer(bundlePath))
 
+      reader.pipe(tar.Pack()).pipe(zlib.createGzip()).pipe(fstream.Writer(bundlePath))
       reader.on 'end', callback.bind(this, null, bundlePath)
 
 createIgnoreFilter = (dir, callback) ->
@@ -99,7 +99,6 @@ versionExists = (manifest, gadgets) ->
     manifest.name == gadget.name
   return _.any otherGadgetVersions, (gadget) ->
     return semver.gte gadget.version, manifest.version
-
 
 # TODO function and supporting functions are a temporary measure
 # until rest-api#1693 is resolved
