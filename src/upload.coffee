@@ -17,8 +17,6 @@ module.exports = (dir, options, callback) ->
   validateGadgetProject dir, options, (err) ->
     if err then return callback err
 
-    # If we could fix receiving endpoint, we could do
-    # reader.pipe(tar.Pack()).pipe(request.post(...))
     createBundleZip dir, (err, bundlePath) ->
       if err then return callback err
       uploadBundleToRestAPI bundlePath, options, callback
@@ -28,6 +26,8 @@ touchLegacyFile = (dir, fileName) ->
   unless fs.existsSync filePath
     fs.writeFileSync filePath, '/* Nothing to see here */'
 
+# If we could fix receiving endpoint, we could do
+# reader.pipe(tar.Pack()).pipe(request.post(...))
 createBundleZip = (dir, callback) ->
   createIgnoreFilter dir, (err, filter) ->
     if err then return callback err
