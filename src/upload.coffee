@@ -1,4 +1,6 @@
 fs = require 'fs'
+tar = require 'tar'
+zlib = require 'zlib'
 _ = require 'underscore'
 semver = require 'semver'
 path = require 'path'
@@ -17,18 +19,11 @@ module.exports = (dir, options, callback) ->
   validateGadgetProject dir, options, (err) ->
     if err then return callback err
 
-    createBundleZip dir, (err, bundlePath) ->
+    createBundleArchive dir, (err, bundlePath) ->
       if err then return callback err
       uploadBundleToRestAPI bundlePath, options, callback
 
-touchLegacyFile = (dir, fileName) ->
-  filePath = path.join dir, fileName
-  unless fs.existsSync filePath
-    fs.writeFileSync filePath, '/* Nothing to see here */'
-
-# If we could fix receiving endpoint, we could do
-# reader.pipe(tar.Pack()).pipe(request.post(...))
-createBundleZip = (dir, callback) ->
+createBundleArchive = (dir, callback) ->
   createIgnoreFilter dir, (err, filter) ->
     if err then return callback err
 
@@ -40,22 +35,10 @@ createBundleZip = (dir, callback) ->
       reader.on 'error', callback
       reader.on 'entry', (e) -> console.log chalk.grey(e.path.slice(e.dirname.length))
 
-      reader.pipe(fstream.Writer({ path: tmpdir, type: 'Directory' }))
-        .on('error', callback)
-        .on('end', zipFilesInFolder.bind(this, tmpdir, callback))
+      bundlePath = path.join tmpdir, 'bundle.tar.gz'
+      reader.pipe(tar.Pack()).pipe(zlib.createGzip()).pipe(fstream.Writer(bundlePath))
 
-
-zipFilesInFolder = (tmpdir, callback) ->
-  console.log chalk.yellow('Creating bundle.zip')
-  bundlePath = path.join tmpdir, 'bundle.zip'
-  # Ugh. Replace with .tar.gz, if we can get platform support
-  zip = exec "zip -r bundle.zip .", cwd: tmpdir, (err) ->
-    if err
-      return callback new Error "zip process exited with code #{err.code}"
-
-    process.nextTick ->
-      console.log chalk.grey 'bundle path:', bundlePath
-      callback null, bundlePath
+      reader.on 'end', callback.bind(this, null, bundlePath)
 
 createIgnoreFilter = (dir, callback) ->
   lookupIgnoreFile dir, (ignorePath) ->
