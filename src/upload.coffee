@@ -35,9 +35,6 @@ createBundleZip = (dir, callback) ->
     tmp.dir (err, tmpdir) ->
       if err then return callback err
 
-      # TODO: remove once the rest-api stops asserting that these exist
-      ['gadget.js', 'gadget.css'].map touchLegacyFile.bind @, tmpdir
-
       console.log chalk.yellow('Reading source directory:')
       reader = fstream.Reader({ path: dir, type: 'Directory', filter })
       reader.on 'error', callback
