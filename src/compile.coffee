@@ -15,8 +15,9 @@ compile =
     manifestLoader.readManifest dir, (err, manifest) ->
       if err then return callback(err)
 
-      # No need to do anything for iframe gadgets
-      if manifest.launcher == 'iframe' || manifest.defaultConfig?.__launcher == 'iframe'
+      # No need to do anything for iframe or component gadgets
+      doNothingLaunchers = ['iframe', 'component']
+      if manifest.launcher in doNothingLaunchers || manifest.defaultConfig?.__launcher in doNothingLaunchers
         return compile.simplyCopyFilesToDist src, callback
 
       options = _.extend _.clone(options), { src, dest, manifest }
