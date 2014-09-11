@@ -37,6 +37,7 @@ createBundleArchive = (dir, callback) ->
 
       bundlePath = path.join tmpdir, 'bundle.tar.gz'
 
+      # TODO shouldn't need to write to disk
       reader.pipe(tar.Pack()).pipe(zlib.createGzip()).pipe(fstream.Writer(bundlePath))
       reader.on 'end', callback.bind(this, null, bundlePath)
 
