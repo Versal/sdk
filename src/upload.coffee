@@ -39,7 +39,10 @@ createBundleArchive = (dir, callback) ->
 
       # TODO shouldn't need to write to disk
       reader.pipe(tar.Pack()).pipe(zlib.createGzip()).pipe(fstream.Writer(bundlePath))
-      reader.on 'end', callback.bind(this, null, bundlePath)
+      reader.on 'end', ->
+        console.log chalk.yellow('Creating bundle.tar.gz')
+        console.log chalk.grey 'bundle path:', bundlePath
+        callback null, bundlePath
 
 createIgnoreFilter = (dir, callback) ->
   lookupIgnoreFile dir, (ignorePath) ->
