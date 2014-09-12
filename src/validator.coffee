@@ -6,28 +6,38 @@ _ = require 'underscore'
 semver = require 'semver'
 
 versionExists = (manifestInfo, gadgets) ->
-  otherGadgetVersions = _.select gadgets, (gadget) ->
-    manifestInfo.name == gadget.name
-  return _.any otherGadgetVersions, (gadget) ->
+  return _.any gadgets, (gadget) ->
     return semver.gte gadget.version, manifestInfo.version
 
-getAllGadgetVersions = (options, callback) ->
+getAllVersionsOfGadget = (name, gadgets) ->
+  return _.select gadgets, (gadget) -> name == gadget.name
+
+getAllGadgets = (options, callback) ->
   async.concat ['approved', 'sandbox'], (catalog, cb) ->
     restapi.getGadgetCatalog catalog, options, cb
   , callback
 
+getNextGadgetVersion = (name, gadgets) ->
+  latestVersion = _.pluck(gadgets, 'version').sort(semver.compare).pop()
+  return semver.inc latestVersion, 'patch'
+
 # TODO function and supporting functions are a temporary measure
 # until rest-api#1693 is resolved
 assertValidVersion = (dir, options, callback) ->
-  getAllGadgetVersions options, (err, gadgets) ->
-    manifest.readManifest dir, (err, manifestInfo) ->
+  manifest.readManifest dir, (err, manifestInfo) ->
+    if err then return callback err
+    getAllGadgets options, (err, allGadgets) ->
       if err then return callback err
-
+      gadgets = getAllVersionsOfGadget manifestInfo.name, allGadgets
       if versionExists manifestInfo, gadgets
-        manifest.lookupManifest dir, (manifestPath) ->
-          errorMessage = "Version 'v#{manifestInfo.version}' or greater already exists." +
-          "\n       Bump the version in '#{path.basename manifestPath}' before uploading."
-          return callback(new Error(errorMessage))
+        manifestPath = manifest.lookupManifest dir
+        version = manifestInfo.version
+        name = path.basename manifestPath
+        nextVersion = getNextGadgetVersion name, gadgets
+        errorMessage = "Version 'v#{version}' or greater already exists." +
+        "\n       Bump the version in '#{name}' to '#{nextVersion}'" +
+        "\n       or higher before uploading."
+        return callback(new Error(errorMessage))
 
       else
         return callback()
