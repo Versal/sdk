@@ -10,6 +10,7 @@ fstream = require 'fstream'
 minimatch = require 'minimatch'
 request = require 'request'
 manifest = require './manifest'
+restapi = require './restapi'
 
 IGNORE_FILE = '.versalignore'
 
@@ -91,28 +92,8 @@ uploadBundleToRestAPI = (bundlePath, options, callback) ->
     size = parseInt(stats.size / 1024, 10)
     console.log chalk.yellow "Uploading #{size}KB to #{opts.url}"
 
-    req = request.post opts, (err, res, body) ->
-      handleRestApiResponse err, res, JSON.parse(body), callback
-
+    req = request.post opts, restapi.jsonResponseHandler(callback)
     req.form().append('content', fs.createReadStream(bundlePath))
-
-handleRestApiResponse = (err, res, body, callback) ->
-  if err then return callback err
-  if res.statusCode >= 300 then return callback new Error(body.message)
-
-  callback(null, body)
-
-getGadgetCatalog = (catalog, options, callback) ->
-  opts =
-    url: options.apiUrl + '/gadgets'
-    qs:
-      catalog: catalog
-      user: 'me'
-    headers:
-      SID: options.sessionId
-
-  request.get opts, (err, res, body) ->
-    handleRestApiResponse err, res, JSON.parse(body), callback
 
 versionExists = (manifest, gadgets) ->
   otherGadgetVersions = _.select gadgets, (gadget) ->
@@ -127,7 +108,7 @@ validateGadgetProject = (dir, options, callback) ->
   console.log chalk.yellow 'Validating gadget'
 
   async.concat ['approved', 'sandbox'], (catalog, cb) ->
-    getGadgetCatalog catalog, options, cb
+    restapi.getGadgetCatalog catalog, options, cb
   , (err, gadgets) ->
 
     manifest.readManifest dir, (err, manifestInfo) ->
