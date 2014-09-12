@@ -6,24 +6,23 @@ assert = require 'assert'
 
 gadgetProjectDir = path.resolve './test/fixtures/iframe-gadget'
 
+givenUploadedGadgets = (gadgets) ->
+    beforeEach ->
+      sinon.stub restapi, 'getGadgetCatalog', (catalog, options, callback) ->
+        callback null, gadgets
+    afterEach ->
+      restapi.getGadgetCatalog.restore()
+
 describe 'Validation helper', ->
 
   describe 'given no other versions', ->
-    beforeEach ->
-      sinon.stub restapi, 'getGadgetCatalog', (catalog, options, callback) ->
-        callback null, {}
-    afterEach ->
-      restapi.getGadgetCatalog.restore()
+    givenUploadedGadgets {}
 
     it 'should pass validation', (done) ->
       validator.checkProject gadgetProjectDir, {}, done
 
   describe 'given an equal version', ->
-    beforeEach ->
-      sinon.stub restapi, 'getGadgetCatalog', (catalog, options, callback) ->
-        callback null, {version: '0.1.0', name: 'iframe-gadget'}
-    afterEach ->
-      restapi.getGadgetCatalog.restore()
+    givenUploadedGadgets { version: '0.1.0', name: 'iframe-gadget' }
 
     it 'should fail validation', (done) ->
       validator.checkProject gadgetProjectDir, {}, (err) ->
@@ -31,11 +30,7 @@ describe 'Validation helper', ->
         done()
 
   describe 'given a higher version', ->
-    beforeEach ->
-      sinon.stub restapi, 'getGadgetCatalog', (catalog, options, callback) ->
-        callback null, {version: '0.2.0', name: 'iframe-gadget'}
-    afterEach ->
-      restapi.getGadgetCatalog.restore()
+    givenUploadedGadgets { version: '0.2.0', name: 'iframe-gadget' }
 
     it 'should fail validation', (done) ->
       validator.checkProject gadgetProjectDir, {}, (err) ->
