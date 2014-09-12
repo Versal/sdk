@@ -111,6 +111,16 @@ commands =
           if err then return logError err
           console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
+  version: (argv) ->
+    versionArg = argv._.shift()
+    unless versionArg then return commands.help(argv)
+
+    version = require('./version')
+    version versionArg, (err, oldVersion, newVersion) ->
+      if err then return logError err
+      message = "version bumped from v#{oldVersion} to v#{newVersion}"
+      console.log chalk.green message
+
   codio: (argv) ->
     codio = require('./codio')
     codio (err) ->
