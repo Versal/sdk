@@ -31,7 +31,15 @@ createBundleArchive = (dir, callback) ->
       if err then return callback err
 
       console.log chalk.yellow('Reading source directory:')
-      reader = fstream.Reader({ path: dir, type: 'Directory', filter })
+
+      options = {
+        path: dir
+        type: 'Directory'
+        root: true
+        filter
+      }
+
+      reader = fstream.Reader options
       reader.on 'error', callback
       reader.on 'entry', (e) -> console.log chalk.grey(e.path.slice(e.dirname.length))
 
