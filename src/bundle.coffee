@@ -17,9 +17,6 @@ module.exports =
       tmp.dir (err, tmpdir) ->
         if err then return callback err
 
-        # TODO: remove once the rest-api stops asserting that these exist
-        ['gadget.js', 'gadget.css'].map touchLegacyFile.bind @, tmpdir
-
         console.log chalk.yellow('Reading source directory:')
         reader = fstream.Reader({ path: dir, type: 'Directory', filter })
         reader.on 'error', callback
@@ -28,11 +25,6 @@ module.exports =
         reader.pipe(fstream.Writer({ path: tmpdir, type: 'Directory' }))
           .on('error', callback)
           .on('end', zipFilesInFolder.bind(this, tmpdir, callback))
-
-touchLegacyFile = (dir, fileName) ->
-  filePath = path.join dir, fileName
-  unless fs.existsSync filePath
-    fs.writeFileSync filePath, '/* Nothing to see here */'
 
 zipFilesInFolder = (tmpdir, callback) ->
   console.log chalk.yellow('Creating bundle.zip')
