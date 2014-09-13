@@ -32,7 +32,8 @@ zipFilesInFolder = (tmpdir, callback) ->
   # Ugh. Replace with .tar.gz, if we can get platform support
   zip = exec "zip -r bundle.zip .", cwd: tmpdir, (err) ->
     if err
-      return callback new Error "zip process exited with code #{err.code}"
+      message = "zip process exited with code #{err.code}"
+      return callback new Error message
 
     process.nextTick ->
       console.log chalk.grey 'bundle path:', bundlePath
