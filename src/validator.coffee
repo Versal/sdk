@@ -5,6 +5,10 @@ manifest = require './manifest'
 _ = require 'underscore'
 semver = require 'semver'
 
+module.exports =
+  checkProject: (dir, options, callback) ->
+    assertValidVersion dir, options, callback
+
 versionExists = (manifestInfo, gadgets) ->
   return _.any gadgets, (gadget) ->
     return semver.gte gadget.version, manifestInfo.version
@@ -41,7 +45,3 @@ assertValidVersion = (dir, options, callback) ->
 
       else
         return callback()
-
-module.exports =
-  checkProject: (dir, options, callback) ->
-    assertValidVersion dir, options, callback
