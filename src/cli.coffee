@@ -3,7 +3,6 @@ chalk = require 'chalk'
 argv = require('optimist').argv
 config = require('./config')()
 signin = require './signin'
-restapi = require './restapi'
 manifest = require './manifest'
 pkg = require '../package.json'
 fs = require 'fs'
@@ -104,12 +103,9 @@ commands =
 
       console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
 
-      restapi.getUserDetails argv, (err, user) ->
+      upload dir, argv, (err, manifest) ->
         if err then return logError err
-
-        upload dir, argv, (err, manifest) ->
-          if err then return logError err
-          console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
+        console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
   codio: (argv) ->
     codio = require('./codio')
