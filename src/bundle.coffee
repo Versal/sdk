@@ -24,10 +24,14 @@ module.exports =
 
         reader.pipe(fstream.Writer({ path: tmpdir, type: 'Directory' }))
           .on('error', callback)
-          .on('end', zipFilesInFolder.bind(this, tmpdir, callback))
+          .on 'end', ->
+            console.log chalk.yellow('Creating bundle.zip')
+            zipFilesInFolder tmpdir, (err, bundlePath) ->
+              if err then return callback err
+              console.log chalk.grey 'bundle path:', bundlePath
+              callback null, bundlePath
 
 zipFilesInFolder = (tmpdir, callback) ->
-  console.log chalk.yellow('Creating bundle.zip')
   bundlePath = path.join tmpdir, 'bundle.zip'
   # Ugh. Replace with .tar.gz, if we can get platform support
   zip = exec "zip -r bundle.zip .", cwd: tmpdir, (err) ->
@@ -36,7 +40,6 @@ zipFilesInFolder = (tmpdir, callback) ->
       return callback new Error message
 
     process.nextTick ->
-      console.log chalk.grey 'bundle path:', bundlePath
       callback null, bundlePath
 
 createIgnoreFilter = (dir, callback) ->
