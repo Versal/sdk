@@ -28,8 +28,17 @@ module.exports =
             console.log chalk.yellow('Creating bundle.zip')
             zipFilesInFolder tmpdir, (err, bundlePath) ->
               if err then return callback err
-              console.log chalk.grey 'bundle path:', bundlePath
-              callback null, bundlePath
+              getBundleSize bundlePath, (err, bundleSize) ->
+                console.log chalk.grey "bundle path: #{bundlePath}"
+                console.log chalk.grey "bundle size: #{bundleSize}KB"
+                bundleStream = fs.createReadStream bundlePath
+                callback null, bundleStream
+
+getBundleSize = (bundlePath, callback) ->
+  fs.stat bundlePath, (err, stats) ->
+    if err then return callback err
+    size = parseInt(stats.size / 1024, 10)
+    callback null, size
 
 zipFilesInFolder = (tmpdir, callback) ->
   bundlePath = path.join tmpdir, 'bundle.zip'
