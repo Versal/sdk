@@ -1,21 +1,19 @@
 fs = require 'fs-extra'
 path = require 'path'
 async = require 'async'
+_ = require 'underscore'
 
 module.exports =
   readManifest: (dir, callback) ->
-    this.lookupManifest dir, (manifestPath) ->
-      return callback() unless manifestPath
+    manifestPath = @lookupManifest dir
+    return callback() unless manifestPath
 
-      fs.readJSON manifestPath, (err, manifest) ->
-        if err then return callback err
+    fs.readJSON manifestPath, (err, manifest) ->
+      if err then return callback err
 
-        callback null, manifest
+      callback null, manifest
 
-  lookupManifest: (dir, callback) ->
+  lookupManifest: (dir) ->
     candidates = ['versal.json', 'manifest.json', 'manifest.webapp', 'package.json']
-    this.lookup candidates, dir, callback
-
-  lookup: (paths, dir, callback) ->
-    paths = paths.map (p) -> path.join dir, p
-    async.detectSeries paths, fs.exists, callback
+    paths = candidates.map (c) -> path.join dir, c
+    return _.find paths, fs.existsSync

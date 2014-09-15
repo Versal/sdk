@@ -4,10 +4,9 @@ manifest = require '../src/manifest'
 
 describe 'Manifest helper', ->
 
-  it 'should lookup manifest', (done) ->
-    manifest.lookupManifest path.resolve('./test/fixtures/iframe-gadget'), (found) ->
-      assert.equal found, path.resolve('./test/fixtures/iframe-gadget/versal.json')
-      done()
+  it 'should lookup manifest', ->
+    manifestPath = manifest.lookupManifest path.resolve('./test/fixtures/iframe-gadget')
+    assert.equal manifestPath, path.resolve('./test/fixtures/iframe-gadget/versal.json')
 
   it 'should read manifest', (done) ->
     manifest.readManifest path.resolve('./test/fixtures/iframe-gadget'), (err, manifest) ->
