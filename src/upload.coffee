@@ -14,7 +14,7 @@ module.exports = (dir, options, callback) ->
     if err then return callback err
     # If we could fix receiving endpoint, we could do
     # reader.pipe(tar.Pack()).pipe(request.post(...))
-    bundle.createZip dir, (err, bundleStream) ->
+    bundle.createBundle dir, (err, bundleStream) ->
       if err then return callback err
       uploadBundleToRestAPI apiUrl, bundleStream, options, callback
 

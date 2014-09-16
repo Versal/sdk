@@ -13,7 +13,7 @@ _ = require 'underscore'
 IGNORE_FILE = '.versalignore'
 
 module.exports =
-  createZip: (dir, callback) ->
+  createBundle: (dir, callback) ->
 
     console.log chalk.yellow('Creating bundle.tar.gz')
     bundleFilesInFolder dir, (err, bundlePath) ->
