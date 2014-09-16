@@ -17,3 +17,6 @@ where <command> is one of the following:
 
 #upload [<directory>]
   uploads gadget from the current directory to your sandbox at Versal.com
+
+#version [<newversion> | prerelease | major | minor | patch]
+  bumps the version and writes the new data back to the versal.json file
