@@ -23,12 +23,10 @@ getNewVersion = (currentVersion, versionArg, callback) ->
 
   callback null, newVersion
 
-writeVersionToFile = (manifestPath, currentVersion, newVersion) ->
-  previousManifestContent = fs.readFileSync(manifestPath).toString()
-  versionRegex = new RegExp "(\"version\":\\s*\")#{currentVersion}(\",?)"
-  versionReplacement = "$1#{newVersion}$2"
-  newManifestContent = previousManifestContent.replace versionRegex, versionReplacement
-  fs.writeFileSync manifestPath, newManifestContent
+writeVersionToFile = (manifestPath, newVersion) ->
+  manifestInfo = fs.readJsonSync manifestPath
+  manifestInfo.version = newVersion
+  fs.writeJsonSync manifestPath, manifestInfo
 
 module.exports = (versionArg, callback) ->
   manifest.lookupManifest process.cwd(), (manifestPath) ->
@@ -41,5 +39,5 @@ module.exports = (versionArg, callback) ->
 
     getNewVersion currentVersion, versionArg, (err, newVersion) ->
       if err then return callback err
-      writeVersionToFile manifestPath, currentVersion, newVersion
+      writeVersionToFile manifestPath, newVersion
       callback null, currentVersion, newVersion
