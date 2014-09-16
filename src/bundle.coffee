@@ -16,10 +16,13 @@ module.exports =
   createBundle: (dir, callback) ->
 
     console.log chalk.yellow('Creating bundle.tar.gz')
+
     bundleFilesInFolder dir, (err, bundlePath) ->
       if err then return callback err
 
       getBundleSize bundlePath, (err, bundleSize) ->
+        if err then return callback err
+
         console.log chalk.grey "bundle path: #{bundlePath}"
         console.log chalk.grey "bundle size: #{bundleSize}KB"
 
@@ -29,6 +32,7 @@ module.exports =
 getBundleSize = (bundlePath, callback) ->
   fs.stat bundlePath, (err, stats) ->
     if err then return callback err
+
     size = parseInt(stats.size / 1024, 10)
     callback null, size
 
