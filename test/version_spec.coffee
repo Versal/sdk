@@ -9,11 +9,10 @@ gadgetProjectFixtureDir = path.resolve './test/fixtures/iframe-gadget'
 gadgetProjectDir = null
 originalCwd = process.cwd()
 
-assertVersionInManifest = (projectPath, expectedVersion, callback) ->
+assertVersionInManifest = (projectPath, expectedVersion) ->
   manifestPath = path.join projectPath, 'versal.json'
   actualVersion = fs.readJsonSync(manifestPath).version
   assert.equal expectedVersion, actualVersion
-  callback()
 
 copyDirectoryRecursive = (src, dest, callback) ->
   reader = fstream.Reader({ path: src, type: 'Directory' })
@@ -41,24 +40,29 @@ describe 'version', ->
   it 'should bump prerelease version', (done) ->
     version 'prerelease', (err) ->
       if err then return done err
-      assertVersionInManifest gadgetProjectDir, '0.1.1-0', done
+      assertVersionInManifest gadgetProjectDir, '0.1.1-0'
+      done()
 
   it 'should bump patch version', (done) ->
     version 'patch', (err) ->
       if err then return done err
-      assertVersionInManifest gadgetProjectDir, '0.1.1', done
+      assertVersionInManifest gadgetProjectDir, '0.1.1'
+      done()
 
   it 'should bump minor version', (done) ->
     version 'minor', (err) ->
       if err then return done err
-      assertVersionInManifest gadgetProjectDir, '0.2.0', done
+      assertVersionInManifest gadgetProjectDir, '0.2.0'
+      done()
 
   it 'should bump major version', (done) ->
     version 'major', (err) ->
       if err then return done err
-      assertVersionInManifest gadgetProjectDir, '1.0.0', done
+      assertVersionInManifest gadgetProjectDir, '1.0.0'
+      done()
 
   it 'should bump to a specific version', (done) ->
     version '2.2.2', (err) ->
       if err then return done err
-      assertVersionInManifest gadgetProjectDir, '2.2.2', done
+      assertVersionInManifest gadgetProjectDir, '2.2.2'
+      done()
