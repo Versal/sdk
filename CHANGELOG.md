@@ -1,3 +1,11 @@
+# v1.6.4
+
+  * Use zlib instead of exec'ing zip
+  * Housekeeping/cleanup
+  * Component launcher pass through on compile
+
+---
+
 # v1.6.3
 
   * Rename codio buttons
