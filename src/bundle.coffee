@@ -1,4 +1,3 @@
-exec = require('child_process').exec
 minimatch = require 'minimatch'
 fstream = require 'fstream'
 chalk = require 'chalk'
