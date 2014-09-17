@@ -29,15 +29,15 @@ writeVersionToFile = (manifestPath, newVersion) ->
   fs.writeJsonSync manifestPath, manifestInfo
 
 module.exports = (versionArg, callback) ->
-  manifest.lookupManifest process.cwd(), (manifestPath) ->
-    currentVersion = getCurrentVersion manifestPath
+  manifestPath = manifest.lookupManifest process.cwd()
+  currentVersion = getCurrentVersion manifestPath
 
-    unless currentVersion
-      manifestName = path.basename manifestPath
-      message = "'#{manifestName}' has no `version` set"
-      return callback new Error message
+  unless currentVersion
+    manifestName = path.basename manifestPath
+    message = "'#{manifestName}' has no `version` set"
+    return callback new Error message
 
-    getNewVersion currentVersion, versionArg, (err, newVersion) ->
-      if err then return callback err
-      writeVersionToFile manifestPath, newVersion
-      callback null, currentVersion, newVersion
+  getNewVersion currentVersion, versionArg, (err, newVersion) ->
+    if err then return callback err
+    writeVersionToFile manifestPath, newVersion
+    callback null, currentVersion, newVersion
