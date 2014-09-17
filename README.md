@@ -17,10 +17,8 @@ versal preview
 ```
 
 ## Links
-- [A 15 minute course on how to make a gadget](https://versal.com/c/gadgetworkshop)
 - [Full documentation](https://versal.com/c/gadgets)
 - [Helper libraries](https://github.com/Versal/versal-gadget-api)
-
 
 
 ## Usage
