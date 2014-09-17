@@ -48,6 +48,10 @@ will be added to your local tray.
 
 >Compresses your gadget and uploads it to Versal platform. If no directory is specified, the current working directory will be used. Gadget directory must have a `versal.json`. To upload gadget you need a valid session ID. If uploading fails, use versal signin to obtain a new session ID.
 
+### versal version [<newversion> | prerelease | major | minor | patch]
+
+>Bumps the version and writes the new data back to the versal.json file.
+
 ## Installation in depth
 
 ### Step one - installing the prerequisites
