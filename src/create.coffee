@@ -1,7 +1,7 @@
 path = require('path')
 fs = require('fs-extra')
 manifest = require('./manifest')
-spawn = require('child_process').spawn
+exec = require('child_process').exec
 
 # Creates gadget from template
 #   name:         the name of the folder to be created
@@ -50,11 +50,10 @@ module.exports = (name, options = {}, callback) ->
 
                 # config.interactive is to prevent bower asking for
                 # permission to collect statistics anonymously
-                child = spawn 'bower',
-                  ['install', '--config.interactive=false'],
-                  { detached: true, cwd: dir }
-
-                child.on 'close', (code) ->
-                  if code != 0
-                    console.warn 'Having troubles running bower install. npm install -g bower, if you have not installed it yet.'
-                  callback()
+                child = exec 'bower install --config.interactive=false',
+                  { detached: true, cwd: dir },
+                  (err, stdout, stderr) ->
+                    if err
+                      console.warn 'Having troubles running bower install. npm ' +
+                                   'install -g bower, if you have not installed it yet.'
+                    callback()
