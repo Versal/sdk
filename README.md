@@ -83,10 +83,7 @@ To install `git` and `npm` under MS Windows:
 
 * Install `git` by downloading and running the EXE installer from [msysgit.github.com](http://msysgit.github.com)
 * Install `npm` and `node` from [nodejs.org](http://nodejs.org/download/) by downloading and running the MSI installer. You might need to manually create `~/AppData/Roaming/npm` folder ([more info](http://stackoverflow.com/questions/25093276/nodejs-windows-error-enoent-stat-c-users-rt-appdata-roaming-npm))
-* You need `zip`, for example from the [gnuwin32](http://downloads.sourceforge.net/gnuwin32/zip-3.0-setup.exe) project
 * Start "Git Bash" from the menu; this opens a more Unix-like environment for the command line
-* Copy `zip` executables to the Bash path, for example with the command `cp /c/Program\ Files/GnuWin32/bin/* /usr/local/bin/`. To make sure that the `zip` command is available in your "Git Bash", type `zip`: you should get usage information.
-
 
 ### Step two - installing the Versal SDK
 
