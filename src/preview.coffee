@@ -61,7 +61,13 @@ linkManifestDir = (app, dir, callback) ->
 maybeLinkLegacyDir = (app, dir, callback) ->
   manifest.readManifest dir, (err, man) ->
     if err then return callback(err)
-    unless man?.launcher
+
+    # TODO would be nice to validate that there's a manifest.json
+    # (and other things) early on (for any command that requires
+    # there be a manifest in `dir`s) and bail out so we never make
+    # it this far outside a valid gadget dir
+    isLegacyGadget = man?.launcher
+    unless isLegacyGadget
       app.use '/scripts', express.static(path.resolve dir)
     callback null
 
