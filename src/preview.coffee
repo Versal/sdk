@@ -24,23 +24,25 @@ module.exports = (dirs, options, callback = ->) ->
 
   async.map dirs, linkManifestDir.bind(this, app), (err, manifests) ->
     if err then return callback err
-
-    coursePath = path.join(__dirname, '../templates/course.json')
-    fs.readJson coursePath, (err, course) ->
+    async.map dirs, linkLegacyDir.bind(this, app), (err) ->
       if err then return callback err
 
-      # Inject course palette
-      course.palette = manifests
-      course.isEditable = true
+      coursePath = path.join(__dirname, '../templates/course.json')
+      fs.readJson coursePath, (err, course) ->
+        if err then return callback err
 
-      app.use('/api', api({ manifests, course, assets: [], representations: {} }))
-        .use('/components', express.static(path.join(__dirname, '../node_modules')))
-        .use(express.static(launchPath))
-        .use(express.static(path.join(__dirname, '../html')))
-        .use(express.logger())
+        # Inject course palette
+        course.palette = manifests
+        course.isEditable = true
 
-      if options.port then app.listen options.port
-      callback null, manifests
+        app.use('/api', api({ manifests, course, assets: [], representations: {} }))
+          .use('/components', express.static(path.join(__dirname, '../node_modules')))
+          .use(express.static(launchPath))
+          .use(express.static(path.join(__dirname, '../html')))
+          .use(express.logger())
+
+        if options.port then app.listen options.port
+        callback null, manifests
 
 linkManifestDir = (app, dir, callback) ->
   manifest.readManifest dir, (err, json) ->
@@ -54,6 +56,10 @@ linkManifestDir = (app, dir, callback) ->
     app.use '/' + gadgetPath, express.static(man._path)
 
     callback null, man
+
+linkLegacyDir = (app, dir, callback) ->
+  app.use '/scripts', express.static(path.resolve dir)
+  callback null
 
 mapManifest = (manifest) ->
   manifest.id = shortid.generate()
