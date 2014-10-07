@@ -57,6 +57,7 @@ linkManifestDir = (app, dir, callback) ->
 
     callback null, man
 
+# TODO deprecate along with legacy gadgets
 maybeLinkLegacyDir = (app, dir, callback) ->
   manifest.readManifest dir, (err, man) ->
     if err then return callback(err)
