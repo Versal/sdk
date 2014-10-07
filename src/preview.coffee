@@ -24,7 +24,7 @@ module.exports = (dirs, options, callback = ->) ->
 
   async.map dirs, linkManifestDir.bind(this, app), (err, manifests) ->
     if err then return callback err
-    async.map dirs, linkLegacyDir.bind(this, app), (err) ->
+    async.map dirs, maybeLinkLegacyDir.bind(this, app), (err) ->
       if err then return callback err
 
       coursePath = path.join(__dirname, '../templates/course.json')
@@ -57,9 +57,12 @@ linkManifestDir = (app, dir, callback) ->
 
     callback null, man
 
-linkLegacyDir = (app, dir, callback) ->
-  app.use '/scripts', express.static(path.resolve dir)
-  callback null
+maybeLinkLegacyDir = (app, dir, callback) ->
+  manifest.readManifest dir, (err, man) ->
+    if err then return callback(err)
+    unless man?.launcher
+      app.use '/scripts', express.static(path.resolve dir)
+    callback null
 
 mapManifest = (manifest) ->
   manifest.id = shortid.generate()
