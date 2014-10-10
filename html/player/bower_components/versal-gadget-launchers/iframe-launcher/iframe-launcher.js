@@ -10,8 +10,12 @@ var patch = function(to, from) {
   return to;
 };
 
+var isNullish = function(obj) {
+  return obj == null; // jshint ignore:line
+};
+
 var JSONDeepEquals = function(o1, o2) {
-  if (typeof o1 !== "object" || typeof o1 !== typeof o2 || o1 == null || o2 == null) {
+  if (typeof o1 !== "object" || typeof o1 !== typeof o2 || isNullish(o1) || isNullish(o2)) {
     return o1 === o2;
   }
 
@@ -23,7 +27,7 @@ var JSONDeepEquals = function(o1, o2) {
     if (!JSONDeepEquals(o1[k1[i]], o2[k2[i]])) return false;
   }
   return true;
-}
+};
 
 var prototype = Object.create(HTMLElement.prototype, {
   src: {
@@ -54,7 +58,7 @@ var prototype = Object.create(HTMLElement.prototype, {
     get: function(){
       if(!this._apiVersion) {
         this._apiVersion = new Semver(this.getAttribute('data-api-version') || '0.0.0');
-      };
+      }
       return this._apiVersion;
     }
   }
@@ -70,7 +74,7 @@ prototype.log = function(dir, event, data) {
 };
 
 prototype.createdCallback = function() {
-  this._previousMessages = {}
+  this._previousMessages = {};
 };
 
 prototype.attachedCallback = function(){
@@ -84,6 +88,7 @@ prototype.attachedCallback = function(){
 
 prototype.detachedCallback = function(){
   this.removeChild(this.iframe);
+  this._previousMessages = {};
   window.clearTimeout(this._attributesChangedTimeout);
   window.clearTimeout(this._learnerStateChangedTimeout);
 };

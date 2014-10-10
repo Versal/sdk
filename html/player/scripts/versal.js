@@ -56,7 +56,7 @@
       }
       found = true;
       origin = c.src.match(/^(https?:\/\/.+)\/scripts\/versal.js/)[1];
-      playerFrame(c.parentNode, origin + '/iframe.html', IFRAME_CLASS_NAME);
+      playerFrame(c.parentNode, origin + '/versal.html', IFRAME_CLASS_NAME);
       if (c.hasAttribute('data-sid')) {
         console.warn(deprecationNotice("data-* syntax is no longer supported and will be removed shortly."));
         config = extractData(c);
