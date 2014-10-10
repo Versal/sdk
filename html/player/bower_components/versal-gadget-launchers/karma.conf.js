@@ -10,6 +10,12 @@ module.exports = function(config) {
       {pattern: 'iframe-launcher/iframe-launcher.js', included: false},
       {pattern: 'iframe-launcher/test/test_gadget.html', included: false},
 
+      // Component launcher
+      'component-launcher/component-launcher.html',
+      'component-launcher/test/*_spec.js',
+      {pattern: 'component-launcher/component-launcher.js', included: false},
+      {pattern: 'component-launcher/test/test_gadget.html', included: false},
+
       // Legacy launcher
       'bower_components/underscore/underscore.js',
       'bower_components/backbone/backbone.js',

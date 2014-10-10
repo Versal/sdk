@@ -19,6 +19,12 @@ describe('Legacy gadget launcher', function() {
     document.body.appendChild(launcher);
   });
 
+  afterEach(function() {
+    if (document.body.contains(launcher)) {
+      document.body.removeChild(launcher);
+    }
+  });
+
   it('contains required properties in gadgetOptions', function() {
     expect(options).to.have.property('$el');
     expect(options).to.have.property('el');
@@ -36,7 +42,7 @@ describe('Legacy gadget launcher', function() {
       var stub = sinon.stub();
       options.player.on('toggleEdit', stub);
       launcher.setAttribute('editable', 'true');
-      expect(stub.firstCall.args[0]).to.be["true"];
+      expect(stub.firstCall.args[0]).to.eq(true);
     });
     it('handles attributesChanged', function() {
       launcher.setAttribute('data-config', JSON.stringify({
@@ -48,7 +54,23 @@ describe('Legacy gadget launcher', function() {
         baz: 'barz'
       });
     });
-    it('handle slearnerStateChanged', function() {
+    it('handles works with pre-set attributes (in this case by cloning the launcher node)', function(done) {
+      var otherLauncherContainer = document.createElement('div');
+      document.body.appendChild(otherLauncherContainer);
+
+      var otherLauncher = launcher.cloneNode(false);
+      otherLauncher.addEventListener('rendered', function() {
+        expect(window.gadgetOptions.config.toJSON()).to.deep.eq({
+          test: 'initial-config'
+        });
+
+        document.body.removeChild(otherLauncherContainer);
+        done();
+      });
+
+      otherLauncherContainer.appendChild(otherLauncher);
+    });
+    it('handles learnerStateChanged', function() {
       launcher.setAttribute('data-userstate', JSON.stringify({
         foo: 'bar',
         baz: 'barz'
@@ -58,11 +80,17 @@ describe('Legacy gadget launcher', function() {
         baz: 'barz'
       });
     });
+    it('doesnt leak old attributes into the config when setting editable', function() {
+      options.config.clear({silent: true});
+      options.config.set({something: 'else'});
+      launcher.setAttribute('editable', 'true');
+      expect(options.config.toJSON()).to.deep.eq({something: 'else'});
+    });
     it('doesnt send "close" event by default', function() {
       var stub = sinon.stub();
       options.player.on('close', stub);
       document.body.removeChild(launcher);
-      expect(stub.called).to.be["false"];
+      expect(stub.called).to.eq(false);
     });
     it('sends "close" event when "should-fire-close-event-on-detached" is set', function(done) {
       options.player.on('close', function() {
@@ -77,9 +105,21 @@ describe('Legacy gadget launcher', function() {
       var stub = sinon.stub();
       launcher.addEventListener('setEmpty', stub);
       options.player.trigger('configEmpty');
-      expect(stub.called).to.be["true"];
+      expect(stub.called).to.eq(true);
+    });
+    it('doesnt trigger setAttributes when editing-allowed is not set', function() {
+
+      var stub = sinon.stub();
+      launcher.addEventListener('setAttributes', stub);
+      options.config.set({
+        foo: 'barz',
+        bar: 123
+      });
+      expect(stub.called).to.eq(false);
     });
     it('setting values silently prior to save triggers setAttributes', function() {
+      launcher.setAttribute('editing-allowed', 'editing-allowed');
+
       var stub = sinon.stub();
       launcher.addEventListener('setAttributes', stub);
       options.config.set({
@@ -93,6 +133,8 @@ describe('Legacy gadget launcher', function() {
       });
     });
     it('triggers setAttributes', function() {
+      launcher.setAttribute('editing-allowed', 'editing-allowed');
+
       var stub = sinon.stub();
       launcher.addEventListener('setAttributes', stub);
       options.config.set({
@@ -105,6 +147,8 @@ describe('Legacy gadget launcher', function() {
       });
     });
     it('triggers setAttributes with the difference when changing an object by reference', function() {
+      launcher.setAttribute('editing-allowed', 'editing-allowed');
+
       var stub = sinon.stub();
       launcher.addEventListener('setAttributes', stub);
 
@@ -170,7 +214,7 @@ describe('Legacy gadget launcher', function() {
   });
   describe('PlayerInterface', function() {
     it('should implement selectAsset', function() {
-      expect(_.isFunction(options.player.selectAsset)).to.be.true;
+      expect(_.isFunction(options.player.selectAsset)).to.eq(true);
     });
     describe('whitelisted events', function() {
       it('forwards asset:select', function() {
@@ -183,7 +227,7 @@ describe('Legacy gadget launcher', function() {
         var stub = sinon.stub();
         launcher.addEventListener('changeBlocking', stub);
         options.player.trigger('blocking:changed', 1, 2);
-        expect(stub.firstCall).to.exist;
+        expect(stub.called).to.eq(true);
       });
     });
     describe('#assetPath', function() {
