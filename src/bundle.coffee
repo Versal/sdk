@@ -5,8 +5,8 @@ tmp = require 'tmp'
 fs = require 'fs'
 path = require 'path'
 async = require 'async'
-archiver = require 'archiver'
-readDirSyncRecursive = require 'fs-readdir-recursive'
+tar = require 'tar'
+zlib = require 'zlib'
 _ = require 'underscore'
 
 IGNORE_FILE = '.versalignore'
@@ -43,24 +43,13 @@ bundleFilesInFolder = (dir, callback) ->
       if err then return callback err
 
       bundlePath = path.join tmpdir, 'bundle.tar.gz'
-      bundleOutput = fs.createWriteStream bundlePath
-
-      bundle = archiver 'tar',
-        gzip: true
-        gzipOptions:
-          level: 1
-
-      bundleFiles = _.select readDirSyncRecursive(dir), filter
-      bundle.on 'error', callback
-      bundle.pipe bundleOutput
-
-      bundleFiles.forEach (name) ->
-        filePath = path.resolve name
-        stream = fs.createReadStream filePath
-        bundle.append stream, { name }
-
-      bundle.finalize()
-
+      bundleOutput = fstream.Writer bundlePath
+      reader = fstream.Reader { path: dir, type: 'directory', filter }
+      # After a lot of poking around in the tar module I found
+      # this was needed to tar the files without including th
+      # root directory.
+      reader.root = true
+      reader.pipe(tar.Pack()).pipe(zlib.Gzip()).pipe(bundleOutput)
       bundleOutput.on 'close', ->
         callback null, bundlePath
 
@@ -69,9 +58,8 @@ createIgnoreFilter = (dir, callback) ->
     fs.readFile ignorePath, 'utf-8', (err, content) ->
       if err then return callback err
       ignores = content.split('\n').filter (m) -> m.length
-      filter = (file) ->
-        basename = path.basename file
-
+      filter = ->
+        basename = this.basename
         ignore = ignores.some (i) -> i && minimatch basename, i
         return !ignore
 
