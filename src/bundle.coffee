@@ -48,9 +48,8 @@ bundleFilesInFolder = (dir, callback) ->
       reader = fstream.Reader({
         path: dir
         type: 'directory'
-        # After a lot of poking around in the tar module I found
-        # this was needed to tar the files without including th
-        # root directory.
+        # `root` option is undocumented. It's used here to
+        # indicate that we want to strip off the parent dir
         root: true
         filter
       }).pipe(tar.Pack())
