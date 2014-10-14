@@ -66,7 +66,9 @@ createIgnoreFilter = (dir, callback) ->
       if err then return callback err
       ignores = content.split('\n').filter (m) -> m.length
       filter = ->
-        basename = this.basename
+        # @basename because when the filter is applied the
+        # context is the path of the file being considered
+        basename = @basename
         ignore = ignores.some (i) -> i && minimatch basename, i
         return !ignore
 
