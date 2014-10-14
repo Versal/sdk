@@ -4,9 +4,10 @@ This contains the different launchers for gadgets on [Versal](versal.com). Curre
 
 - [iframe](iframe-launcher), the Iframe Launcher. It loads a gadget's HTML file inside an iframe. This is the only launcher you can currently use for new gadgets.
 - [legacy](legacy-launcher), the Legacy Launcher. It maintains compatibility for earlier developed gadgets. New gadgets cannot use this launcher.
+- [component](component-launcher), the Component Launcher. It is used for some in-house gadgets that are used so often that the Iframe Launcher is too expensive. As Web Components standards advance we can open up usage for external gadgets as well, but not yet.
 
 All code is licensed under the [MIT License](LICENSE).
 
-## Changelog
-- **0.3.2** Legacy Launcher: more changed attributes fixes (https://github.com/Versal/versal-gadget-launchers/pull/30)
-- **0.3.1** Legacy Launcher: only send changed attributes to player (https://github.com/Versal/versal-gadget-launchers/pull/29)
+## Chrome bug workaround
+
+Normally you can load the launchers using HTML Imports, but since Chrome currently has a [bug in its implementation](https://code.google.com/p/chromium/issues/detail?id=421206) you could also use the JS/CSS files directly.
