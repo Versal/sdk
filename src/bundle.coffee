@@ -44,12 +44,19 @@ bundleFilesInFolder = (dir, callback) ->
 
       bundlePath = path.join tmpdir, 'bundle.tar.gz'
       bundleOutput = fstream.Writer bundlePath
-      reader = fstream.Reader { path: dir, type: 'directory', filter }
-      # After a lot of poking around in the tar module I found
-      # this was needed to tar the files without including th
-      # root directory.
-      reader.root = true
-      reader.pipe(tar.Pack()).pipe(zlib.Gzip()).pipe(bundleOutput)
+
+      reader = fstream.Reader({
+        path: dir
+        type: 'directory'
+        # After a lot of poking around in the tar module I found
+        # this was needed to tar the files without including th
+        # root directory.
+        root: true
+        filter
+      }).pipe(tar.Pack())
+        .pipe(zlib.Gzip())
+        .pipe(bundleOutput)
+
       bundleOutput.on 'close', ->
         callback null, bundlePath
 
