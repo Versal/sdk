@@ -5,8 +5,8 @@ tmp = require 'tmp'
 fs = require 'fs'
 path = require 'path'
 async = require 'async'
-archiver = require 'archiver'
-readDirSyncRecursive = require 'fs-readdir-recursive'
+tar = require 'tar'
+zlib = require 'zlib'
 _ = require 'underscore'
 
 IGNORE_FILE = '.versalignore'
@@ -43,23 +43,18 @@ bundleFilesInFolder = (dir, callback) ->
       if err then return callback err
 
       bundlePath = path.join tmpdir, 'bundle.tar.gz'
-      bundleOutput = fs.createWriteStream bundlePath
+      bundleOutput = fstream.Writer bundlePath
 
-      bundle = archiver 'tar',
-        gzip: true
-        gzipOptions:
-          level: 1
-
-      bundleFiles = _.select readDirSyncRecursive(dir), filter
-      bundle.on 'error', callback
-      bundle.pipe bundleOutput
-
-      bundleFiles.forEach (name) ->
-        filePath = path.resolve name
-        stream = fs.createReadStream filePath
-        bundle.append stream, { name }
-
-      bundle.finalize()
+      reader = fstream.Reader({
+        path: dir
+        type: 'directory'
+        # `root` option is undocumented. It's used here to
+        # indicate that we want to strip off the parent dir
+        root: true
+        filter
+      }).pipe(tar.Pack())
+        .pipe(zlib.Gzip())
+        .pipe(bundleOutput)
 
       bundleOutput.on 'close', ->
         callback null, bundlePath
@@ -69,9 +64,10 @@ createIgnoreFilter = (dir, callback) ->
     fs.readFile ignorePath, 'utf-8', (err, content) ->
       if err then return callback err
       ignores = content.split('\n').filter (m) -> m.length
-      filter = (file) ->
-        basename = path.basename file
-
+      filter = ->
+        # @basename because when the filter is applied the
+        # context is the path of the file being considered
+        basename = @basename
         ignore = ignores.some (i) -> i && minimatch basename, i
         return !ignore
 
