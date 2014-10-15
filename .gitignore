@@ -2,3 +2,4 @@
 node_modules
 npm-debug.log
 temp
+!html/player/bower_components

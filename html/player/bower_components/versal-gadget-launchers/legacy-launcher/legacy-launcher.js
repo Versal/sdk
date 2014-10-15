@@ -8,7 +8,7 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
   var LegacyPlayerInterface = function(options) {
     this.gadgetBaseUrl = options.gadgetBaseUrl;
     this._assetUrlTemplate = _.template(options.assetUrlTemplate);
-  }
+  };
   _.extend(LegacyPlayerInterface.prototype, Backbone.Events);
   LegacyPlayerInterface.prototype.selectAsset = function(type) {
     var dfd = $.Deferred();
@@ -65,18 +65,13 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
     }
   });
 
-  // state aggregate is used only by survey gadget so far
-  var GadgetUserStateAggregate = Backbone.Collection.extend({
-    initialize: function(models, options) {
-      this._gadgetInstanceUrl = options.gadgetInstanceUrl;
-    },
-    url: function() {
-      if (this._gadgetInstanceUrl == null) {
-        throw 'No valid gadget url in GadgetUserStateAggregate';
-      }
-      return this._gadgetInstanceUrl + '/userstates';
+  var findDeepChangedAttributes = function(newObj, oldObj) {
+    newObjClone = _.clone(newObj);
+    for (var key in newObjClone) {
+      if (_.isEqual(newObjClone[key], oldObj[key])) delete newObjClone[key];
     }
-  });
+    return newObjClone;
+  };
 
   var prototype = Object.create(HTMLElement.prototype, {
 
@@ -89,11 +84,6 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
     gadgetCssClassName: {
       get: function() {
         return this.getAttribute("gadget-css-class-name") || "";
-      }
-    },
-    gadgetInstanceUrl: {
-      get: function() {
-        return this.getAttribute("gadget-instance-url") || "";
       }
     },
     editable: {
@@ -136,23 +126,23 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
   prototype.createdCallback = function() {
     this.$el = $('<div>');
 
-    this._config = new LocalModel;
+    this._config = new LocalModel();
     // NOTE this serves the purpose of making sure attributes are saved
     // when @set is called with 'silent: true' before @save
     this._config.on('gadgetTriggeredSave', this._onGadgetTriggeredSave, this);
     this._config.on('change', this._onGadgetTriggeredSave, this);
 
-    this._userstate = new LocalModel;
+    this._userstate = new LocalModel();
     this._userstate.gadget = new Backbone.Model({
       id: 1337
     });
     this._userstate.on('change', (function(model, opts) {
       if (opts.source !== 'player') {
-        this._fireCustomEvent('setLearnerState', this._findDeepChangedAttributes(model.toJSON(), this.userstate));
+        this._fireCustomEvent('setLearnerState', findDeepChangedAttributes(model.toJSON(), this.userstate));
       }
     }).bind(this));
 
-    this._propertySheetSchema = new LocalModel;
+    this._propertySheetSchema = new LocalModel();
     this._propertySheetSchema.on('change', (function(model, opts) {
       this._fireCustomEvent('setPropertySheetAttributes', model.toJSON());
     }).bind(this));
@@ -226,10 +216,10 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
       config: this._config,
       userState: this._userstate,
 
-      // Only for Survey gadget by Tekliner
-      userStates: new GadgetUserStateAggregate([], {
-        gadgetInstanceUrl: this.gadgetInstanceUrl
-      }),
+      // Only for Survey gadget by Tekliner, not actually used there
+      // any more, since way of getting aggregate data has changed
+      // since https://github.com/Versal/tekliner-gadgets/pull/404
+      userStates: new Backbone.Collection(),
 
       model: this._config,
 
@@ -254,7 +244,14 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
     }
   };
   prototype.attachedCallback = function() {
-    this._loadGadgetCode(this.gadgetBaseUrl);
+    this.attributeChangedCallback('data-config');
+    this.attributeChangedCallback('data-userstate');
+
+    if (this.gadgetBaseUrl) {
+      this._loadGadgetCode(this.gadgetBaseUrl);
+    } else {
+      console.warn('Empty gadgetBaseUrl for ' + this.gadgetCssClassName);
+    }
   };
   prototype.detachedCallback = function() {
     if (this.shouldFireCloseEventOnDetached) {
@@ -265,11 +262,13 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
     switch (name) {
       case 'editable':
         this._passEvent('toggleEdit', this.editable);
+        break;
       case 'data-config':
         this._config.clear({silent: true});
         this._config.set(this.config, {
           source: 'player'
         });
+        break;
       case 'data-userstate':
         this._userstate.clear({silent: true});
         this._userstate.set(this.userstate, {
@@ -279,22 +278,18 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
         // probably only for quiz gadget
         // see https://github.com/Versal/player/issues/1579#issuecomment-38737311
         this._userstate.trigger('sync');
+        break;
     }
   };
   prototype.setLegacyContainers = function(_containersInterface) {
     this._containersInterface = _containersInterface;
   };
-  prototype._findDeepChangedAttributes = function(newObj, oldObj) {
-    newObjClone = _.clone(newObj);
-    for (var key in newObjClone) {
-      if (_.isEqual(newObjClone[key], oldObj[key])) delete newObjClone[key];
-    }
-    return newObjClone;
-  };
   prototype._onGadgetTriggeredSave = function(model, opts) {
     opts = opts || {};
     if (opts.source !== 'player') {
-      this._fireCustomEvent('setAttributes', this._findDeepChangedAttributes(model.toJSON(), this.config));
+      if (this.editingAllowed) {
+        this._fireCustomEvent('setAttributes', findDeepChangedAttributes(model.toJSON(), this.config));
+      }
     }
   };
   prototype._fireError = function(data) {
