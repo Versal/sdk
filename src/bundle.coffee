@@ -45,8 +45,14 @@ bundleFilesInFolder = (dir, callback) ->
       bundlePath = path.join tmpdir, 'bundle.tar.gz'
       bundleOutput = fstream.Writer bundlePath
 
+      # Due to the way tar works we need to chdir
+      # to the directory specified on CLI
+      initialRoot = process.cwd()
+      gadgetRoot = path.resolve dir
+      process.chdir gadgetRoot
+
       reader = fstream.Reader({
-        path: dir
+        path: gadgetRoot
         type: 'directory'
         # `root` option is undocumented. It's used here to
         # indicate that we want to strip off the parent dir
@@ -57,6 +63,8 @@ bundleFilesInFolder = (dir, callback) ->
         .pipe(bundleOutput)
 
       bundleOutput.on 'close', ->
+        # Switch back to the original project root
+        process.chdir initialRoot
         callback null, bundlePath
 
 createIgnoreFilter = (dir, callback) ->
