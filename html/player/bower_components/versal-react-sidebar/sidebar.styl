@@ -1,0 +1,315 @@
+$padding = 24px
+$sidebarMargin = 9px
+
+.sidebar
+  background $softBackground
+  height 100%
+  position relative
+  box-shadow $boxShadow
+  display flex
+  flex-direction column
+  font 16px $primaryFont
+  z-index 0 // new stacking context for this file
+
+  i[class^='icon-']
+  i[class*='icon-']
+    font-size 18px
+    color $gray2
+
+    &:hover
+      color $gray4
+
+.sidebar-body
+  flex 1 1 auto
+  overflow-y auto
+  overflow-x hidden
+  color $typeGrayDark
+
+.sidebar-footer
+  flex 0 0 auto
+  padding 0 12px
+  background $softBackground
+
+.sidebar-last-saved
+  display inline-block
+  font-size 12px
+  color $gray2
+  line-height 30px
+
+  &:before
+    content 'last saved '
+
+  &:after
+    content ' ago'
+
+.sidebar-course-title-container
+  flex 0 0 auto
+  line-height 26px
+  font-weight bold
+  position relative
+  border-bottom 1px solid $lightBorder
+  padding 12px 24px
+
+.sidebar-course-title-edit-icon
+  position absolute
+  right 5px
+  top 16px
+  opacity 0
+  transition opacity 200ms ease-in-out
+
+.sidebar-course-title-container:hover .sidebar-course-title-edit-icon
+  opacity 1
+
+.sidebar-course-title
+  color $typeGrayDark
+  font-size 18px
+  cursor pointer
+
+  &[contenteditable=true]
+    outline 1px solid $gray7
+    cursor text
+    background white
+
+  &:hover:not([contenteditable=true])
+    color $lightAction
+
+input.sidebar-course-title-input
+  font 18px $primaryFont
+  font-weight bold
+
+.sidebar-course-title-options-toggle
+  position absolute
+  left 6px
+  top 13px
+  cursor pointer
+
+.sidebar-course-title-options-dropdown
+  position absolute
+  top 30px
+  left 5px
+  right 5px
+
+.sidebar-course-title-options-dropdown-list
+  position relative
+  z-index 1002
+  background white
+  padding 10px 20px
+  top 8px
+  box-shadow $boxShadow
+  font-size 14px
+  font-weight normal
+
+.sidebar-lesson-title
+  font-size 16px
+  line-height 26px
+  white-space nowrap
+  padding 7px 28px 7px 30px
+  background-color white
+
+  &:hover
+    color $typeGrayLight
+
+.sidebar-lesson-title-readonly
+  overflow hidden
+  text-overflow ellipsis
+
+input.sidebar-lesson-title-input
+  font 16px $primaryFont
+  line-height 26px
+
+input.sidebar-course-title-input,
+input.sidebar-lesson-title-input
+  border none
+  background transparent
+  box-shadow none
+  outline 1px solid $darkBorder
+  outline-offset 0
+  padding 1px
+  margin -1px
+  width: 100%
+  background white
+
+.sidebar-section-title
+  font-size 12px
+  line-height 26px
+  overflow hidden
+  text-overflow ellipsis
+  white-space nowrap
+  padding-left 42px
+  cursor pointer
+
+  &:first-child
+    border-top 1px solid $lightBorder
+
+  &:last-child
+    padding-bottom 7px
+    border-bottom 1px solid $lightBorder
+
+  &:hover
+    color $typeGrayLight
+
+.sidebar-lesson
+  font-size 16px
+  position relative
+  transition background 120ms ease-in-out
+  background #fff
+  padding 0
+  cursor pointer
+
+  &:before
+    content ''
+    height 100%
+    absolute top 0 left 0
+    border-left 0px solid $gray2
+
+.sidebar-lesson-drag-handle, .sidebar-lesson-delete-button, .sidebar-lesson-edit-button
+  position absolute
+  top ($padding / 2) - 1px // account for border
+  opacity 0
+  transition opacity 200ms ease-in-out
+
+.sidebar-lesson-hovered
+  .sidebar-lesson-drag-handle, .sidebar-lesson-delete-button, .sidebar-lesson-edit-button
+    opacity: 1
+
+.sidebar-lesson-drag-handle
+  left $sidebarMargin
+  cursor move
+
+.sidebar-lesson-edit-button
+  margin-right -2px
+  right $sidebarMargin
+
+.sidebar-lesson-delete-button
+  left $sidebarMargin
+  display none
+
+.sidebar-lesson.sidebar-lesson-editing
+  .sidebar-lesson-delete-button
+    opacity 1
+    display block
+    z-index 1000
+  .sidebar-lesson-edit-button, .sidebar-lesson-drag-handle
+    display none
+
+
+.sidebar-lesson-lock
+  display none
+.sidebar-lesson.sidebar-lesson-disabled .sidebar-lesson-lock
+    display block
+    position absolute
+    top ($padding / 2)
+    right $sidebarMargin
+
+.sidebar-lesson.sidebar-lesson-disabled
+  opacity 0.5
+  cursor default
+  .sidebar-lesson-drag-handle, .sidebar-lesson-delete-button, .sidebar-lesson-edit-button
+    display none
+
+.sidebar-lesson-title
+.sidebar-section-title
+  transition color 250ms
+  &:hover
+    background-color $marketingGrayLight
+
+.sidebar-section-title.sidebar-toc-active
+  color $typeGrayDark
+
+.sidebar-section-title.sidebar-toc-progressed
+  background-color $marketingGrayLight
+
+.sidebar-lesson.sidebar-toc-active
+  &:before
+    border-left-width 5px
+    transition border 250ms
+
+  .sidebar-lesson-title
+    color $typeGrayDark
+    border-top 1px solid $lightBorder
+
+.sidebar-lesson.sidebar-toc-progressed
+  .sidebar-lesson-title
+    background-color $marketingGrayLight
+
+.sidebar-dragging-some-lesson
+  .sidebar-lesson-drag-handle,
+  .sidebar-lesson-delete-button,
+  .sidebar-lesson-edit-button
+    display none
+
+.sidebar-lesson-dragging
+  height 0
+  overflow hidden
+  border none
+
+.sidebar-lesson-drag-image
+  position fixed
+  opacity 0.5
+  z-index 1000000 // in <body>, so global stacking context!
+  pointer-events none
+
+.sidebar-lesson-drop-target
+  border-bottom 2px solid $action
+  position absolute
+  width 100%
+  pointer-events none
+  z-index 1
+
+.sidebar-add-lesson
+  display block
+  line-height 26px
+  padding 7px 28px 7px 30px
+  border-bottom 1px solid $lightBorder
+  text-decoration none
+  &:hover
+    color $linkDarkTeal
+
+.sidebar-placeholder-text
+  color $placeholderText
+
+.sidebar-scrollbar {
+  -webkit-overflow-scrolling touch
+  scrollbar-track-color $softBackground
+  scrollbar-base-color $gray1
+  scrollbar-arrow-color $softBackground
+  scrollbar-face-color $gray1
+  scrollbar-3dlight-color $gray1
+  scrollbar-highlight-color $gray1
+  scrollbar-shadow-color $gray1
+  scrollbar-dark-shadow-color $gray1
+
+  &:hover {
+    scrollbar-base-color $gray2
+    scrollbar-arrow-color $gray1
+    scrollbar-face-color $gray2
+    scrollbar-3dlight-color $gray2
+    scrollbar-highlight-color $gray2
+    scrollbar-shadow-color $gray2
+    scrollbar-dark-shadow-color $gray2
+  }
+}
+.sidebar-scrollbar::-webkit-scrollbar {
+  height 9px
+  width 9px
+}
+.sidebar-scrollbar::-webkit-scrollbar-button:start:decrement,
+.sidebar-scrollbar::-webkit-scrollbar-button:end:increment {
+  background transparent
+  display none
+}
+.sidebar-scrollbar::-webkit-scrollbar-track-piece {
+  background $softBackground
+}
+.sidebar-scrollbar::-webkit-scrollbar-thumb:vertical,
+.sidebar-scrollbar::-webkit-scrollbar-thumb:horizontal {
+  display block
+  height 50px
+  background-color $gray1
+  transition background-color 0.2s
+}
+
+.sidebar-scrollbar:hover::-webkit-scrollbar-thumb:vertical,
+.sidebar-scrollbar:hover::-webkit-scrollbar-thumb:horizontal {
+  background-color $gray2
+}
