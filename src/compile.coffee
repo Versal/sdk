@@ -7,20 +7,16 @@ css = require 'css'
 fstream = require 'fstream'
 manifestLoader = require('./manifest')
 
-compile =
+compiler =
   # TODO: make compile command return compiled gadget manifest
-  command: (dir, options = {}, callback = ->) =>
+  compile: (dir, callback) =>
     src = path.resolve dir
-    dest = if options.out then path.resolve(options.out) else "#{src}/dist"
-    manifestLoader.readManifest dir, (err, manifest) ->
+    dest = path.join src, 'dist'
+
+    manifestLoader.readManifest src, (err, manifest) ->
       if err then return callback(err)
 
-      # No need to do anything for iframe or component gadgets
-      doNothingLaunchers = ['iframe', 'component']
-      if manifest.launcher in doNothingLaunchers || manifest.defaultConfig?.__launcher in doNothingLaunchers
-        return compile.simplyCopyFilesToDist src, callback
-
-      options = _.extend _.clone(options), { src, dest, manifest }
+      options = { src, dest, manifest }
 
       config =
         baseUrl: src
@@ -44,7 +40,7 @@ compile =
         stubModules: ['text']
         out: (code) =>
           options.code = code
-          compile.createBundle options, callback
+          compiler.createBundle options, callback
 
       if manifest.uglify
         config = _.extend config,
@@ -185,4 +181,12 @@ compile =
     # callback when all files are copied
     async.series funcs, callback
 
-module.exports = compile.command
+compileIfLegacy = (dir, callback) =>
+  manifestLoader.readManifest dir, (err, manifest) ->
+    if err then return callback(err)
+    if manifest.launcher?
+      callback()
+    else
+      compiler.compile dir, callback
+
+module.exports = { compileIfLegacy }

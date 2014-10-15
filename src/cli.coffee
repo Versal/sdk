@@ -68,15 +68,6 @@ commands =
         launcher = p.launcher || 'legacy'
         console.log chalk.grey("#{launcher} #{p.name}/@#{p.version}")
 
-  # Legacy
-  compile: (argv) ->
-    compile = require './compile'
-    dir = argv._.shift() || process.cwd()
-
-    compile dir, {}, (err) ->
-      if err then console.error err
-      else console.log chalk.green('compile ok')
-
   signin: (argv) ->
     argv.authUrl ?= config.get 'authUrl'
     console.log "Signing in to #{argv.authUrl}"
@@ -91,21 +82,27 @@ commands =
     upload = require('./upload')
     dir = argv._.shift() || process.cwd()
 
-    manifest.readManifest dir, (err, manifest) ->
-      if err then return logError err
+    # Legacy
+    compileIfLegacy = require('./compile').compileIfLegacy
+    compileIfLegacy dir, (err) ->
+      if err then console.error err
+      else console.log chalk.green('compile legacy gadget, ok')
 
-      argv.apiUrl ?= config.get 'apiUrl'
-      unless argv.sessionId
-        argv.sessionId = argv.sid || config.get 'sessionId'
-
-      if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
-      if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
-
-      console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
-
-      upload dir, argv, (err, manifest) ->
+      manifest.readManifest dir, (err, manifest) ->
         if err then return logError err
-        console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
+
+        argv.apiUrl ?= config.get 'apiUrl'
+        unless argv.sessionId
+          argv.sessionId = argv.sid || config.get 'sessionId'
+
+        if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
+        if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
+
+        console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
+
+        upload dir, argv, (err, manifest) ->
+          if err then return logError err
+          console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
   version: (argv) ->
     versionArg = argv._.shift()
