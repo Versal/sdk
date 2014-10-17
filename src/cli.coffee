@@ -1,3 +1,4 @@
+fs = require 'fs'
 path = require 'path'
 chalk = require 'chalk'
 argv = require('optimist').argv
@@ -5,7 +6,14 @@ config = require('./config')()
 signin = require './signin'
 manifest = require './manifest'
 pkg = require '../package.json'
-fs = require 'fs'
+create = require('./create')
+preview = require('./preview')
+localIp = require('./local-ip')()
+upload = require('./upload')
+version = require('./version')
+codio = require('./codio')
+# Legacy
+compileIfLegacy = require('./compile').compileIfLegacy
 
 if argv.env then config.env argv.env
 
@@ -26,7 +34,6 @@ commands =
           console.log l
 
   create: (argv) ->
-    create = require('./create')
     name = argv._.shift()
 
     create name, argv, (err) ->
@@ -45,7 +52,6 @@ commands =
       console.log key, value
 
   preview: (argv) ->
-    preview = require('./preview')
     if argv._.length == 0
       dirs = [process.cwd()]
     else
@@ -56,7 +62,6 @@ commands =
     preview dirs, argv, (err, projects) ->
       if err then return logError err
 
-      localIp = require('./local-ip')()
       localIpString = if localIp then " or http://#{localIp}:#{argv.port}" else ""
       console.log chalk.green("\\\\\\  ///  versal #{pkg.version}")
       console.log chalk.yellow(" \\\\\\///   http://localhost:#{argv.port}#{localIpString}")
@@ -79,11 +84,9 @@ commands =
       if argv.verbose || argv.v then console.log sessionId
 
   upload: (argv) ->
-    upload = require('./upload')
     dir = argv._.shift() || process.cwd()
 
     # Legacy
-    compileIfLegacy = require('./compile').compileIfLegacy
     compileIfLegacy dir, (err) ->
       if err then console.error err
       else console.log chalk.green('compile legacy gadget, ok')
@@ -108,14 +111,12 @@ commands =
     versionArg = argv._.shift()
     unless versionArg then return commands.help(argv)
 
-    version = require('./version')
     version versionArg, (err, oldVersion, newVersion) ->
       if err then return logError err
       message = "version bumped from v#{oldVersion} to v#{newVersion}"
       console.log chalk.green message
 
   codio: (argv) ->
-    codio = require('./codio')
     codio (err) ->
       if err then return logError err
       console.log chalk.green '.codio created'
