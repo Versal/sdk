@@ -6,6 +6,7 @@ async = require 'async'
 css = require 'css'
 fstream = require 'fstream'
 manifestLoader = require('./manifest')
+chalk = require 'chalk'
 
 compiler =
   # TODO: make compile command return compiled gadget manifest
@@ -187,6 +188,7 @@ compileIfLegacy = (dir, callback) =>
     if manifest.launcher?
       callback()
     else
+      console.log chalk.green('compile legacy gadget:', manifest.name)
       compiler.compile dir, callback
 
 module.exports = { compileIfLegacy }

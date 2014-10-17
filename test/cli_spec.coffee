@@ -7,11 +7,11 @@ fs = require 'fs'
 versal = path.resolve __dirname, '../bin/versal'
 
 describe 'versal cli', ->
-  cwd = null
+  gadgetProjectDir = null
 
   before (done) ->
     tmp.dir (err, dir) ->
-      cwd = dir
+      gadgetProjectDir = dir
       done err
 
   it 'version', (done) ->
@@ -27,8 +27,8 @@ describe 'versal cli', ->
       done(err)
 
   it 'create foo', (done) ->
-    exec "#{versal} create foo --noBower", { cwd }, (err, stdout, stderr) ->
-      fs.exists path.join(cwd, 'foo/versal.json'), (exists) ->
+    exec "#{versal} create foo --noBower", { cwd: gadgetProjectDir }, (err, stdout, stderr) ->
+      fs.exists path.join(gadgetProjectDir, 'foo/versal.json'), (exists) ->
         assert exists
         done()
 
@@ -39,7 +39,7 @@ describe 'versal cli', ->
       if preview && !preview.killed then preview.kill()
 
     it 'on port 3073', (done) ->
-      preview = spawn versal, ['preview', 'foo', '--port', '3073'], { cwd }
+      preview = spawn versal, ['preview', 'foo', '--port', '3073'], { cwd: gadgetProjectDir }
 
       preview.stdout.on 'data', (data) ->
         if data.toString().indexOf('localhost:3073') > 0
@@ -60,7 +60,7 @@ describe 'versal cli', ->
         '--authUrl', 'http://versal-api',
         '--email', 'foo',
         '--password', 'bar']
-      signin = spawn versal, args, { cwd }
+      signin = spawn versal, args, { cwd: gadgetProjectDir }
 
       signin.stdout.on 'data', (data) ->
         if data.toString().indexOf('Signing in to http://versal-api') == 0
@@ -80,7 +80,7 @@ describe 'versal cli', ->
       if upload && !upload.killed then upload.kill()
 
     it 'with credentials', (done) ->
-      upload = spawn versal, ['upload', 'foo', '--apiUrl', 'http://versal-api', '--sid', 'foo'], { cwd }
+      upload = spawn versal, ['upload', 'foo', '--apiUrl', 'http://versal-api', '--sid', 'foo'], { cwd: gadgetProjectDir }
 
       upload.stdout.on 'data', (data) ->
         if data.toString().indexOf('foo@0.0.1 to http://versal-api') > 0

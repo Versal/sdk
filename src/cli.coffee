@@ -1,6 +1,7 @@
 _ = require 'underscore'
 fs = require 'fs'
 path = require 'path'
+async = require 'async'
 chalk = require 'chalk'
 argv = require('optimist').argv
 config = require('./config')()
@@ -63,19 +64,24 @@ commands =
     unless _.every(dirs, manifest.lookupManifest)
       return logError new Error 'preview is only allowed in gadget directories'
 
-    preview dirs, argv, (err, projects) ->
+    # Legacy
+    async.each dirs, compileIfLegacy, (err) ->
       if err then return logError err
 
-      localIpString = if localIp then " or http://#{localIp}:#{argv.port}" else ""
-      console.log chalk.green("\\\\\\  ///  versal #{pkg.version}")
-      console.log chalk.yellow(" \\\\\\///   http://localhost:#{argv.port}#{localIpString}")
-      console.log chalk.red("  \\\\\\/    ctrl + C to stop")
-      console.log ''
-      projects.forEach (p) ->
-        return unless p
+      preview dirs, argv, (err, projects) ->
+        if err then return logError err
 
-        launcher = p.launcher || 'legacy'
-        console.log chalk.grey("#{launcher} #{p.name}/@#{p.version}")
+        localIpString = if localIp then " or http://#{localIp}:#{argv.port}" else ""
+        console.log ''
+        console.log chalk.green("\\\\\\  ///  versal #{pkg.version}")
+        console.log chalk.yellow(" \\\\\\///   http://localhost:#{argv.port}#{localIpString}")
+        console.log chalk.red("  \\\\\\/    ctrl + C to stop")
+        console.log ''
+        projects.forEach (p) ->
+          return unless p
+
+          launcher = p.launcher || 'legacy'
+          console.log chalk.grey("#{launcher} #{p.name}/@#{p.version}")
 
   signin: (argv) ->
     argv.authUrl ?= config.get 'authUrl'
@@ -96,7 +102,6 @@ commands =
     # Legacy
     compileIfLegacy dir, (err) ->
       if err then console.error err
-      else console.log chalk.green('compile legacy gadget, ok')
 
       manifest.readManifest dir, (err, manifest) ->
         if err then return logError err
