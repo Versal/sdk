@@ -1,3 +1,4 @@
+_ = require 'underscore'
 fs = require 'fs'
 path = require 'path'
 chalk = require 'chalk'
@@ -59,6 +60,9 @@ commands =
 
     argv.port ?= 3000
 
+    unless _.every(dirs, manifest.lookupManifest)
+      return logError new Error 'preview is only allowed in gadget directories'
+
     preview dirs, argv, (err, projects) ->
       if err then return logError err
 
@@ -86,6 +90,9 @@ commands =
   upload: (argv) ->
     dir = argv._.shift() || process.cwd()
 
+    unless manifest.lookupManifest dir
+      return logError new Error 'preview is only allowed in gadget directories'
+
     # Legacy
     compileIfLegacy dir, (err) ->
       if err then console.error err
@@ -108,6 +115,9 @@ commands =
           console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
   version: (argv) ->
+    unless manifest.lookupManifest process.cwd()
+      return logError new Error 'preview is only allowed in gadget directories'
+
     versionArg = argv._.shift()
     unless versionArg then return commands.help(argv)
 
