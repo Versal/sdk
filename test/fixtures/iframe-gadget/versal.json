@@ -4,6 +4,7 @@
   "title": "My gadget",
   "description": "Does nothing just yet",
   "author": "anonymous",
+  "launcher": "iframe",
   "defaultAttributes": {},
   "defaultLearnerState": {}
 }

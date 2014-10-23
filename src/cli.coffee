@@ -1,11 +1,21 @@
+_ = require 'underscore'
+fs = require 'fs'
 path = require 'path'
+async = require 'async'
 chalk = require 'chalk'
 argv = require('optimist').argv
 config = require('./config')()
 signin = require './signin'
 manifest = require './manifest'
 pkg = require '../package.json'
-fs = require 'fs'
+create = require('./create')
+preview = require('./preview')
+localIp = require('./local-ip')()
+upload = require('./upload')
+version = require('./version')
+codio = require('./codio')
+# Legacy
+compileIfLegacy = require('./compile').compileIfLegacy
 
 if argv.env then config.env argv.env
 
@@ -26,7 +36,6 @@ commands =
           console.log l
 
   create: (argv) ->
-    create = require('./create')
     name = argv._.shift()
 
     create name, argv, (err) ->
@@ -45,7 +54,6 @@ commands =
       console.log key, value
 
   preview: (argv) ->
-    preview = require('./preview')
     if argv._.length == 0
       dirs = [process.cwd()]
     else
@@ -53,29 +61,27 @@ commands =
 
     argv.port ?= 3000
 
-    preview dirs, argv, (err, projects) ->
+    unless _.every(dirs, manifest.lookupManifest)
+      return logError new Error 'preview is only allowed in gadget directories'
+
+    # Legacy
+    async.each dirs, compileIfLegacy, (err) ->
       if err then return logError err
 
-      localIp = require('./local-ip')()
-      localIpString = if localIp then " or http://#{localIp}:#{argv.port}" else ""
-      console.log chalk.green("\\\\\\  ///  versal #{pkg.version}")
-      console.log chalk.yellow(" \\\\\\///   http://localhost:#{argv.port}#{localIpString}")
-      console.log chalk.red("  \\\\\\/    ctrl + C to stop")
-      console.log ''
-      projects.forEach (p) ->
-        return unless p
+      preview dirs, argv, (err, projects) ->
+        if err then return logError err
 
-        launcher = p.launcher || 'legacy'
-        console.log chalk.grey("#{launcher} #{p.name}/@#{p.version}")
+        localIpString = if localIp then " or http://#{localIp}:#{argv.port}" else ""
+        console.log ''
+        console.log chalk.green("\\\\\\  ///  versal #{pkg.version}")
+        console.log chalk.yellow(" \\\\\\///   http://localhost:#{argv.port}#{localIpString}")
+        console.log chalk.red("  \\\\\\/    ctrl + C to stop")
+        console.log ''
+        projects.forEach (p) ->
+          return unless p
 
-  # Legacy
-  compile: (argv) ->
-    compile = require './compile'
-    dir = argv._.shift() || process.cwd()
-
-    compile dir, {}, (err) ->
-      if err then console.error err
-      else console.log chalk.green('compile ok')
+          launcher = p.launcher || 'legacy'
+          console.log chalk.grey("#{launcher} #{p.name}/@#{p.version}")
 
   signin: (argv) ->
     argv.authUrl ?= config.get 'authUrl'
@@ -88,37 +94,44 @@ commands =
       if argv.verbose || argv.v then console.log sessionId
 
   upload: (argv) ->
-    upload = require('./upload')
     dir = argv._.shift() || process.cwd()
 
-    manifest.readManifest dir, (err, manifest) ->
-      if err then return logError err
+    unless manifest.lookupManifest dir
+      return logError new Error 'preview is only allowed in gadget directories'
 
-      argv.apiUrl ?= config.get 'apiUrl'
-      unless argv.sessionId
-        argv.sessionId = argv.sid || config.get 'sessionId'
+    # Legacy
+    compileIfLegacy dir, (err) ->
+      if err then console.error err
 
-      if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
-      if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
-
-      console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
-
-      upload dir, argv, (err, manifest) ->
+      manifest.readManifest dir, (err, manifest) ->
         if err then return logError err
-        console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
+
+        argv.apiUrl ?= config.get 'apiUrl'
+        unless argv.sessionId
+          argv.sessionId = argv.sid || config.get 'sessionId'
+
+        if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
+        if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
+
+        console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
+
+        upload dir, argv, (err, manifest) ->
+          if err then return logError err
+          console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
   version: (argv) ->
+    unless manifest.lookupManifest process.cwd()
+      return logError new Error 'preview is only allowed in gadget directories'
+
     versionArg = argv._.shift()
     unless versionArg then return commands.help(argv)
 
-    version = require('./version')
     version versionArg, (err, oldVersion, newVersion) ->
       if err then return logError err
       message = "version bumped from v#{oldVersion} to v#{newVersion}"
       console.log chalk.green message
 
   codio: (argv) ->
-    codio = require('./codio')
     codio (err) ->
       if err then return logError err
       console.log chalk.green '.codio created'
