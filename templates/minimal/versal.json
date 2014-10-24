@@ -5,8 +5,5 @@
 
   "title": "My gadget",
   "description": "Does nothing just yet",
-  "author": "anonymous",
-
-  "defaultConfig": {},
-  "defaultUserState": {}
+  "author": "anonymous"
 }
