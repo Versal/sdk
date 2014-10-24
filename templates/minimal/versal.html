@@ -19,40 +19,40 @@
     <input type="text" name="greeting" readonly value="What is your name?">
     <input type="text" name="learnerName">
     <script>
-    window.addEventListener('WebComponentsReady', function(){
+      window.addEventListener('WebComponentsReady', function(){
 
-      var greeting = document.querySelector('[name=greeting]');
-      var learnerName = document.querySelector('[name=learnerName]');
-      var player = new VersalPlayerAPI();
+        var greeting = document.querySelector('[name=greeting]');
+        var learnerName = document.querySelector('[name=learnerName]');
+        var player = new VersalPlayerAPI();
 
-      greeting.addEventListener('change', function(e){
-        player.setAttribute(greeting.name, greeting.value);
+        greeting.addEventListener('change', function(e){
+          player.setAttribute(greeting.name, greeting.value);
+        });
+
+        learnerName.addEventListener('change', function(e){
+          player.setLearnerAttribute(learnerName.name, learnerName.value);
+        });
+
+        player.on('attributesChanged', function(data){
+          if(data.greeting) {
+            greeting.value = data.greeting;
+          };
+        });
+
+        player.on('learnerStateChanged', function(data){
+          if(data.learnerName) {
+            learnerName.value = data.learnerName;
+          };
+        });
+
+        player.on('editableChanged', function(editable){
+          greeting.readOnly = !editable.editable;
+          learnerName.readOnly = editable.editable;
+        });
+
+        player.setHeight(60);
+        player.startListening();
       });
-
-      learnerName.addEventListener('change', function(e){
-        player.setLearnerAttribute(learnerName.name, learnerName.value);
-      });
-
-      player.on('attributesChanged', function(data){
-        if(data.greeting) {
-          greeting.value = data.greeting;
-        };
-      });
-
-      player.on('learnerStateChanged', function(data){
-        if(data.learnerName) {
-          learnerName.value = data.learnerName;
-        };
-      });
-
-      player.on('editableChanged', function(editable){
-        greeting.readOnly = !editable.editable;
-        learnerName.readOnly = editable.editable;
-      });
-
-      player.setHeight(60);
-      player.startListening();
-    });
     </script>
   </body>
 </html>
