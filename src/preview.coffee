@@ -34,7 +34,6 @@ module.exports = (dirs, options, callback = ->) ->
       course.isEditable = true
 
       app.use('/api', api({ manifests, course, assets: [], representations: {} }))
-        .get('/', indexMiddleware(options.port))
         .use(express.static(launchPath))
         .use(express.static(path.join(__dirname, '../html')))
         .use(express.logger())
@@ -65,14 +64,3 @@ mapManifest = (manifest) ->
   manifest.main ?= 'versal.html'
 
   return manifest
-
-# This is a temporary measure. When playerUrl is deprecated, this
-# can be safely removed.
-indexMiddleware = (port) ->
-  (req, res, next) ->
-    indexPath = path.join(__dirname, '../html/index.html')
-    playerUrl = "http://localhost:#{port}"
-    fs.readFile indexPath, 'utf-8', (err, content) ->
-      if err then return next(err)
-      html = content.replace('<%=playerUrl%>', playerUrl)
-      res.send html
