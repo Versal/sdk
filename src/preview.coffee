@@ -57,7 +57,7 @@ linkManifestDir = (app, dir, callback) ->
 mapManifest = (manifest) ->
   manifest.id = shortid.generate()
   manifest.catalog = 'local'
-  manifest.username = 'local'
+  manifest.username = manifest.username || 'local'
   manifest.latestVersion = manifest.version
 
   manifest.icon ?= 'assets/icon.png'
