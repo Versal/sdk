@@ -18,29 +18,9 @@
         return window.player = new PlayerApplication(e.data.data);
       }
     });
-    window.addEventListener('message', function(e) {
-      var data, err;
-      if (typeof e.data !== 'string') {
-        return;
-      }
-      try {
-        data = JSON.parse(e.data);
-        if (data.event === 'player:launch') {
-          return window.player = new PlayerApplication(data);
-        }
-      } catch (_error) {
-        err = _error;
-        return typeof console !== "undefined" && console !== null ? console.error(err) : void 0;
-      }
-    });
-    if (window.parent) {
-      window.parent.postMessage({
-        event: 'startListening'
-      }, '*');
-      return window.parent.postMessage(JSON.stringify({
-        event: 'player:ready'
-      }), '*');
-    }
+    return window.parent.postMessage({
+      event: 'startListening'
+    }, '*');
   });
 
 }).call(this);

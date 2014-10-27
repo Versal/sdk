@@ -1,0 +1,22 @@
+{
+  "name": "react-coffeescript-glue",
+  "version": "0.0.3",
+  "homepage": "https://github.com/Factlink/react-coffeescript-glue",
+  "description": "Write pretty React components in Coffeescript.",
+  "main": "react-coffeescript-glue.js",
+  "moduleType": [
+    "amd",
+    "globals"
+  ],
+  "keywords": [
+    "react",
+    "coffeescript"
+  ],
+  "authors": [
+    "Factlink"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "react": "*"
+  }
+}

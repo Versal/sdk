@@ -186,6 +186,19 @@ describe('iframe launcher', function() {
         {event: 'setAttributes', data: {value: 2}});
     });
 
+    it('unsets attributes that are set to null', function(done) {
+      var observer = new MutationObserver(function() {
+        chai.expect(launcher.config).to.deep.eq({});
+        observer.disconnect();
+        done();
+      });
+
+      observer.observe(launcher, {attributes: true});
+
+      launcher.children[0].contentWindow.sendGadgetEvent(
+        {event: 'setAttributes', data: {test: null}});
+    });
+
     it('patches userstate when receiving setLearnerState', function(done) {
       var observer = new MutationObserver(function() {
         chai.expect(launcher.userstate).to.deep.eq(
@@ -197,6 +210,19 @@ describe('iframe launcher', function() {
 
       launcher.children[0].contentWindow.sendGadgetEvent(
         {event: 'setLearnerState', data: {test2: 'new-userstate'}});
+    });
+
+    it('unsets learnerState that are set to null', function(done) {
+      var observer = new MutationObserver(function() {
+        chai.expect(launcher.userstate).to.deep.eq({});
+        observer.disconnect();
+        done();
+      });
+
+      observer.observe(launcher, {attributes: true});
+
+      launcher.children[0].contentWindow.sendGadgetEvent(
+        {event: 'setLearnerState', data: {test: null}});
     });
 
     it('sends learnerStateChanged after receiving setLearnerState', function(done) {

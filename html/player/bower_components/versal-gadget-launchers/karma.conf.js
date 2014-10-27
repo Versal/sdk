@@ -8,12 +8,14 @@ module.exports = function(config) {
       'iframe-launcher/iframe-launcher.html',
       'iframe-launcher/test/*_spec.js',
       {pattern: 'iframe-launcher/iframe-launcher.js', included: false},
+      {pattern: 'iframe-launcher/iframe-launcher.css', included: false},
       {pattern: 'iframe-launcher/test/test_gadget.html', included: false},
 
       // Component launcher
       'component-launcher/component-launcher.html',
       'component-launcher/test/*_spec.js',
       {pattern: 'component-launcher/component-launcher.js', included: false},
+      {pattern: 'component-launcher/component-launcher.css', included: false},
       {pattern: 'component-launcher/test/test_gadget.html', included: false},
 
       // Legacy launcher
@@ -24,6 +26,7 @@ module.exports = function(config) {
       'legacy-launcher/mini_require.js',
       'legacy-launcher/legacy-launcher.html',
       {pattern: 'legacy-launcher/legacy-launcher.js', included: false},
+      {pattern: 'legacy-launcher/legacy-launcher.css', included: false},
       'legacy-launcher/legacy-launcher_spec.js'
     ],
     reporters: ['dots'],

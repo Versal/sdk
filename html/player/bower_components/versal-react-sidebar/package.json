@@ -1,0 +1,13 @@
+{
+  "name": "versal-react-sidebar",
+  "repository": "git@github.com:Versal/versal-react-sidebar.git",
+  "scripts": {
+    "prepublish": "node make-bundle.js > sidebar.js && ./node_modules/stylus/bin/stylus --use nib --import nib --import ./default-variables.styl sidebar.styl"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.8.0",
+    "nib": "~1.0.4",
+    "stylus": "~0.49.1",
+    "umd-wrap": "~0.1.1"
+  }
+}

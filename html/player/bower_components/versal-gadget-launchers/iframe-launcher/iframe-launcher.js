@@ -6,6 +6,9 @@ var Semver = function(ver) {
 var patch = function(to, from) {
   Object.keys(from).forEach(function(key){
     to[key] = from[key];
+    if (to[key] === null) {
+      delete to[key];
+    }
   });
   return to;
 };

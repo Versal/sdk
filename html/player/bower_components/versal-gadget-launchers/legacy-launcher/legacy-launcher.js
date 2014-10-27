@@ -235,6 +235,8 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
       // Force a (faked) `sync` event to appease SAT gadgets
       this._userstate.fetch();
 
+      this.playerInterface.on('broadcast:send', this._broadcastEvent.bind(this));
+
       this.playerInterface.trigger('domReady');
     } catch (err) {
       this._fireError({
@@ -242,6 +244,16 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
         stacktrace: err.stack
       });
     }
+  };
+  prototype._broadcastEvent = function(evt){
+    var _this = this;
+    var otherLegacyLaunchers = document.querySelectorAll('versal-legacy-launcher');
+    Array.prototype.forEach.call(otherLegacyLaunchers, function(other){
+      if(other == _this) return;
+      if(other.playerInterface) {
+        other.playerInterface.trigger('broadcast:receive', evt);
+      }
+    })
   };
   prototype.attachedCallback = function() {
     this.attributeChangedCallback('data-config');
@@ -254,6 +266,8 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
     }
   };
   prototype.detachedCallback = function() {
+    this.playerInterface.off('broadcast:send', this._broadcastEvent.bind(this));
+
     if (this.shouldFireCloseEventOnDetached) {
       this._passEvent('close');
     }

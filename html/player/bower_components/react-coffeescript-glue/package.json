@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "prepublish": "node make-bundle.js > react-coffeescript-glue.js"
+  },
+  "devDependencies": {
+    "coffee-script": "*",
+    "umd-wrap": "*"
+  }
+}
