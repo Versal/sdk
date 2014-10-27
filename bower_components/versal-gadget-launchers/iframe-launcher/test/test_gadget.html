@@ -1,0 +1,15 @@
+<script>
+  window.addEventListener('message', function(event) {
+    // normally you cannot just call methods on the parent as it might be
+    // of different origin -- this is just for easily recording the received
+    // events for the tests
+    window.parent.recordPlayerEvent(event.data);
+  });
+
+  // called by tests
+  window.sendGadgetEvent = function(eventMessage) {
+    window.parent.postMessage(eventMessage, '*');
+  };
+
+  window.parent.gadgetLoaded();
+</script>
