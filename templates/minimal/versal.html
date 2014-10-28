@@ -19,39 +19,41 @@ input[readonly] {
   border: 1px solid transparent;
 }
 </style>
-</body>
-
 <script>
-var greeting = document.querySelector('[name=greeting]');
-var learnerName = document.querySelector('[name=learnerName]');
-var player = new VersalPlayerAPI();
+window.addEventListener('HTMLImportsLoaded', function(){
 
-greeting.addEventListener('change', function(e){
-  player.setAttribute(greeting.name, greeting.value);
+  var greeting = document.querySelector('[name=greeting]');
+  var learnerName = document.querySelector('[name=learnerName]');
+  var player = new VersalPlayerAPI();
+
+  greeting.addEventListener('change', function(e){
+    player.setAttribute(greeting.name, greeting.value);
+  });
+
+  learnerName.addEventListener('change', function(e){
+    player.setLearnerAttribute(learnerName.name, learnerName.value);
+  });
+
+  player.on('attributesChanged', function(data){
+    if(data.greeting) {
+      greeting.value = data.greeting;
+    };
+  });
+
+  player.on('learnerStateChanged', function(data){
+    if(data.learnerName) {
+      learnerName.value = data.learnerName;
+    };
+  });
+
+  player.on('editableChanged', function(editable){
+    greeting.readOnly = !editable.editable;
+    learnerName.readOnly = editable.editable;
+  });
+
+  player.setHeight(60);
+  player.startListening();
 });
-
-learnerName.addEventListener('change', function(e){
-  player.setLearnerAttribute(learnerName.name, learnerName.value);
-});
-
-player.on('attributesChanged', function(data){
-  if(data.greeting) {
-    greeting.value = data.greeting;
-  };
-});
-
-player.on('learnerStateChanged', function(data){
-  if(data.learnerName) {
-    learnerName.value = data.learnerName;
-  };
-});
-
-player.on('editableChanged', function(editable){
-  greeting.readOnly = !editable.editable;
-  learnerName.readOnly = editable.editable;
-});
-
-player.setHeight(60);
-player.startListening();
 </script>
+</body>
 </html>

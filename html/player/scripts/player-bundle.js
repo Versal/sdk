@@ -1,6 +1,6 @@
 /*!
  * player v1.6.27
- * a masterpiece! from 32afe58 on 27. October 2014
+ * a masterpiece! from 32afe58 on 28. October 2014
  */
 // NOTE: We also depend on requirejs and requirejs-text!
 

@@ -1,3 +1,13 @@
+# v1.7.0
+
+* Fixed html imports in default gadget
+* Fixed several bundle issues
+* Fixed specifying preview dir
+* Bumped to recent player
+* Support legacy gadgets transparently
+
+---
+
 # v1.6.4
 
   * Use zlib instead of exec'ing zip

@@ -24,14 +24,16 @@ module.exports = (dirs, options, callback = ->) ->
 
   async.map dirs, linkManifestDir.bind(this, app), (err, manifests) ->
     if err then return callback err
-
-    coursePath = path.join(__dirname, '../templates/course.json')
-    fs.readJson coursePath, (err, course) ->
+    async.map dirs, maybeLinkLegacyDir.bind(this, app), (err) ->
       if err then return callback err
 
-      # Inject course palette
-      course.palette = manifests
-      course.isEditable = true
+      coursePath = path.join(__dirname, '../templates/course.json')
+      fs.readJson coursePath, (err, course) ->
+        if err then return callback err
+
+        # Inject course palette
+        course.palette = manifests
+        course.isEditable = true
 
       app.use('/api', api({ manifests, course, assets: [], representations: {} }))
         .use(express.static(launchPath))
@@ -46,6 +48,10 @@ linkManifestDir = (app, dir, callback) ->
     if err then return callback(err)
     return callback() unless json
 
+    # TODO deprecate along with legacy gadgets
+    unless json.launcher
+      dir = path.join dir, 'dist'
+
     man = mapManifest json
     man._path = path.resolve dir
 
@@ -54,10 +60,24 @@ linkManifestDir = (app, dir, callback) ->
 
     callback null, man
 
+# TODO deprecate along with legacy gadgets
+maybeLinkLegacyDir = (app, dir, callback) ->
+  dir = path.join dir, 'dist'
+  unless fs.existsSync dir then return callback()
+
+  manifest.readManifest dir, (err, man) ->
+    if err then return callback(err)
+
+    isLegacyGadget = not man.launcher
+    if isLegacyGadget
+      app.use '/scripts', express.static(path.resolve dir)
+
+    callback()
+
 mapManifest = (manifest) ->
   manifest.id = shortid.generate()
   manifest.catalog = 'local'
-  manifest.username = 'local'
+  manifest.username = manifest.username || 'local'
   manifest.latestVersion = manifest.version
 
   manifest.icon ?= 'assets/icon.png'
