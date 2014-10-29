@@ -1,18 +1,27 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<html>
   <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <title>Versal SDK</title>
-    <meta name="description" content=""/>
     <meta name="viewport" content="width=device-width"/>
-    <link rel="stylesheet" href="/styles/player-bundle.css" />
+    <script src="bower_components/versal-component-runtime/dist/runtime.min.js"></script>
+    <link rel="import" href="bower_components/versal-gadget-launchers/iframe-launcher/iframe-launcher.html" />
+    <style>
+    html, body {
+      padding: 0;
+      margin: 0;
+      border: 0;
+      height: 100%;
+    }
+
+    versal-iframe-launcher, versal-iframe-launcher iframe {
+      height: 100%;
+    }
+    </style>
   </head>
   <body>
-    <div class="player-container"></div>
-    <script data-main="sdk-launcher" src="/bower_components/requirejs/require.js"></script>
+    <!-- use versal.html so that express resolves the actual path -->
+    <versal-iframe-launcher src="versal.html" data-environment='{ "courseId": "local", "api": { "url": "/api", "sessionId": "" } }' />
   </body>
 </html>
