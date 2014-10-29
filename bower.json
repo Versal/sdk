@@ -1,0 +1,21 @@
+{
+  "name": "versal sdk",
+  "version": "1.6.4",
+  "homepage": "https://github.com/Versal/sdk",
+  "authors": [
+    "Versal Team <support@versal.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "versal-component-runtime": "~0.2.6",
+    "versal-gadget-launchers": "~0.3.9"
+  }
+}

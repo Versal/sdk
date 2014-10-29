@@ -143,6 +143,7 @@ SidebarLessonComponent = React.createClass
       'sidebar-lesson'
       'sidebar-lesson-disabled' unless @props.isAccessible
       'sidebar-lesson-editing' if @state.editing
+      'sidebar-lesson-editable' if @props.editable
       'sidebar-lesson-hovered' if @props.hovered
       'sidebar-lesson-dragging' if @props.dragging
       'sidebar-toc-progressed' if @props.hasCompletedLesson || @props.isCurrentLesson
@@ -178,13 +179,23 @@ SidebarLessonComponent = React.createClass
                 @props.onDelete()
           ],
             _i ['icon-remove']
-          _div [
-            'sidebar-lesson-edit-button'
-            onClick: (e) =>
-              e.stopPropagation()
-              @setState editing: !@state.editing
-          ],
-            _i ['icon-pencil']
+
+          if @state.editing
+            _div [
+              'sidebar-lesson-edit-button'
+              key: 'edit-button-editing'
+              # do nothing, rely on input blur
+            ],
+              _i ['icon-pencil']
+          else
+            _div [
+              'sidebar-lesson-edit-button'
+              key: 'edit-button-not-editing'
+              onClick: (e) =>
+                e.stopPropagation()
+                @setState editing: !@state.editing
+            ],
+              _i ['icon-pencil']
 
       _div ['sidebar-lesson-title', ref: 'title'],
         if @state.editing

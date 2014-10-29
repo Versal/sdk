@@ -1,6 +1,6 @@
 /*!
- * player v1.6.22
- * a masterpiece! from 949fb47 on 14. October 2014
+ * player v1.6.27
+ * a masterpiece! from 32afe58 on 28. October 2014
  */
 // NOTE: We also depend on requirejs and requirejs-text!
 
@@ -3418,9 +3418,8 @@ define('text!templates/course.html',[],function () { return '<div class="js-upda
 
 (function() {
   define('models/settings',['cdn.underscore', 'plugins/clonedeep'], function(_, cloneDeep) {
-    var defaults, options, upgrade_config;
+    var defaults, options;
     defaults = {
-      whitelabel: false,
       embed: false,
       site: '//versal.com',
       container: '.player-container',
@@ -3430,27 +3429,6 @@ define('text!templates/course.html',[],function () { return '<div class="js-upda
       }
     };
     options = {};
-    upgrade_config = function(config) {
-      if (typeof config.api === 'string') {
-        config.api = {
-          url: config.api
-        };
-      }
-      if (config.sid) {
-        config.api.sessionId = config.sid;
-        delete config.sid;
-      }
-      if (config.sessionId) {
-        config.api.sessionId = config.sessionId;
-        delete config.sessionId;
-      }
-      if (config.course) {
-        config.courseId = config.course;
-        delete config.course;
-      }
-      delete config.event;
-      return config;
-    };
     return {
       get: function(opt) {
         return cloneDeep(options[opt]);
@@ -3465,7 +3443,7 @@ define('text!templates/course.html',[],function () { return '<div class="js-upda
         if (opts.api == null) {
           throw new Error('Please set options.api!');
         }
-        return options = _.defaults({}, upgrade_config(opts), defaults);
+        return options = _.defaults({}, opts, defaults);
       },
       toJSON: function() {
         return cloneDeep(options);
@@ -11410,10 +11388,10 @@ define('text!templates/tray/gadget.html',[],function () { return '<div class="js
 define('text!templates/gadget_instance.html',[],function () { return '<div class="toolbar">\n  <i class="drag js-draggable icon-reorder" draggable="true"></i>\n  <i class="gadget-toolbar-info js-info icon-info"></i>\n  <i class="edit js-edit icon-cog"></i>\n  <i class="delete js-trash icon-trash"></i>\n</div>\n\n<div class="gadgetContent"></div>\n<div class="js-placeholder placeholder">Click to edit this gadget</div>\n<div class="drag-overlay"></div>\n\n<div class="toolbar-right"></div>\n\n<div class="js-collab-lock-region gadget-collab-lock-region"></div>\n\n<div class="gadget-info-tooltip js-info-tooltip"></div>\n';});
 
 
-define('text!templates/gadget_instance_error.html',[],function () { return '<div class="alert alert-error">\n  Something went wrong and this gadget didn\'t load properly.<br>\n  We\'re on it. Please check back in a bit.\n  <!--\n    Technical details:\n    <%- errorDescription %>\n  -->\n  <div class="error-controls">\n    <button class="js-hide">close</button>\n    <button class="action delete-button js-delete">remove</button>\n  </div>\n</div>\n';});
+define('text!templates/gadget_instance_error.html',[],function () { return '<div class="gadget-dialog js-spec-error">\n  <div class="gadget-dialog-vertical-align">\n    <div class="gadget-dialog-message">\n      Something went wrong and this gadget didn\'t load properly.<br>\n      We\'re on it. Please check back in a bit.\n    </div>\n    <div>\n      <button class="js-hide">close</button>\n      <button class="action gadget-delete-button js-delete">delete</button>\n    </div>\n  </div>\n</div>\n';});
 
 
-define('text!templates/gadget_delete_warn.html',[],function () { return '<div class="alert alert-warn js-alert-warn">\n  <div class="alert-controls">\n    <div class="alert-msg">Are you sure you want to delete this gadget?</div>\n    <button class="undo-button js-undo-delete">cancel</button>\n    <button class="action delete-button js-delete">delete</button>\n  </div>\n</div>\n';});
+define('text!templates/gadget_delete_warn.html',[],function () { return '<div class="gadget-dialog js-alert-warn">\n  <div class="gadget-dialog-vertical-align">\n    <div class="gadget-dialog-message">\n      Are you sure you want to delete this gadget?\n    </div>\n    <button class="js-undo-delete">cancel</button>\n    <button class="action js-delete">delete</button>\n  </div>\n</div>\n';});
 
 
 define('text!templates/gadget_child_picker.html',[],function () { return '<div class=\'gadget-child-picker-inner\'>\n  <h2 class="gadget-child-picker-heading">Select slide content</h2>\n\n  <ul class=\'gadget-child-picker-list\'>\n    <% for(var gadgetType in gadgetTypes) { %>\n      <li class=\'gadget-child-picker-item js-choose-type\' data-type=\'<%= gadgetType %>\'>\n        <img class="gadget-child-picker-image" src=\'<%= gadgetTypes[gadgetType].imageUrl %>\'>\n        <label class=\'gadget-child-picker-title\'><%= gadgetTypes[gadgetType].title %></label>\n        <label class=\'gadget-child-picker-author\'><%= gadgetTypes[gadgetType].author %></label>\n      </li>\n    <% } %>\n  </ul>\n</div>\n';});
@@ -11653,6 +11631,7 @@ define('text!templates/gadget_child_container.html',[],function () { return '<di
 
       function GadgetInstanceView() {
         this._onGadgetSeen = __bind(this._onGadgetSeen, this);
+        this._handleError = __bind(this._handleError, this);
         this._scrollIntoViewIfNeeded = __bind(this._scrollIntoViewIfNeeded, this);
         this._gadgetDropped = __bind(this._gadgetDropped, this);
         this.stopEditing = __bind(this.stopEditing, this);
@@ -12005,27 +11984,25 @@ define('text!templates/gadget_child_container.html',[],function () { return '<di
       };
 
       GadgetInstanceView.prototype.onHideClick = function() {
-        return this.$el.fadeOut(1200);
+        return this.$el.hide();
       };
 
       GadgetInstanceView.prototype.showDeleteMsg = function() {
-        var height, warnMsg;
+        var warnMsg;
         if (this.deleteShowing) {
           return;
         }
         this.deleteShowing = true;
-        height = this.$el.height();
         warnMsg = $(warn_template);
-        if (height < 100) {
-          warnMsg.addClass('minimized');
-        }
-        return this.$el.append(warnMsg);
+        this.$el.append(warnMsg);
+        return this.$el.addClass('gadget-showing-dialog');
       };
 
       GadgetInstanceView.prototype.onUndoDelete = function() {
         this.stopEditing();
         this.deleteShowing = false;
-        return this.$el.find('.js-alert-warn').remove();
+        this.$el.find('.js-alert-warn').remove();
+        return this.$el.removeClass('gadget-showing-dialog');
       };
 
       GadgetInstanceView.prototype.onDeleteClick = function() {
@@ -12036,7 +12013,8 @@ define('text!templates/gadget_child_container.html',[],function () { return '<di
       GadgetInstanceView.prototype.onRender = function() {
         var attrData, attrName, launcherJsonAttributes;
         if (this.project == null) {
-          return this.showCouldNotLoad('Gadget Project is missing');
+          this._handleError(new Error('Gadget project is missing'));
+          return this.showCouldNotLoad();
         }
         this.ui.gadgetContent.addClass(this.project.cssClassName());
         if (this.isEditable && this.project.get('noToggleSwitch')) {
@@ -12061,10 +12039,22 @@ define('text!templates/gadget_child_container.html',[],function () { return '<di
           this._launcher.setAttribute(attrName, JSON.stringify(attrData));
         }
         this.ui.gadgetContent.append(this._launcher);
-        if (this._launcher.tagName === 'VERSAL-IFRAME-LAUNCHER') {
-          this._gadgetRendered();
-        }
         return this.startReportingActivity();
+      };
+
+      GadgetInstanceView.prototype._handleError = function(err) {
+        var _ref, _ref1;
+        if (!err) {
+          return;
+        }
+        _.extend(err, {
+          gadgetType: (_ref = this.project) != null ? _ref.type() : void 0,
+          gadgetId: (_ref1 = this.model) != null ? _ref1.id : void 0
+        });
+        if (typeof console.error === "function") {
+          console.error(err);
+        }
+        return this._track('gadget-error', err);
       };
 
       GadgetInstanceView.prototype._showInfoTooltip = function() {
@@ -12094,11 +12084,6 @@ define('text!templates/gadget_child_container.html',[],function () { return '<di
         return this.ui.infoTooltip.fadeOut('fast');
       };
 
-      GadgetInstanceView.prototype._gadgetRendered = function() {
-        this.trigger('gadgetRendered');
-        return mediator.trigger('gadget:rendered', this.model);
-      };
-
       GadgetInstanceView.prototype._onGadgetSeen = function() {
         this.trigger('gadgetSeen', _.pick(this.model.attributes, 'id', 'type'));
         return this._track('gadget-seen');
@@ -12115,17 +12100,10 @@ define('text!templates/gadget_child_container.html',[],function () { return '<di
         return this.listenTo(mediator, 'course:click', triggerActivityDebounced);
       };
 
-      GadgetInstanceView.prototype.showCouldNotLoad = function(errorDescription) {
-        if (typeof console.error === "function") {
-          console.error(errorDescription);
-        }
-        this.$el.html(_.template(error_template, {
-          errorDescription: errorDescription
-        }));
-        this._track('gadget-error', {
-          description: errorDescription
-        });
-        return this.trigger('gadgetRendered');
+      GadgetInstanceView.prototype.showCouldNotLoad = function() {
+        this.$el.html(_.template(error_template));
+        this.trigger('gadgetRendered');
+        return this.$el.addClass('gadget-showing-dialog');
       };
 
       GadgetInstanceView.prototype.toggleEmpty = function(bool) {
@@ -12172,7 +12150,8 @@ define('text!templates/gadget_child_container.html',[],function () { return '<di
 
       GadgetInstanceView.prototype._launcherHandlers = {
         rendered: function(event) {
-          return this._gadgetRendered();
+          this.trigger('gadgetRendered');
+          return mediator.trigger('gadget:rendered', this.model);
         },
         setAttributes: function(event) {
           return this.model.config.save(event.detail);
@@ -12212,10 +12191,16 @@ define('text!templates/gadget_child_container.html',[],function () { return '<di
           return mediator.trigger('blocking:changed');
         },
         error: function(event) {
-          var err, opts;
-          opts = event.detail;
-          err = [opts.message, opts.stacktrace].join('\n');
-          return this.showCouldNotLoad(err || 'Something bad happened to this gadget...');
+          var err;
+          if ('string' === typeof event.detail) {
+            err = new Error(event.detail);
+          } else if (event.detail && event.detail.message) {
+            err = event.detail;
+          } else {
+            err = new Error('Misformatted error');
+          }
+          this._handleError(err);
+          return this.showCouldNotLoad();
         }
       };
 
@@ -12681,21 +12666,26 @@ define('text!templates/gadget_child_container.html',[],function () { return '<di
       };
 
       Lesson.prototype.moveGadgetToIndex = function(oldIndex, newIndex) {
-        var $element, model, previousView;
+        var $element, model;
         if (oldIndex === newIndex) {
           return;
         }
         model = this.collection.at(oldIndex);
         this.collection.move(model, newIndex);
         $element = this.children.findByModel(model).$el.detach();
-        if (newIndex === 0) {
-          this.ui.gadgets.prepend($element);
-        } else {
-          previousView = this.children.findByModel(this.collection.at(newIndex - 1));
-          $element.insertAfter(previousView.el);
-        }
-        mediator.trigger('lesson:gadget:moved', this);
-        return this._relegateChildGadgets();
+        return _.defer((function(_this) {
+          return function() {
+            var previousView;
+            if (newIndex === 0) {
+              _this.ui.gadgets.prepend($element);
+            } else {
+              previousView = _this.children.findByModel(_this.collection.at(newIndex - 1));
+              $element.insertAfter(previousView.el);
+            }
+            mediator.trigger('lesson:gadget:moved', _this);
+            return _this._relegateChildGadgets();
+          };
+        })(this));
       };
 
       Lesson.prototype._onDragStart = function(e) {
@@ -13086,11 +13076,9 @@ define('libs/analytics',[], function(){
       };
 
       NavButtonsView.prototype._onCourseEnd = function(user) {
-        _.each(['courseEnd', 'player:course:completed'], function(event) {
-          return mediator.trigger('parent:notify', {
-            event: event,
-            user: _.pick(user, 'email', 'id')
-          });
+        mediator.trigger('parent:notify', {
+          event: 'player:course:completed',
+          user: _.pick(user, 'email', 'id')
         });
         return this.ui.finishButton.removeClass('disabled');
       };
@@ -13220,6 +13208,7 @@ define('libs/analytics',[], function(){
           this._loadingView = new LoadingView;
           this.loadingRegion.show(this._loadingView);
         }
+        this._activeLesson = null;
         return this.loadingLesson.done((function(_this) {
           return function() {
             return _this.displayLesson(lesson);
@@ -33924,7 +33913,7 @@ module.exports = warning;
       var lessonPlaceholder, _ref;
       lessonPlaceholder = 'Untitled lesson';
       return _div([
-        'sidebar-lesson', !this.props.isAccessible ? 'sidebar-lesson-disabled' : void 0, this.state.editing ? 'sidebar-lesson-editing' : void 0, this.props.hovered ? 'sidebar-lesson-hovered' : void 0, this.props.dragging ? 'sidebar-lesson-dragging' : void 0, this.props.hasCompletedLesson || this.props.isCurrentLesson ? 'sidebar-toc-progressed' : void 0, this.props.isCurrentLesson ? 'sidebar-toc-active' : void 0, {
+        'sidebar-lesson', !this.props.isAccessible ? 'sidebar-lesson-disabled' : void 0, this.state.editing ? 'sidebar-lesson-editing' : void 0, this.props.editable ? 'sidebar-lesson-editable' : void 0, this.props.hovered ? 'sidebar-lesson-hovered' : void 0, this.props.dragging ? 'sidebar-lesson-dragging' : void 0, this.props.hasCompletedLesson || this.props.isCurrentLesson ? 'sidebar-toc-progressed' : void 0, this.props.isCurrentLesson ? 'sidebar-toc-active' : void 0, {
           onClick: this._onClick,
           onDragEnter: this._onDragEnter,
           onDragOver: this._onDragOver,
@@ -33954,8 +33943,13 @@ module.exports = warning;
             };
           })(this)
         }
-      ], _i(['icon-remove'])), _div([
+      ], _i(['icon-remove'])), this.state.editing ? _div([
         'sidebar-lesson-edit-button', {
+          key: 'edit-button-editing'
+        }
+      ], _i(['icon-pencil'])) : _div([
+        'sidebar-lesson-edit-button', {
+          key: 'edit-button-not-editing',
           onClick: (function(_this) {
             return function(e) {
               e.stopPropagation();
@@ -36121,7 +36115,7 @@ define('text!templates/layout.html',[],function () { return '<div>\n  <header cl
 }).call(this);
 
 
-define('text!templates/asset_picker/asset_picker.html',[],function () { return '<div class="assets-modal modal">\n  <div class="header">\n    <div class="modal-title">file picker</div>\n    <div class="modal-controls">\n      <button class="cancel js-close">cancel</button>\n      <button class="action js-use-file js-upload">use file</button>\n    </div>\n    <div class="clearfix"></div>\n  </div>\n  <div class="content">\n    <div class="preview-region">\n      <div class="uploading-overlay">\n        <div class="uploading-spinner"></div>\n      </div>\n\n      <div class="choose-overlay">\n        <div class="drop-image"></div>\n        <div class="drop-blurb">\n          drag file here\n          <span class="click-blurb">or click to upload</span>\n        </div>\n        <div class="dropzone"></div>\n      </div>\n\n      <input class="hidden-uploader" type="file">\n      <div class="file-preview"></div>\n\n    </div>\n    <div class="status-message"></div>\n    <% if (getType() == "video") { %>\n      <input class="video-link" placeholder="or paste YouTube or Vimeo link" />\n    <% } %>\n  </div>\n</div>\n<div class="modal-backdrop"></div>\n';});
+define('text!templates/asset_picker/asset_picker.html',[],function () { return '<div class="assets-modal modal">\n  <div class="header">\n    <div class="modal-title">file picker</div>\n    <div class="modal-controls">\n      <button class="cancel js-close">cancel</button>\n      <button class="action js-use-file js-upload">use file</button>\n    </div>\n    <div class="clearfix"></div>\n  </div>\n  <div class="content">\n    <div class="preview-region">\n      <% if(allowUploading()) { %>\n        <div class="uploading-overlay">\n          <div class="uploading-spinner"></div>\n        </div>\n         <div class="choose-overlay">\n          <div class="drop-image"></div>\n          <div class="drop-blurb">\n            drag file here\n            <span class="click-blurb">or click to upload</span>\n          </div>\n          <div class="dropzone"></div>\n        </div>\n        <input class="hidden-uploader" type="file">\n      <% } %>\n      <div class="file-preview"></div>\n      <div class="status-message"></div>\n    </div>\n    <% if (getType() == "video") { %>\n      <input class="video-link" placeholder="paste YouTube or Vimeo link" />\n    <% } %>\n  </div>\n</div>\n<div class="modal-backdrop"></div>\n';});
 
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -36150,6 +36144,11 @@ define('text!templates/asset_picker/asset_picker.html',[],function () { return '
           getType: (function(_this) {
             return function() {
               return _this.type;
+            };
+          })(this),
+          allowUploading: (function(_this) {
+            return function() {
+              return _this.type !== 'video';
             };
           })(this)
         };
@@ -36527,33 +36526,14 @@ define('text!templates/asset_picker/asset_picker.html',[],function () { return '
 }).call(this);
 
 (function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   define('player',['cdn.underscore', 'cdn.jquery', 'cdn.marionette', 'app/models/patch_backbone_sync', 'plugins/vs.collab', 'views/course', 'views/sidebar/author', 'views/sidebar/learner', 'views/tray/tray', 'views/tray/tray_filters', 'views/header', 'views/player_layout', 'app/combined_catalogue', 'views/loading', 'app/mediator', 'plugins/tracker', 'models/settings', 'libs/keen', 'libs/analytics', 'collections/gadget_projects', 'models/course', 'messages/decorate', 'libs/modernizr', 'libs/vs.ui', 'bower_components/versal-component-runtime/dist/runtime.min', 'app/legacy-gadget-dependencies'], function(_, $, Marionette, patchBackboneSync, collab, CourseView, AuthorSidebarView, LearnerSidebarView, TrayView, TrayFiltersView, HeaderView, PlayerLayoutView, CombinedCatalogue, LoadingView, mediator, tracker, settings, Keen, analytics, GadgetProjects, Course) {
-    var PlayerApplication, PlayerRouter;
-    PlayerRouter = (function(_super) {
-      __extends(PlayerRouter, _super);
-
-      function PlayerRouter() {
-        return PlayerRouter.__super__.constructor.apply(this, arguments);
-      }
-
-      PlayerRouter.prototype.routes = {
-        'courses/:courseId': 'showCourse',
-        'courses/:courseId/lessons/:lessonIndex': 'showLesson',
-        'courses/:courseId/lessons/:lessonIndex/gadgets/:gadgetIndex': 'showGadget'
-      };
-
-      return PlayerRouter;
-
-    })(Backbone.Router);
+    var PlayerApplication;
     return PlayerApplication = (function() {
       function PlayerApplication(options) {
         this._onNavigateGadget = __bind(this._onNavigateGadget, this);
         this._onNavigateLesson = __bind(this._onNavigateLesson, this);
-        this.onProgressLoad = __bind(this.onProgressLoad, this);
         this.onCourseLoad = __bind(this.onCourseLoad, this);
         this._onLearnerStateChanged = __bind(this._onLearnerStateChanged, this);
         var $el, containerSelector, courseId;
@@ -36575,16 +36555,10 @@ define('text!templates/asset_picker/asset_picker.html',[],function () { return '
           };
         })(this));
         courseId = settings.get('courseId');
-        if (!(options != null ? options.noHistory : void 0)) {
-          this.installHistory(courseId);
-        }
         this.installNavigation(courseId);
         containerSelector = settings.get('container');
         $el = $(containerSelector);
         $el.addClass('versal-player js-versal-player');
-        if (settings.get('embed')) {
-          $el.addClass('embed-frame');
-        }
         this.layout = new PlayerLayoutView({
           el: $el.get(0)
         });
@@ -36613,8 +36587,6 @@ define('text!templates/asset_picker/asset_picker.html',[],function () { return '
       };
 
       PlayerApplication.prototype._installBowerStylesAndScripts = function() {
-        this._installDependency('stylesheet', 'bower_components/fontawesome/css/font-awesome.min.css');
-        this._installDependency('stylesheet', 'styles/player-bundle.css');
         this._installDependency('script', 'bower_components/versal-gadget-launchers/iframe-launcher/iframe-launcher.js');
         this._installDependency('stylesheet', 'bower_components/versal-gadget-launchers/iframe-launcher/iframe-launcher.css');
         this._installDependency('script', 'bower_components/versal-gadget-launchers/legacy-launcher/legacy-launcher.js');
@@ -36627,10 +36599,25 @@ define('text!templates/asset_picker/asset_picker.html',[],function () { return '
         var position;
         if (e.data.event === 'learnerStateChanged') {
           position = e.data.data;
-          if (position.gadgetIndex) {
-            return this.showGadget(null, position.lessonIndex, position.gadgetIndex);
-          } else if (position.lessonIndex) {
-            return this.showLesson(null, position.lessonIndex);
+          if (position.gadgetIndex != null) {
+            return this._showGadget(position.lessonIndex, position.gadgetIndex);
+          } else if (position.lessonIndex != null) {
+            return this._showLesson(position.lessonIndex);
+          } else {
+            return this._courseRendering.done((function(_this) {
+              return function() {
+                var gadgetIndex, lessonIndex;
+                lessonIndex = _this.course.progress.get('lessonIndex') || 1;
+                gadgetIndex = _this.course.progress.get('gadgetIndex');
+                return window.parent.postMessage({
+                  event: 'setLearnerState',
+                  data: {
+                    lessonIndex: lessonIndex,
+                    gadgetIndex: gadgetIndex
+                  }
+                }, '*');
+              };
+            })(this));
           }
         }
       };
@@ -36652,24 +36639,9 @@ define('text!templates/asset_picker/asset_picker.html',[],function () { return '
         }
       };
 
-      PlayerApplication.prototype.installHistory = function(courseId) {
-        this.router = new PlayerRouter;
-        this.router.on('route:showLesson', this.showLesson, this);
-        this.router.on('route:showGadget', this.showGadget, this);
-        if (courseId) {
-          this.router.courseId = courseId;
-        }
-        return Backbone.history.start({
-          root: window.location.pathname
-        });
-      };
-
       PlayerApplication.prototype.close = function() {
         this.layout.sidebar.close();
         this.uninstallNavigation();
-        if (this.router) {
-          Backbone.history.stop();
-        }
         return mediator.off('lesson:allGadgetsRendered', this._onAllGadgetsRendered, this);
       };
 
@@ -36711,9 +36683,8 @@ define('text!templates/asset_picker/asset_picker.html',[],function () { return '
       PlayerApplication.prototype.onCourseLoad = function(courseModel) {
         var catalogs, filters;
         this.course = courseModel;
-        this.onProgressLoad(courseModel.progress);
         mediator.catalogue = new GadgetProjects(courseModel.palette.models);
-        if (settings.get('noEditable') || settings.get('embed')) {
+        if (settings.get('noEditable')) {
           courseModel.set({
             isEditable: false
           });
@@ -36783,26 +36754,7 @@ define('text!templates/asset_picker/asset_picker.html',[],function () { return '
         });
       };
 
-      PlayerApplication.prototype.onProgressLoad = function(model) {
-        var gadget, lesson;
-        if (model == null) {
-          model = {};
-        }
-        lesson = model.get('lessonIndex');
-        gadget = model.get('gadgetIndex');
-        if (this.lessonIndex) {
-          mediator.trigger('navigate:lesson', this.lessonIndex);
-        }
-        if ((lesson != null) && this.router) {
-          if (gadget != null) {
-            return mediator.trigger('navigate:gadget', lesson, gadget);
-          } else {
-            return mediator.trigger('navigate:lesson', lesson);
-          }
-        }
-      };
-
-      PlayerApplication.prototype.showLesson = function(courseId, lessonIndex) {
+      PlayerApplication.prototype._showLesson = function(lessonIndex) {
         return this._courseRendering.done((function(_this) {
           return function() {
             return _this.courseView.showLesson(lessonIndex);
@@ -36810,21 +36762,12 @@ define('text!templates/asset_picker/asset_picker.html',[],function () { return '
         })(this));
       };
 
-      PlayerApplication.prototype.showGadget = function(courseId, lessonIndex, gadgetIndex) {
+      PlayerApplication.prototype._showGadget = function(lessonIndex, gadgetIndex) {
         return this._courseRendering.done((function(_this) {
           return function() {
             return _this.courseView.showGadget(lessonIndex, gadgetIndex);
           };
         })(this));
-      };
-
-      PlayerApplication.prototype._navigateTo = function(path) {
-        if (!this.router) {
-          return;
-        }
-        return this.router.navigate("courses/" + this.course.id + "/" + path, {
-          trigger: true
-        });
       };
 
       PlayerApplication.prototype._onAllGadgetsRendered = function(lesson) {
@@ -36847,31 +36790,38 @@ define('text!templates/asset_picker/asset_picker.html',[],function () { return '
       };
 
       PlayerApplication.prototype._onNavigateLesson = function(lessonIndex) {
-        this.lessonIndex = lessonIndex;
         if (!this.course) {
           return;
         }
-        this._navigateTo("lessons/" + this.lessonIndex);
-        this.showLesson(this.course.id, this.lessonIndex);
+        window.parent.postMessage({
+          event: 'setLearnerState',
+          data: {
+            lessonIndex: lessonIndex
+          }
+        }, '*');
         return mediator.trigger('parent:notify', {
           event: 'player:navigate:lesson',
           data: {
-            lessonIndex: this.lessonIndex
+            lessonIndex: lessonIndex
           }
         });
       };
 
       PlayerApplication.prototype._onNavigateGadget = function(lessonIndex, gadgetIndex) {
-        this.lessonIndex = lessonIndex;
         if (!this.course) {
           return;
         }
-        this._navigateTo("lessons/" + this.lessonIndex + "/gadgets/" + gadgetIndex);
-        this.showGadget(this.course.id, this.lessonIndex, gadgetIndex);
+        window.parent.postMessage({
+          event: 'setLearnerState',
+          data: {
+            lessonIndex: lessonIndex,
+            gadgetIndex: gadgetIndex
+          }
+        }, '*');
         return mediator.trigger('parent:notify', {
           event: 'player:navigate:gadget',
           data: {
-            lessonIndex: this.lessonIndex,
+            lessonIndex: lessonIndex,
             gadgetIndex: gadgetIndex
           }
         });
@@ -36884,15 +36834,13 @@ define('text!templates/asset_picker/asset_picker.html',[],function () { return '
         userId = (_ref = this.course.get('currentPosition')) != null ? _ref.userId : void 0;
         sessionId = (_ref1 = settings.get('api')) != null ? _ref1.sessionId : void 0;
         segmentSettings = settings.get('segmentio');
-        if (segmentioKey = segmentSettings != null ? segmentSettings.writeKey : void 0) {
-          if (!(segmentSettings != null ? segmentSettings.skipInitialization : void 0)) {
-            analytics.load(segmentioKey);
-            analytics.page();
-            analytics.identify(sessionId, {
-              interactionId: interactionId
-            });
-          }
-          if (settings.get('embed')) {
+        if (segmentioKey = segmentSettings != null ? segmentSettings.write_key : void 0) {
+          analytics.load(segmentioKey);
+          analytics.page();
+          analytics.identify(sessionId, {
+            interactionId: interactionId
+          });
+          if (settings.get('embedded')) {
             analytics.track('Loaded course embed', {
               courseId: courseId
             });

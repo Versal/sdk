@@ -35,14 +35,13 @@ module.exports = (dirs, options, callback = ->) ->
         course.palette = manifests
         course.isEditable = true
 
-        app.use('/api', api({ manifests, course, assets: [], representations: {} }))
-          .use('/components', express.static(path.join(__dirname, '../node_modules')))
-          .use(express.static(launchPath))
-          .use(express.static(path.join(__dirname, '../html')))
-          .use(express.logger())
+      app.use('/api', api({ manifests, course, assets: [], representations: {} }))
+        .use(express.static(launchPath))
+        .use(express.static(path.join(__dirname, '../html')))
+        .use(express.logger())
+        .listen options.port
 
-        if options.port then app.listen options.port
-        callback null, manifests
+      callback null, manifests
 
 linkManifestDir = (app, dir, callback) ->
   manifest.readManifest dir, (err, json) ->
