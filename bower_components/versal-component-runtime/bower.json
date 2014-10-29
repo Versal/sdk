@@ -1,0 +1,33 @@
+{
+  "name": "versal-component-runtime",
+  "version": "0.2.6",
+  "homepage": "https://github.com/Versal/component-runtime",
+  "authors": [
+    "Versal Team <support@versal.com>"
+  ],
+  "description": "versal-runtime is a collection of polyfills to run web components on Versal platform",
+  "main": "dist/runtime.min.js",
+  "keywords": [
+    "versal-component-runtime",
+    "web component polyfills"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "polyfills",
+    "test",
+    "package.json",
+    "bower.json"
+  ],
+  "devDependencies": {
+    "promise-polyfill": "~1.1.0",
+    "customevent-polyfill": "~1.0.0",
+    "HTMLImports": "Polymer/HTMLImports#master",
+    "CustomElements": "Polymer/CustomElements#master",
+    "html-template-polyfill": "Versal/html-template-polyfill",
+    "tools": "Polymer/tools#master",
+    "requestAnimationFrame-polyfill": "*"
+  }
+}
