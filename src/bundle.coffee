@@ -8,8 +8,6 @@ zlib = require 'zlib'
 _ = require 'underscore'
 fstreamIgnore = require 'fstream-ignore'
 
-IGNORE_FILE = '.versalignore'
-
 module.exports =
   createBundle: (dir, callback) ->
 
@@ -54,7 +52,9 @@ bundleFilesInFolder = (dir, callback) ->
       # indicate that we want to strip off the parent dir
       root: true
     })
+    # Some defaults we always want to ignore
     reader.addIgnoreRules ['node_modules', '.*']
+
     reader.pipe(tar.Pack())
       .pipe(zlib.Gzip())
       .pipe(bundleOutput)
