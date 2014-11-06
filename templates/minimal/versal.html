@@ -1,56 +1,58 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Empty gadget</title>
-<script src="bower_components/versal-component-runtime/dist/runtime.min.js"></script>
-<link rel="import" href="bower_components/versal-gadget-api/versal-gadget-api.html">
-</head>
+  <head>
+    <title>Empty gadget</title>
+    <style>
+      input {
+        font-size: 20px;
+        padding: 5px;
+        min-width: 300px;
+      }
+      input[readonly] {
+        border: 1px solid transparent;
+      }
+    </style>
+    <script src="bower_components/versal-component-runtime/dist/runtime.min.js"></script>
+    <link rel="import" href="bower_components/versal-gadget-api/versal-gadget-api.html">
+  </head>
+  <body>
+    <input type="text" name="greeting" readonly value="What is your name?">
+    <input type="text" name="learnerName">
+    <script>
+      window.addEventListener('WebComponentsReady', function(){
 
-<body>
-<input type="text" name="greeting" readonly value="What is your name?">
-<input type="text" name="learnerName">
-<style>
-input {
-  font-size: 20px;
-  padding: 5px;
-  min-width: 300px;
-}
-</style>
-<script>
-window.addEventListener('HTMLImportsLoaded', function(){
+        var greeting = document.querySelector('[name=greeting]');
+        var learnerName = document.querySelector('[name=learnerName]');
+        var player = new VersalPlayerAPI();
 
-  var greeting = document.querySelector('[name=greeting]');
-  var learnerName = document.querySelector('[name=learnerName]');
-  var player = new VersalPlayerAPI();
+        greeting.addEventListener('change', function(e){
+          player.setAttribute(greeting.name, greeting.value);
+        });
 
-  greeting.addEventListener('change', function(e){
-    player.setAttribute(greeting.name, greeting.value);
-  });
+        learnerName.addEventListener('change', function(e){
+          player.setLearnerAttribute(learnerName.name, learnerName.value);
+        });
 
-  learnerName.addEventListener('change', function(e){
-    player.setLearnerAttribute(learnerName.name, learnerName.value);
-  });
+        player.on('attributesChanged', function(data){
+          if(data.greeting) {
+            greeting.value = data.greeting;
+          };
+        });
 
-  player.on('attributesChanged', function(data){
-    if(data.greeting) {
-      greeting.value = data.greeting;
-    };
-  });
+        player.on('learnerStateChanged', function(data){
+          if(data.learnerName) {
+            learnerName.value = data.learnerName;
+          };
+        });
 
-  player.on('learnerStateChanged', function(data){
-    if(data.learnerName) {
-      learnerName.value = data.learnerName;
-    };
-  });
+        player.on('editableChanged', function(editable){
+          greeting.readOnly = !editable.editable;
+          learnerName.readOnly = editable.editable;
+        });
 
-  player.on('editableChanged', function(editable){
-    greeting.readOnly = !editable.editable;
-    learnerName.readOnly = editable.editable;
-  });
-
-  player.setHeight(60);
-  player.startListening();
-});
-</script>
-</body>
+        player.setHeight(60);
+        player.startListening();
+      });
+    </script>
+  </body>
 </html>
