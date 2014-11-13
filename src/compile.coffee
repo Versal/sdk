@@ -182,13 +182,4 @@ compiler =
     # callback when all files are copied
     async.series funcs, callback
 
-compileIfLegacy = (dir, callback) =>
-  manifestLoader.readManifest dir, (err, manifest) ->
-    if err then return callback(err)
-    if manifest.launcher?
-      callback()
-    else
-      console.log chalk.green('compile legacy gadget:', manifest.name)
-      compiler.compile dir, callback
-
-module.exports = { compileIfLegacy }
+module.exports = compiler.compile
