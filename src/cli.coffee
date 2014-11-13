@@ -15,7 +15,7 @@ upload = require('./upload')
 version = require('./version')
 codio = require('./codio')
 # Legacy
-compileIfLegacy = require('./compile').compileIfLegacy
+{ isLegacy, compileIfLegacy } = require './compile'
 
 if argv.env then config.env argv.env
 
@@ -115,9 +115,13 @@ commands =
 
         console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
 
-        upload dir, argv, (err, manifest) ->
+        isLegacy dir, (err, gadgetIsLegacy) ->
           if err then return logError err
-          console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
+          if gadgetIsLegacy then dir = path.join dir, 'dist'
+
+          upload dir, argv, (err, manifest) ->
+            if err then return logError err
+            console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
   version: (argv) ->
     unless manifest.lookupManifest process.cwd()
