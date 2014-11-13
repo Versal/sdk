@@ -6,7 +6,7 @@ chalk = require 'chalk'
 argv = require('optimist').argv
 config = require('./config')()
 signin = require './signin'
-manifest = require './manifest'
+manifestUtil = require './manifest'
 pkg = require '../package.json'
 create = require('./create')
 preview = require('./preview')
@@ -15,13 +15,21 @@ upload = require('./upload')
 version = require('./version')
 codio = require('./codio')
 # Legacy
-{ isLegacy, compileIfLegacy } = require './compile'
+legacyCompile = require './compile'
 
 if argv.env then config.env argv.env
 
 logError = (err) ->
   console.error chalk.red(err)
   process.exit(1)
+
+# Legacy helper
+compileIfLegacy = (dir, callback) ->
+  manifestUtil.isLegacy dir, (err, gadgetIsLegacy) ->
+    if gadgetIsLegacy
+      legacyCompile dir, callback
+    else
+      callback()
 
 commands =
   help: (argv) ->
@@ -61,7 +69,7 @@ commands =
 
     argv.port ?= 3000
 
-    unless _.every(dirs, manifest.lookupManifest)
+    unless _.every(dirs, manifestUtil.lookupManifest)
       return logError new Error 'preview is only allowed in gadget directories'
 
     # Legacy
@@ -96,36 +104,38 @@ commands =
   upload: (argv) ->
     dir = argv._.shift() || process.cwd()
 
-    unless manifest.lookupManifest dir
-      return logError new Error 'preview is only allowed in gadget directories'
+    unless manifestUtil.lookupManifest dir
+      return logError new Error 'upload is only allowed in gadget directories'
 
     # Legacy
-    compileIfLegacy dir, (err) ->
-      if err then console.error err
+    manifestUtil.isLegacy dir, (err, gadgetIsLegacy) ->
+      # TODO when legacy gadgets are gone this can move because we don't
+      # need the manifest until later otherwise
+      manifestUtil.readManifest dir, (err, manifest) ->
+        # Legacy
+        if gadgetIsLegacy then console.log chalk.green('compile legacy gadget:', manifest.name)
 
-      manifest.readManifest dir, (err, manifest) ->
-        if err then return logError err
-
-        argv.apiUrl ?= config.get 'apiUrl'
-        unless argv.sessionId
-          argv.sessionId = argv.sid || config.get 'sessionId'
-
-        if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
-        if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
-
-        console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
-
-        isLegacy dir, (err, gadgetIsLegacy) ->
+        # Legacy
+        compileIfLegacy dir, (err) ->
           if err then return logError err
+
+          argv.apiUrl ?= config.get 'apiUrl'
+          unless argv.sessionId
+            argv.sessionId = argv.sid || config.get 'sessionId'
+
+          if !argv.apiUrl then return console.log chalk.red('API url is undefined. Run versal signin.')
+          if !argv.sessionId then return console.log chalk.red('Session ID is undefined. Run versal signin.')
+
           if gadgetIsLegacy then dir = path.join dir, 'dist'
 
+          console.log("uploading #{manifest.name}@#{manifest.version} to #{argv.apiUrl}")
           upload dir, argv, (err, manifest) ->
             if err then return logError err
             console.log chalk.green("#{manifest.username}/#{manifest.name}/#{manifest.version} successfully uploaded")
 
   version: (argv) ->
-    unless manifest.lookupManifest process.cwd()
-      return logError new Error 'preview is only allowed in gadget directories'
+    unless manifestUtil.lookupManifest process.cwd()
+      return logError new Error 'version is only allowed in gadget directories'
 
     versionArg = argv._.shift()
     unless versionArg then return commands.help(argv)
