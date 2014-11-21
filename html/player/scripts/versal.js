@@ -34,7 +34,7 @@
   extractData = function(el) {
     var key, result, val, _i, _len, _ref;
     result = {};
-    _ref = ['course', 'sid', 'api', 'whitelabel', 'embed', 'noEditable', 'revision'];
+    _ref = ['course', 'sid', 'api'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       key = _ref[_i];
       val = el.getAttribute("data-" + key);
@@ -56,7 +56,7 @@
       }
       found = true;
       origin = c.src.match(/^(https?:\/\/.+)\/scripts\/versal.js/)[1];
-      playerFrame(c.parentNode, origin + '/versal.html', IFRAME_CLASS_NAME);
+      playerFrame(c.parentNode, origin + '/legacy-embed.html', IFRAME_CLASS_NAME);
       if (c.hasAttribute('data-sid')) {
         console.warn(deprecationNotice("data-* syntax is no longer supported and will be removed shortly."));
         config = extractData(c);

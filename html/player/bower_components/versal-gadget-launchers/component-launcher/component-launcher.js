@@ -38,10 +38,11 @@ prototype.createdCallback = function() {
     return;
   }
   this.childComponent = document.createElement(componentName);
-  this.appendChild(this.childComponent);
 };
 
 prototype.attachedCallback = function(){
+  this.appendChild(this.childComponent);
+
   // only import once
   var childImportSelector = 'link[href="' + this.src + '"]';
   if(!document.querySelectorAll(childImportSelector).length) {
@@ -61,6 +62,11 @@ prototype.attachedCallback = function(){
   this.fireCustomEvent('rendered');
 };
 
+prototype.detachedCallback = function(){
+  this.observer.disconnect();
+  this.removeChild(this.childComponent);
+};
+
 prototype.childHasSameConfigAsLauncher = function(){
   return this.childComponent.getAttribute('data-config') === this.getAttribute('data-config');
 };
@@ -72,6 +78,10 @@ prototype.initObserver = function(){
 
       // return if child component is already at the correct state
       if(this.childHasSameConfigAsLauncher()) {
+        return;
+      }
+      if(!this.editable) {
+        console.warn('Unable to setAttributes in the read-only state');
         return;
       }
 
@@ -90,11 +100,6 @@ prototype.initObserver = function(){
 
   // pass in the target node, as well as the observer options
   this.observer.observe(this.childComponent, { attributes: true });
-};
-
-prototype.detachedCallback = function(){
-  this.observer.disconnect();
-  this.removeChild(this.childComponent);
 };
 
 prototype.setChildEditable = function(editable){

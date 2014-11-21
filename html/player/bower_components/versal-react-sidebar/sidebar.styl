@@ -47,7 +47,6 @@ $sidebarMargin = 9px
   line-height 26px
   font-weight bold
   position relative
-  border-bottom 1px solid $lightBorder
   padding 12px 24px
 
 .sidebar-course-title-edit-icon
@@ -103,11 +102,16 @@ input.sidebar-course-title-input
   font-size 16px
   line-height 26px
   white-space nowrap
-  padding 7px 28px 7px 30px
+  padding 7px 7px 7px 30px
   background-color white
+  border-top 1px solid $lightBorder
 
   &:hover
     color $typeGrayLight
+
+.sidebar-lesson-editable .sidebar-lesson-title,
+.sidebar-lesson-disabled .sidebar-lesson-title
+  padding-right 28px
 
 .sidebar-lesson-title-readonly
   overflow hidden
@@ -136,6 +140,7 @@ input.sidebar-lesson-title-input
   text-overflow ellipsis
   white-space nowrap
   padding-left 42px
+  padding-right 7px
   cursor pointer
 
   &:first-child
@@ -143,7 +148,6 @@ input.sidebar-lesson-title-input
 
   &:last-child
     padding-bottom 7px
-    border-bottom 1px solid $lightBorder
 
   &:hover
     color $typeGrayLight
@@ -161,6 +165,9 @@ input.sidebar-lesson-title-input
     height 100%
     absolute top 0 left 0
     border-left 0px solid $gray2
+
+  &:last-child
+    border-bottom 1px solid $lightBorder
 
 .sidebar-lesson-drag-handle, .sidebar-lesson-delete-button, .sidebar-lesson-edit-button
   position absolute
@@ -185,17 +192,18 @@ input.sidebar-lesson-title-input
   display none
 
 .sidebar-lesson.sidebar-lesson-editing
-  .sidebar-lesson-delete-button
+  .sidebar-lesson-edit-button, .sidebar-lesson-delete-button
     opacity 1
     display block
     z-index 1000
-  .sidebar-lesson-edit-button, .sidebar-lesson-drag-handle
+  .sidebar-lesson-drag-handle
     display none
 
 
 .sidebar-lesson-lock
   display none
-.sidebar-lesson.sidebar-lesson-disabled .sidebar-lesson-lock
+.sidebar-lesson.sidebar-lesson-disabled
+  .sidebar-lesson-lock
     display block
     position absolute
     top ($padding / 2)
@@ -226,7 +234,6 @@ input.sidebar-lesson-title-input
 
   .sidebar-lesson-title
     color $typeGrayDark
-    border-top 1px solid $lightBorder
 
 .sidebar-lesson.sidebar-toc-progressed
   .sidebar-lesson-title
@@ -259,8 +266,7 @@ input.sidebar-lesson-title-input
 .sidebar-add-lesson
   display block
   line-height 26px
-  padding 7px 28px 7px 30px
-  border-bottom 1px solid $lightBorder
+  padding 7px 7px 7px 30px
   text-decoration none
   &:hover
     color $linkDarkTeal

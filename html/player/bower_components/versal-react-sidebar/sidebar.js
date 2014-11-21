@@ -196,7 +196,7 @@
       var lessonPlaceholder, _ref;
       lessonPlaceholder = 'Untitled lesson';
       return _div([
-        'sidebar-lesson', !this.props.isAccessible ? 'sidebar-lesson-disabled' : void 0, this.state.editing ? 'sidebar-lesson-editing' : void 0, this.props.hovered ? 'sidebar-lesson-hovered' : void 0, this.props.dragging ? 'sidebar-lesson-dragging' : void 0, this.props.hasCompletedLesson || this.props.isCurrentLesson ? 'sidebar-toc-progressed' : void 0, this.props.isCurrentLesson ? 'sidebar-toc-active' : void 0, {
+        'sidebar-lesson', !this.props.isAccessible ? 'sidebar-lesson-disabled' : void 0, this.state.editing ? 'sidebar-lesson-editing' : void 0, this.props.editable ? 'sidebar-lesson-editable' : void 0, this.props.hovered ? 'sidebar-lesson-hovered' : void 0, this.props.dragging ? 'sidebar-lesson-dragging' : void 0, this.props.hasCompletedLesson || this.props.isCurrentLesson ? 'sidebar-toc-progressed' : void 0, this.props.isCurrentLesson ? 'sidebar-toc-active' : void 0, {
           onClick: this._onClick,
           onDragEnter: this._onDragEnter,
           onDragOver: this._onDragOver,
@@ -226,8 +226,13 @@
             };
           })(this)
         }
-      ], _i(['icon-remove'])), _div([
+      ], _i(['icon-remove'])), this.state.editing ? _div([
         'sidebar-lesson-edit-button', {
+          key: 'edit-button-editing'
+        }
+      ], _i(['icon-pencil'])) : _div([
+        'sidebar-lesson-edit-button', {
+          key: 'edit-button-not-editing',
           onClick: (function(_this) {
             return function(e) {
               e.stopPropagation();

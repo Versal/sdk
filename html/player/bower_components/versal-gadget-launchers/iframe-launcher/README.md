@@ -149,6 +149,8 @@ Adjust the height of the gadget.
 }
 ```
 
+The first time when calling this also triggers a `rendered` event on the `<versal-iframe-launcher>` element.
+
 ### setPropertySheetAttributes
 
 Define an updated property sheet schema.

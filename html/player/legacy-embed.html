@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Versal legacy embed page</title>
+    <script src="bower_components/versal-component-runtime/dist/runtime.min.js"></script>
+    <link rel="import" href="bower_components/versal-gadget-launchers/iframe-launcher/iframe-launcher.html" />
+
+    <style>
+      html, body, versal-iframe-launcher, versal-iframe-launcher > iframe {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      window.addEventListener('message', function(event) {
+        if (typeof(event.data) != 'string') return;
+
+        try {
+          var data = JSON.parse(event.data);
+
+          if (data.event == 'player:launch') {
+            var launcher = document.createElement('versal-iframe-launcher');
+            launcher.setAttribute('src', 'versal.html');
+            launcher.setAttribute('data-environment', JSON.stringify({
+              api: {url: data.api, sessionId: data.sid},
+              courseId: data.course,
+              noEditable: true,
+              embedded: true,
+              tracker: {path: 'https://datapipes.versal.com/appevents'}
+            }));
+            document.body.appendChild(launcher);
+          } else if (data.event == 'player:course:completed') {
+            window.parent.postMessage(JSON.stringify({event: 'courseEnd', user: {email: data.user.email, id: data.user.id}}), '*');
+          }
+        } catch (error) {
+          if (console) console.error('Error in legacy-embed.html, parsing JSON: ', error);
+        }
+      });
+
+      window.parent.postMessage(JSON.stringify({ event: 'player:ready' }), '*');
+    </script>
+  </body>
+</html>

@@ -74,7 +74,6 @@
   line-height: 26px;
   font-weight: bold;
   position: relative;
-  border-bottom: 1px solid #f2f1ed;
   padding: 12px 24px;
 }
 .sidebar-course-title-edit-icon {
@@ -139,11 +138,16 @@ input.sidebar-course-title-input {
   font-size: 16px;
   line-height: 26px;
   white-space: nowrap;
-  padding: 7px 28px 7px 30px;
+  padding: 7px 7px 7px 30px;
   background-color: #fff;
+  border-top: 1px solid #f2f1ed;
 }
 .sidebar-lesson-title:hover {
   color: #7c7975;
+}
+.sidebar-lesson-editable .sidebar-lesson-title,
+.sidebar-lesson-disabled .sidebar-lesson-title {
+  padding-right: 28px;
 }
 .sidebar-lesson-title-readonly {
   overflow: hidden;
@@ -175,6 +179,7 @@ input.sidebar-lesson-title-input {
   text-overflow: ellipsis;
   white-space: nowrap;
   padding-left: 42px;
+  padding-right: 7px;
   cursor: pointer;
 }
 .sidebar-section-title:first-child {
@@ -182,7 +187,6 @@ input.sidebar-lesson-title-input {
 }
 .sidebar-section-title:last-child {
   padding-bottom: 7px;
-  border-bottom: 1px solid #f2f1ed;
 }
 .sidebar-section-title:hover {
   color: #7c7975;
@@ -206,6 +210,9 @@ input.sidebar-lesson-title-input {
   top: 0;
   left: 0;
   border-left: 0px solid #c7c3be;
+}
+.sidebar-lesson:last-child {
+  border-bottom: 1px solid #f2f1ed;
 }
 .sidebar-lesson-drag-handle,
 .sidebar-lesson-delete-button,
@@ -240,6 +247,7 @@ input.sidebar-lesson-title-input {
   left: 9px;
   display: none;
 }
+.sidebar-lesson.sidebar-lesson-editing .sidebar-lesson-edit-button,
 .sidebar-lesson.sidebar-lesson-editing .sidebar-lesson-delete-button {
   opacity: 1;
   -ms-filter: none;
@@ -247,7 +255,6 @@ input.sidebar-lesson-title-input {
   display: block;
   z-index: 1000;
 }
-.sidebar-lesson.sidebar-lesson-editing .sidebar-lesson-edit-button,
 .sidebar-lesson.sidebar-lesson-editing .sidebar-lesson-drag-handle {
   display: none;
 }
@@ -299,7 +306,6 @@ input.sidebar-lesson-title-input {
 }
 .sidebar-lesson.sidebar-toc-active .sidebar-lesson-title {
   color: #524e47;
-  border-top: 1px solid #f2f1ed;
 }
 .sidebar-lesson.sidebar-toc-progressed .sidebar-lesson-title {
   background-color: #f8f7f1;
@@ -332,8 +338,7 @@ input.sidebar-lesson-title-input {
 .sidebar-add-lesson {
   display: block;
   line-height: 26px;
-  padding: 7px 28px 7px 30px;
-  border-bottom: 1px solid #f2f1ed;
+  padding: 7px 7px 7px 30px;
   text-decoration: none;
 }
 .sidebar-add-lesson:hover {
