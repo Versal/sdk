@@ -1,33 +1,37 @@
 module.exports = function(config) {
   config.set({
     frameworks: ['mocha', 'chai', 'sinon'],
+    basePath: '..',
     files: [
-      'bower_components/versal-component-runtime/dist/runtime.min.js',
+      'versal-component-runtime/dist/runtime.min.js',
 
       // Iframe launcher
-      'iframe-launcher/iframe-launcher.html',
-      'iframe-launcher/test/*_spec.js',
-      {pattern: 'iframe-launcher/iframe-launcher.js', included: false},
-      {pattern: 'iframe-launcher/iframe-launcher.css', included: false},
-      {pattern: 'iframe-launcher/test/test_gadget.html', included: false},
+      'versal-gadget-launchers/iframe-launcher/iframe-launcher.html',
+      'versal-gadget-launchers/iframe-launcher/test/*_spec.js',
+      {pattern: 'versal-gadget-launchers/iframe-launcher/iframe-launcher.js', included: false},
+      {pattern: 'versal-gadget-launchers/iframe-launcher/iframe-launcher.css', included: false},
+      {pattern: 'versal-gadget-launchers/iframe-launcher/test/test_gadget.html', included: false},
 
       // Component launcher
-      'component-launcher/component-launcher.html',
-      'component-launcher/test/*_spec.js',
-      {pattern: 'component-launcher/component-launcher.js', included: false},
-      {pattern: 'component-launcher/component-launcher.css', included: false},
-      {pattern: 'component-launcher/test/test_gadget.html', included: false},
+      'versal-gadget-launchers/component-launcher/component-launcher.html',
+      'versal-gadget-launchers/component-launcher/test/*_spec.js',
+      {pattern: 'versal-gadget-launchers/component-launcher/component-launcher.js', included: false},
+      {pattern: 'versal-gadget-launchers/component-launcher/component-launcher.css', included: false},
+      {pattern: 'versal-gadget-launchers/component-launcher/test/test_gadget.html', included: false},
 
       // Legacy launcher
-      'bower_components/underscore/underscore.js',
-      'bower_components/backbone/backbone.js',
-      'bower_components/jquery/dist/jquery.js',
-      {pattern: 'legacy-launcher/test_gadget/gadget.css', included: false},
-      'legacy-launcher/mini_require.js',
-      'legacy-launcher/legacy-launcher.html',
-      {pattern: 'legacy-launcher/legacy-launcher.js', included: false},
-      {pattern: 'legacy-launcher/legacy-launcher.css', included: false},
-      'legacy-launcher/legacy-launcher_spec.js'
+      'underscore/underscore.js',
+      'backbone/backbone.js',
+      'jquery/dist/jquery.js',
+      'requirejs/require.js',
+      'versal-gadget-launchers/legacy-launcher/test_require_config.js',
+      'versal-gadget-launchers/legacy-launcher/cdn-defines.js',
+      {pattern: 'versal-gadget-launchers/legacy-launcher/test_gadget/gadget.css', included: false},
+      {pattern: 'versal-gadget-launchers/legacy-launcher/test_gadget/gadget.js', included: false},
+      'versal-gadget-launchers/legacy-launcher/legacy-launcher.html',
+      {pattern: 'versal-gadget-launchers/legacy-launcher/legacy-launcher.js', included: false},
+      {pattern: 'versal-gadget-launchers/legacy-launcher/legacy-launcher.css', included: false},
+      'versal-gadget-launchers/legacy-launcher/legacy-launcher_spec.js'
     ],
     reporters: ['dots'],
     port: 9876,

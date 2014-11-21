@@ -180,8 +180,9 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
     this._loadGadgetJsIfNeeded(gadgetBaseUrl);
   };
   prototype._gadgetOptions = function() {
+    var assetUrlTemplate = (this.env && this.env.assetUrlTemplate) || '';
     this.playerInterface = new LegacyPlayerInterface({
-      assetUrlTemplate: this.env.assetUrlTemplate,
+      assetUrlTemplate: assetUrlTemplate,
       gadgetBaseUrl: this.gadgetBaseUrl
     });
     this.playerInterface.isEditable = this.editingAllowed;
@@ -235,6 +236,8 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
       // Force a (faked) `sync` event to appease SAT gadgets
       this._userstate.fetch();
 
+      this.playerInterface.on('broadcast:send', this._broadcastEvent.bind(this));
+
       this.playerInterface.trigger('domReady');
     } catch (err) {
       this._fireError({
@@ -243,9 +246,20 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
       });
     }
   };
+  prototype._broadcastEvent = function(evt){
+    var _this = this;
+    var otherLegacyLaunchers = document.querySelectorAll('versal-legacy-launcher');
+    Array.prototype.forEach.call(otherLegacyLaunchers, function(other){
+      if(other == _this) return;
+      if(other.playerInterface) {
+        other.playerInterface.trigger('broadcast:receive', evt);
+      }
+    })
+  };
   prototype.attachedCallback = function() {
     this.attributeChangedCallback('data-config');
     this.attributeChangedCallback('data-userstate');
+    this.$el.addClass(this.gadgetCssClassName);
 
     if (this.gadgetBaseUrl) {
       this._loadGadgetCode(this.gadgetBaseUrl);
@@ -254,6 +268,8 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
     }
   };
   prototype.detachedCallback = function() {
+    this.playerInterface.off('broadcast:send', this._broadcastEvent.bind(this));
+
     if (this.shouldFireCloseEventOnDetached) {
       this._passEvent('close');
     }

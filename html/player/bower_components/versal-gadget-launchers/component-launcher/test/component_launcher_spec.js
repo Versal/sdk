@@ -14,7 +14,7 @@ describe('iframe launcher', function() {
   beforeEach(function(done) {
     launcher = document.createElement('versal-component-launcher');
     launcher.setAttribute('data-config', '{"test": "initial-config"}');
-    launcher.setAttribute('src', '/base/component-launcher/test/test_gadget.html');
+    launcher.setAttribute('src', '/base/versal-gadget-launchers/component-launcher/test/test_gadget.html');
     document.body.appendChild(launcher);
 
     promise.then(function(){
@@ -35,9 +35,28 @@ describe('iframe launcher', function() {
     expect( vsTest.getAttribute('data-config') ).to.equal( '{"test": "initial-config"}' );
   });
 
-  it("child -> launcher, launcher fires 'setAttributes' event when child changes config by itself", function(done) {
+  it("child -> launcher, launcher does NOT fire 'setAttributes' event " +
+    "when child changes config by itself but child is in read-only state", function(done) {
     var newConfig = {"test": "changed"};
 
+    launcher.addEventListener('setAttributes', function(payload){
+      done( new Error("Unexpected firing of setAttributes") );
+    }, false);
+
+    //wait for 1s and call it a day
+    setTimeout(function(){
+      done();
+    }, 1000);
+
+    var vsTest = document.querySelector('vs-texthd');
+    vsTest.setAttribute('data-config', JSON.stringify(newConfig));
+  });
+
+  it("child -> launcher, launcher fires 'setAttributes' event " +
+    "when child changes config by itself and launcher is in editable state", function(done) {
+    var newConfig = {"test": "changed"};
+
+    launcher.setAttribute('editable', 'true');
     launcher.addEventListener('setAttributes', function(payload){
       var detail = payload.detail;
       expect(detail).to.deep.equal(newConfig);
