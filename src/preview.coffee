@@ -24,6 +24,7 @@ module.exports = (dirs, options, callback = ->) ->
 
   async.map dirs, linkManifestDir.bind(this, app), (err, manifests) ->
     if err then return callback err
+
     async.map dirs, maybeLinkLegacyDir.bind(this, app), (err) ->
       if err then return callback err
 
@@ -63,7 +64,12 @@ linkManifestDir = (app, dir, callback) ->
 # TODO deprecate along with legacy gadgets
 maybeLinkLegacyDir = (app, dir, callback) ->
   dir = path.join dir, 'dist'
-  unless fs.existsSync dir then return callback()
+  legacyManifestPath = path.join dir, 'manifest.json'
+
+  # Don't bother if there isn't a manifest there
+  # because it could be a modern gadget's build dir.
+  unless fs.existsSync legacyManifestPath
+    return callback()
 
   manifest.readManifest dir, (err, man) ->
     if err then return callback(err)
