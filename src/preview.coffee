@@ -82,7 +82,7 @@ maybeLinkLegacyDir = (app, dir, callback) ->
 
 mapManifest = (manifest) ->
   manifest.id = shortid.generate()
-  manifest.catalog = 'local'
+  manifest.catalog = 'sandbox'
   manifest.username = manifest.username || 'local'
   manifest.latestVersion = manifest.version
 
