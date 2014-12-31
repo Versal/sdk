@@ -270,11 +270,18 @@ SidebarCourseTitleComponent = React.createClass
           PlaceholderTextComponent {placeholder: coursePlaceholder},
             @props.title
 
-      if @props.editable && !@state.editing
-        _i [
-          'sidebar-course-title-edit-icon icon-pencil'
-          onClick: => @setState editing: true
-        ]
+      if @props.editable
+        if @state.editing
+          _i [
+            'sidebar-course-title-edit-icon icon-pencil'
+            key: 'edit-button-editing'
+          ]
+        else
+          _i [
+            'sidebar-course-title-edit-icon icon-pencil'
+            key: 'edit-button-not-editing'
+            onClick: => @setState editing: true
+          ]
 
   componentDidMount: ->
     @_afterRender()
@@ -381,8 +388,10 @@ return SidebarCourseComponent = React.createClass
       onDelete: => @props.onLessonDelete lessonIndex
       onDragStart: => @setState dragFromIndex: lessonIndex
       onDragMove: (append) =>
+        return unless @state.dragFromIndex?
         @setState dragToIndex: lessonIndex + (if append then 1 else 0)
       onDragEnd: =>
+        return unless @state.dragFromIndex?
         dragFromId = @props.course.lessons[@state.dragFromIndex].id
         dragToIndex = @state.dragToIndex
         if dragToIndex > @state.dragFromIndex then dragToIndex-- # don't count the old lesson

@@ -27,7 +27,6 @@ $sidebarMargin = 9px
 
 .sidebar-footer
   flex 0 0 auto
-  padding 0 12px
   background $softBackground
 
 .sidebar-last-saved
@@ -35,6 +34,7 @@ $sidebarMargin = 9px
   font-size 12px
   color $gray2
   line-height 30px
+  padding 0 12px
 
   &:before
     content 'last saved '
@@ -75,6 +75,7 @@ $sidebarMargin = 9px
 input.sidebar-course-title-input
   font 18px $primaryFont
   font-weight bold
+  color black
 
 .sidebar-course-title-options-toggle
   position absolute
@@ -120,6 +121,7 @@ input.sidebar-course-title-input
 input.sidebar-lesson-title-input
   font 16px $primaryFont
   line-height 26px
+  color black
 
 input.sidebar-course-title-input,
 input.sidebar-lesson-title-input
@@ -141,13 +143,9 @@ input.sidebar-lesson-title-input
   white-space nowrap
   padding-left 42px
   padding-right 7px
+  padding-top 5px
+  padding-bottom 5px
   cursor pointer
-
-  &:first-child
-    border-top 1px solid $lightBorder
-
-  &:last-child
-    padding-bottom 7px
 
   &:hover
     color $typeGrayLight

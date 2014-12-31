@@ -366,8 +366,13 @@
         }
       ], PlaceholderTextComponent({
         placeholder: coursePlaceholder
-      }, this.props.title)), this.props.editable && !this.state.editing ? _i([
+      }, this.props.title)), this.props.editable ? this.state.editing ? _i([
         'sidebar-course-title-edit-icon icon-pencil', {
+          key: 'edit-button-editing'
+        }
+      ]) : _i([
+        'sidebar-course-title-edit-icon icon-pencil', {
+          key: 'edit-button-not-editing',
           onClick: (function(_this) {
             return function() {
               return _this.setState({
@@ -528,6 +533,9 @@
         })(this),
         onDragMove: (function(_this) {
           return function(append) {
+            if (_this.state.dragFromIndex == null) {
+              return;
+            }
             return _this.setState({
               dragToIndex: lessonIndex + (append ? 1 : 0)
             });
@@ -536,6 +544,9 @@
         onDragEnd: (function(_this) {
           return function() {
             var dragFromId, dragToIndex;
+            if (_this.state.dragFromIndex == null) {
+              return;
+            }
             dragFromId = _this.props.course.lessons[_this.state.dragFromIndex].id;
             dragToIndex = _this.state.dragToIndex;
             if (dragToIndex > _this.state.dragFromIndex) {

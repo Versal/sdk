@@ -48,7 +48,6 @@
   -webkit-flex: 0 0 auto;
   -ms-flex: 0 0 auto;
   flex: 0 0 auto;
-  padding: 0 12px;
   background: #fefdf9;
 }
 .sidebar-last-saved {
@@ -56,6 +55,7 @@
   font-size: 12px;
   color: #c7c3be;
   line-height: 30px;
+  padding: 0 12px;
 }
 .sidebar-last-saved:before {
   content: 'last saved ';
@@ -110,6 +110,7 @@
 input.sidebar-course-title-input {
   font: 18px 'AvenirNextLTPro-Regular', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: bold;
+  color: #000;
 }
 .sidebar-course-title-options-toggle {
   position: absolute;
@@ -157,6 +158,7 @@ input.sidebar-course-title-input {
 input.sidebar-lesson-title-input {
   font: 16px 'AvenirNextLTPro-Regular', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   line-height: 26px;
+  color: #000;
 }
 input.sidebar-course-title-input,
 input.sidebar-lesson-title-input {
@@ -180,13 +182,9 @@ input.sidebar-lesson-title-input {
   white-space: nowrap;
   padding-left: 42px;
   padding-right: 7px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   cursor: pointer;
-}
-.sidebar-section-title:first-child {
-  border-top: 1px solid #f2f1ed;
-}
-.sidebar-section-title:last-child {
-  padding-bottom: 7px;
 }
 .sidebar-section-title:hover {
   color: #7c7975;

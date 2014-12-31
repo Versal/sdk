@@ -37,4 +37,8 @@ module.exports = (data) ->
   api.use '/sandbox', sandbox
 
   #TODO: Legacy endpoint
-  api.get '/gadgets', (req, res) => res.json data.manifests
+  api.get '/gadgets', (req, res) =>
+    if req.query.catalog == 'approved'
+      res.json data.manifests
+    else
+      res.json []

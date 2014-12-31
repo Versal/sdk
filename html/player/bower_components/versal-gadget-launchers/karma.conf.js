@@ -3,7 +3,8 @@ module.exports = function(config) {
     frameworks: ['mocha', 'chai', 'sinon'],
     basePath: '..',
     files: [
-      'versal-component-runtime/dist/runtime.min.js',
+      'customevent-polyfill/customevent-polyfill.min.js',
+      'webcomponentsjs/webcomponents-lite.min.js',
 
       // Iframe launcher
       'versal-gadget-launchers/iframe-launcher/iframe-launcher.html',
