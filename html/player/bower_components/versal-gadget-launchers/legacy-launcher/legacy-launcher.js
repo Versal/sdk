@@ -88,12 +88,12 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
     },
     editable: {
       get: function() {
-        return this.hasAttribute("editable");
+        return this.getAttribute("editable") == 'true';
       }
     },
     editingAllowed: {
       get: function() {
-        return this.hasAttribute("editing-allowed");
+        return this.getAttribute("editing-allowed") == 'true';
       }
     },
     shouldFireCloseEventOnDetached: {
@@ -239,6 +239,7 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
       this.playerInterface.on('broadcast:send', this._broadcastEvent.bind(this));
 
       this.playerInterface.trigger('domReady');
+      this.attributeChangedCallback('editable');
     } catch (err) {
       this._fireError({
         message: 'Error when loading: ' + err,
