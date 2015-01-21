@@ -159,6 +159,18 @@ describe('iframe launcher', function() {
         {event: 'setAttributes', data: {test2: 'new-config'}});
     });
 
+    it('does not fail when empty patch arrives in setAttributes', function(done){
+      try{
+        launcher.children[0].contentWindow.sendGadgetEvent({
+          event: 'setAttributes',
+          data: undefined
+        });
+        setTimeout(done, 1);
+      } catch(err) {
+        expect(true).to.be(false);
+      }
+    });
+
     it('sends attributesChanged after receiving setAttributes', function(done) {
       window.recordPlayerEvent = function(eventMessage) {
         if (eventMessage.event == 'attributesChanged' &&
@@ -259,24 +271,20 @@ describe('iframe launcher', function() {
     });
 
     it('updates height when receiving setHeight', function(done) {
-      var observer = new MutationObserver(function() {
+      setTimeout(function(){
         chai.expect(launcher.clientHeight).to.eq(137);
-        observer.disconnect();
         done();
-      });
-      observer.observe(launcher, {attributes: true, subtree: true});
+      }, 1);
 
       launcher.children[0].contentWindow.sendGadgetEvent(
         {event: 'setHeight', data: {pixels: 137}});
     });
 
     it('does NOT cap height', function(done) {
-      var observer = new MutationObserver(function() {
+      setTimeout(function(){
         chai.expect(launcher.clientHeight).to.eq(10000);
-        observer.disconnect();
         done();
-      });
-      observer.observe(launcher, {attributes: true, subtree: true});
+      }, 1);
 
       launcher.children[0].contentWindow.sendGadgetEvent(
         {event: 'setHeight', data: {pixels: 10000}});

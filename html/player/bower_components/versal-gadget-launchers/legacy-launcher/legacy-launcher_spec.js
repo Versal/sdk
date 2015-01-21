@@ -129,7 +129,7 @@ describe('Legacy gadget launcher', function() {
       expect(stub.called).to.eq(false);
     });
     it('setting values silently prior to save triggers setAttributes', function() {
-      launcher.setAttribute('editing-allowed', 'editing-allowed');
+      launcher.setAttribute('editing-allowed', 'true');
 
       var stub = sinon.stub();
       launcher.addEventListener('setAttributes', stub);
@@ -144,7 +144,7 @@ describe('Legacy gadget launcher', function() {
       });
     });
     it('triggers setAttributes', function() {
-      launcher.setAttribute('editing-allowed', 'editing-allowed');
+      launcher.setAttribute('editing-allowed', 'true');
 
       var stub = sinon.stub();
       launcher.addEventListener('setAttributes', stub);
@@ -158,7 +158,7 @@ describe('Legacy gadget launcher', function() {
       });
     });
     it('triggers setAttributes with the difference when changing an object by reference', function() {
-      launcher.setAttribute('editing-allowed', 'editing-allowed');
+      launcher.setAttribute('editing-allowed', 'true');
 
       var stub = sinon.stub();
       launcher.addEventListener('setAttributes', stub);

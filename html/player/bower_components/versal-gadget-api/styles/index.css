@@ -1,0 +1,31 @@
+/* This line has to be on top */
+@import url(//fonts.googleapis.com/css?family=Open+Sans:300,600&subset=latin,cyrillic-ext);
+
+@import '../node_modules/normalize-css/normalize.css';
+@import 'typography.css';
+@import 'form.css';
+@import 'buttons.css';
+
+:root {
+  --bg-gray: #f8f7f1;
+  --beige: #fefdf9;
+
+  --white: #fff;
+  --gray-light: #c7c3be;
+  --gray: #7c7975;
+  --gray-dark: #524e47;
+  --red: #ce3e30;
+  --teal: #3a968a;
+  --teal-dark: #385455;
+
+  --sans-serif: 'Open sans', sans-serif;
+}
+
+body {
+  background: var(--white);
+  color: var(--gray);
+}
+
+.beige-background {
+  background: var(--beige);
+}
