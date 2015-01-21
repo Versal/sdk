@@ -16,7 +16,6 @@
     "tests"
   ],
   "dependencies": {
-    "versal-gadget-api": "~0.0.4",
-    "versal-component-runtime": "~0.2.4"
+    "versal-gadget-api": "~0.0.9"
   }
 }
