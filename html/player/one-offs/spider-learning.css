@@ -1,0 +1,31 @@
+.sidebar {
+  background: #ff6e01;
+}
+
+.sidebar-course-title,
+.sidebar-course-title:hover:not([contenteditable=true]), 
+.sidebar-lesson.sidebar-toc-progressed .sidebar-lesson-title:hover {
+  color: white;
+}
+
+.sidebar-lesson {
+  background: #ffaf00;
+}
+
+.sidebar-lesson-title {
+  background: #ffaf00;
+  border-color: #ff3521;
+}
+
+.sidebar-lesson:last-child {
+  border-color: #ffaf00;
+}
+
+.sidebar-lesson.sidebar-toc-progressed .sidebar-lesson-title {
+  background: #ff8e01;
+  border-color: #ff3521;
+}
+
+.sidebar-lesson:before {
+  border-color: #ff3521;
+}

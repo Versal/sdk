@@ -1,0 +1,30 @@
+label {
+  font-size: 14px;
+}
+
+input, textarea, select, output {
+  color: var(--gray);
+}
+
+input, textarea, select {
+  padding: 3px;
+}
+
+input, textarea {
+  border: 1px solid var(--gray-light);
+}
+
+input:hover, textarea:hover {
+  border: 1px solid var(--gray);
+}
+
+input:focus, textarea:focus {
+  border: 1px solid #3a968a;
+  outline: none;
+}
+
+input[readonly], textarea[readonly], output {
+  font-size: 12px;
+  line-height: 16px;
+  font-family: monospace;
+}
