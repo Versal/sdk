@@ -13,6 +13,7 @@ module.exports = (data) ->
 
   api = express()
   api.use express.json()
+  api.get '/user', (req, res) => res.json { id: 1, fn: 'Local user'}
   api.get '/manifests', (req, res) => res.json data.manifests
 
   api.all '/assets*', (req, res, next) ->
