@@ -1,0 +1,21 @@
+{
+  "name": "customevent-polyfill",
+  "version": "1.0.0",
+  "description": "A polyfill for CustomEvent",
+  "main": "customevent-polyfill.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kaesetoast/customevent-polyfill.git"
+  },
+  "author": "Philipp Nowinski <philipp@nowinski.de",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kaesetoast/customevent-polyfill/issues"
+  },
+  "homepage": "https://github.com/kaesetoast/customevent-polyfill",
+  "devDependencies": {
+    "gulp": "^3.6.2",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^0.3.0"
+  }
+}

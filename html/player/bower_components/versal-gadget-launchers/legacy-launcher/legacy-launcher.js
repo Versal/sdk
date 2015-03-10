@@ -78,22 +78,22 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
     // These attributes will be set before this element is attached.
     gadgetBaseUrl: {
       get: function() {
-        return this.getAttribute("gadget-base-url") || "";
+        return this.env.baseUrl;
       }
     },
     gadgetCssClassName: {
       get: function() {
-        return this.getAttribute("gadget-css-class-name") || "";
+        return this.env.cssClassName;
       }
     },
     editable: {
       get: function() {
-        return this.hasAttribute("editable");
+        return this.getAttribute("editable") == 'true';
       }
     },
     editingAllowed: {
       get: function() {
-        return this.hasAttribute("editing-allowed");
+        return this.env.editingAllowed;
       }
     },
     shouldFireCloseEventOnDetached: {
@@ -239,6 +239,7 @@ require(['cdn.underscore', 'cdn.backbone', 'cdn.jquery'], function(_, Backbone, 
       this.playerInterface.on('broadcast:send', this._broadcastEvent.bind(this));
 
       this.playerInterface.trigger('domReady');
+      this.attributeChangedCallback('editable');
     } catch (err) {
       this._fireError({
         message: 'Error when loading: ' + err,

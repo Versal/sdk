@@ -1,12 +1,14 @@
 function createLegacyLauncher(){
   var launcher = document.createElement('versal-legacy-launcher');
-  launcher.setAttribute('data-environment', '{"test": "initial-environment", "assetUrlTemplate": "http://api/<%= id %>/foo"}');
+  launcher.setAttribute('data-environment', JSON.stringify({
+    test: "initial-environment",
+    assetUrlTemplate: "http://api/<%= id %>/foo",
+    cssClassName: "foo-bar",
+    editingAllowed: true,
+    baseUrl: '/base/versal-gadget-launchers/legacy-launcher/test_gadget'
+  }));
   launcher.setAttribute('data-config', '{"test": "initial-config"}');
   launcher.setAttribute('data-userstate', '{"test": "initial-userstate"}');
-  launcher.setAttribute('asset-url-template', '');
-  launcher.setAttribute('gadget-css-class-name', 'foo-bar');
-  launcher.setAttribute('gadget-base-url', '/base/versal-gadget-launchers/legacy-launcher/test_gadget');
-  launcher.setAttribute('gadget-instance-url', 'http://example.org');
   return launcher;
 };
 
@@ -48,6 +50,7 @@ describe('Legacy gadget launcher', function() {
     expect(options.project).to.have.property('path');
     expect(options.project.path('blah')).to.equal('/base/versal-gadget-launchers/legacy-launcher/test_gadget/blah');
   });
+
   describe('receiving launcher events', function() {
     it('handles editableChanged (becomes toggleEdit)', function() {
       var stub = sinon.stub();
@@ -118,19 +121,8 @@ describe('Legacy gadget launcher', function() {
       options.player.trigger('configEmpty');
       expect(stub.called).to.eq(true);
     });
-    it('doesnt trigger setAttributes when editing-allowed is not set', function() {
 
-      var stub = sinon.stub();
-      launcher.addEventListener('setAttributes', stub);
-      options.config.set({
-        foo: 'barz',
-        bar: 123
-      });
-      expect(stub.called).to.eq(false);
-    });
     it('setting values silently prior to save triggers setAttributes', function() {
-      launcher.setAttribute('editing-allowed', 'editing-allowed');
-
       var stub = sinon.stub();
       launcher.addEventListener('setAttributes', stub);
       options.config.set({
@@ -143,9 +135,8 @@ describe('Legacy gadget launcher', function() {
         bar: 123
       });
     });
-    it('triggers setAttributes', function() {
-      launcher.setAttribute('editing-allowed', 'editing-allowed');
 
+    it('triggers setAttributes', function() {
       var stub = sinon.stub();
       launcher.addEventListener('setAttributes', stub);
       options.config.set({
@@ -158,8 +149,6 @@ describe('Legacy gadget launcher', function() {
       });
     });
     it('triggers setAttributes with the difference when changing an object by reference', function() {
-      launcher.setAttribute('editing-allowed', 'editing-allowed');
-
       var stub = sinon.stub();
       launcher.addEventListener('setAttributes', stub);
 

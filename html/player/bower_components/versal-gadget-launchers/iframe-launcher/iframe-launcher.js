@@ -1,15 +1,95 @@
+var SUPPORTED_IMAGE_TYPES = ['jpg','jpeg','png','gif'];
+
 var Semver = function(ver) {
   var segs = ver.split('.');
   return { major: (segs[0] || 0), minor: (segs[1] || 0), patch: (segs[2] || 0), version: ver };
 };
 
-var patch = function(to, from) {
-  Object.keys(from).forEach(function(key){
-    to[key] = from[key];
-    if (to[key] === null) {
-      delete to[key];
+var isValidFileType = function(extension) {
+  return SUPPORTED_IMAGE_TYPES.indexOf(extension) >= 0;
+};
+
+var createAssetInput = function() {
+  var assetInput = document.createElement('input');
+
+  assetInput.type = 'file';
+  assetInput.style.display = 'none';
+  assetInput.id = 'asset-input';
+
+  // Stop event propagation to make sure we don't set editable state to false
+  //  - when we click on the input[type="file"]
+  assetInput.onclick = function(event) {
+    event.stopPropagation();
+  };
+
+  return assetInput;
+};
+
+var createLoadingOverlay = function() {
+  var loadingOverlay = document.createElement('div');
+  loadingOverlay.className = 'asset-loading-overlay';
+  loadingOverlay.innerHTML = '<div class="asset-loading-indicator">Uploading asset...</div>';
+
+  loadingOverlay.className = 'asset-loading-overlay hidden';
+  return loadingOverlay;
+};
+
+var postAsset = function(url, sessionId, assetData, callback) {
+  var request = new XMLHttpRequest();
+
+  var formData = new FormData();
+  Object.keys(assetData).forEach(function(key) {
+    if (key === 'tags') {
+      formData.append(key, JSON.stringify(assetData[key]));
+    } else {
+      formData.append(key, assetData[key]);
     }
   });
+
+  request.onload = function() {
+    if (request.readyState == 4) {
+      if (request.status == 201) {
+        return callback(null, JSON.parse(request.responseText));
+      } else {
+        return callback(new Error('Something went wrong when uploading an asset. please try again'));
+      }
+    }
+  };
+
+  request.open('POST', url + '/assets', true);
+  request.setRequestHeader('SID', sessionId);
+  request.send(formData);
+};
+
+var serializeFile = function(file) {
+  var fileNameSplit = file.name.split('.'),
+      extension     = fileNameSplit[fileNameSplit.length - 1],
+      contentType   = file.type || 'image/x-' + extension;
+
+  if (!isValidFileType(extension)) {
+    return console.warn('invalid file type:', extension);
+  }
+
+  var attributes = {
+    title:        'New File',
+    type:         'image',
+    tags:         ['image'],
+    content:      file,
+    contentType:  contentType
+  };
+
+  return attributes;
+};
+
+var patch = function(to, from) {
+  if(from) {
+    Object.keys(from).forEach(function(key){
+      to[key] = from[key];
+      if (to[key] === null) {
+        delete to[key];
+      }
+    });
+  }
   return to;
 };
 
@@ -87,10 +167,22 @@ prototype.attachedCallback = function(){
   this.iframe.setAttribute('allowfullscreen', 'allowfullscreen');
 
   this.appendChild(this.iframe);
+
+  this.assetInput      = createAssetInput();
+  this.loadingOverlay  = createLoadingOverlay();
+
+  this.appendChild(this.assetInput);
+  this.appendChild(this.loadingOverlay);
 };
 
 prototype.detachedCallback = function(){
   this.removeChild(this.iframe);
+  this.removeChild(this.assetInput);
+  this.removeChild(this.loadingOverlay);
+  this._reset();
+};
+
+prototype._reset = function(){
   this._previousMessages = {};
   window.clearTimeout(this._attributesChangedTimeout);
   window.clearTimeout(this._learnerStateChangedTimeout);
@@ -157,8 +249,37 @@ prototype.fireCustomEvent = function(eventName, data, options) {
   this.dispatchEvent(evt);
 };
 
+prototype.uploadAssetAndSetAttributes = function(data, file) {
+  var apiUrl      = this.env.apiUrl,
+      sessionId   = this.env.sessionId,
+      serializedFile = serializeFile(file);
+
+  if (!serializedFile) { return; }
+
+  // To patch attributesChanged if author toggles out of gadget editing
+  this.uploadingAsset = true;
+
+  this.loadingOverlay.className = 'asset-loading-overlay';
+
+  postAsset(apiUrl, sessionId, serializedFile, function(error, assetJson) {
+    this.loadingOverlay.className = 'asset-loading-overlay hidden';
+    if (error) {
+      return alert(error.message);
+    }
+
+    assetAttributes = {};
+    assetAttributes[data.attribute] = assetJson;
+
+    this.sendMessage('attributesChanged', assetAttributes);
+    // After a period of time allotted to communicate the change to 'attributesChanged'		
+    // set uploadingAsset to false		
+    setTimeout(function() { this.uploadingAsset = false; }.bind(this), 1000)
+  }.bind(this));
+};
+
 prototype.messageHandlers = {
   startListening: function(){
+    this._reset();
     this._listening = true;
     this.sendMessage('environmentChanged', this.env);
     this.sendMessage('attributesChanged', this.config);
@@ -175,7 +296,7 @@ prototype.messageHandlers = {
   },
 
   setAttributes: function(data){
-    if(!this.editable) {
+    if(!this.editable && !this.uploadingAsset) {
       console.warn('Unable to setAttributes in the read-only state');
       return;
     }
@@ -208,7 +329,19 @@ prototype.messageHandlers = {
   setPropertySheetAttributes: function(data) { this.fireCustomEvent('setPropertySheetAttributes', data); },
   track: function(data) { this.fireCustomEvent('track', data, {bubbles: true}); },
   error: function(data) { this.fireCustomEvent('error', data, {bubbles: true}); },
-  requestAsset: function(data) { this.fireCustomEvent('requestAsset', data); },
+  requestAsset: function(data) {
+    // TODO support other updload types
+    if (data.type == 'video') {
+      return this.fireCustomEvent('requestAsset', data);
+    }
+
+    this.assetInput.click();
+    this.assetInput.onchange = function(e) {
+      if (e && e.target && e.target.files && e.target.files[0]) {
+        this.uploadAssetAndSetAttributes(data, e.target.files[0]);
+      }
+    }.bind(this);
+  },
 
   // Soon to be deprecated in favour of in-iframe APIs
   // E.g. https://github.com/Versal/challenges-js-api/

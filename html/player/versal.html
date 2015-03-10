@@ -8,10 +8,11 @@
     <meta name="viewport" content="width=device-width"/>
     <link rel="stylesheet" href="bower_components/fontawesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="styles/player-bundle.css">
-    <script src="bower_components/versal-component-runtime/dist/runtime.min.js"></script>
+    <script src="bower_components/customevent-polyfill/customevent-polyfill.min.js"></script>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="bower_components/versal-gadget-launchers/index.html">
   </head>
-  <body>
+  <body style="overflow: hidden; width: 100%; height: 100%;">
     <div class="player-container" style="height:100%"></div>
     <script src="scripts/player-bundle.js"></script>
     <script>

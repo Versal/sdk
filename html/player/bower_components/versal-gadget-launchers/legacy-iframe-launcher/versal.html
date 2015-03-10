@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Legacy launcher</title>
+  <link rel='import' href='../legacy-launcher/legacy-launcher.html' />
+  <link rel='stylesheet' href='./legacy-launcher.css' />
+  <link rel='stylesheet' href='../../fontawesome/css/font-awesome.min.css' />
+  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../underscore/underscore.js"></script>
+  <script src="../../versal-gadget-api/versal-player-api.js"></script>
+  <style>
+  body { margin: 0; padding: 0; }
+  </style>
+</head>
+<body>
+
+<script>
+var player = new VersalPlayerAPI();
+var launcher = document.createElement('versal-legacy-launcher');
+
+player.on('environmentChanged', function(env){
+  // TODO: doesn't make much sense really.
+  // If it's not editable, just don't set editable to true.
+  launcher.setAttribute('editing-allowed', env.editingAllowed || false);
+  launcher.setAttribute('gadget-css-class-name', env.cssClassName);
+  launcher.setAttribute('gadget-base-url', env.baseUrl);
+  launcher.setAttribute('data-environment', JSON.stringify(env));
+
+  document.body.appendChild(launcher);
+
+  launcher.addEventListener('rendered', function(){
+    player.watchBodyHeight();
+  });
+
+  launcher.addEventListener('setAttributes', function(evt){
+    player.setAttributes(evt.detail);
+  });
+
+  launcher.addEventListener('setLearnerState', function(evt){
+    player.setLearnerState(evt.detail);
+  });
+
+  launcher.addEventListener('setPropertySheetAttributes', function(evt){
+    player.setPropertySheetAttributes(_cleanupPropertySheetValidators(evt.detail));
+  });
+
+  launcher.addEventListener('setEmpty', function(evt){
+    window.parent.postMessage({ event: 'setEmpty' }, '*');
+  });
+
+  launcher.addEventListener('changeBlocking', function(evt){
+    window.parent.postMessage({ event: 'changeBlocking' }, '*');
+  });
+
+  launcher.addEventListener('selectAsset', function(evt){
+    player.requestAsset({ type: evt.detail.type }, evt.detail.success);
+  });
+});
+
+player.on('attributesChanged', function(attributes){
+  launcher.setAttribute('data-config', JSON.stringify(attributes));
+});
+
+player.on('learnerStateChanged', function(userstate){
+  launcher.setAttribute('data-userstate', JSON.stringify(userstate));
+});
+
+player.on('editableChanged', function(evt){
+  launcher.setAttribute('editable', evt.editable);
+});
+
+player.startListening();
+
+function _cleanupPropertySheetValidators(schema) {
+  if(!_.isObject(schema)) return schema;
+
+  var cleanedUpSchema = _.chain(schema).pairs().map(function(pair){
+    return [pair[0], _.omit(pair[1], 'validators')];
+  }).object().value();
+
+  return cleanedUpSchema;
+}
+</script>
+</body>
+</html>

@@ -6,7 +6,7 @@ This contains the different launchers for gadgets on [Versal](versal.com). Curre
 - [legacy](legacy-launcher), the Legacy Launcher. It maintains compatibility for earlier developed gadgets. New gadgets cannot use this launcher.
 - [component](component-launcher), the Component Launcher. It is used for some in-house gadgets that are used so often that the Iframe Launcher is too expensive. As Web Components standards advance we can open up usage for external gadgets as well, but not yet.
 
-All code is licensed under the [MIT License](LICENSE).
+All code is licensed under the [MIT License](LICENSE), except the fonts in the legacy-launcher which are licensed only to Versal.
 
 ## Chrome bug workaround
 

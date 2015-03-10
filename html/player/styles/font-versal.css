@@ -1,0 +1,28 @@
+@font-face {
+  font-family: 'fontversal';
+  src:url('../assets/font/fontversal.eot');
+  src:url('../assets/font/fontversal.eot?#iefix') format('embedded-opentype'),
+    url('../assets/font/fontversal.ttf') format('truetype'),
+    url('../assets/font/fontversal.woff') format('woff'),
+    url('../assets/font/fontversal.svg#fontversal') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="fv-"], [class*=" fv-"] {
+	font-family: 'fontversal';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.fv-bubble:before {
+	content: "\e600";
+}
