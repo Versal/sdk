@@ -42,7 +42,7 @@ will be added to your local tray.
 
 >If no directory is specified, the current working directory will be used.
 
->Use `--port` option to specify port, if you already have something running on port 3000.
+>Use `--port` option to specify port.
 
 ### versal upload [\<directory\>] [--apiUrl https://stack.versal.com/api2]
 
