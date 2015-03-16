@@ -34,15 +34,15 @@ The session ID will be stored in `~/.versal/sdk/default.json`.
 
 >The `--template` option allows you to choose a template. Supported templates: `minimal` (currently the only one).
 
-### versal preview [\<directory1\> \<directory2\> \<directory3\> ...] [--iframe]
+### versal preview [\<directory1\> \<directory2\> \<directory3\> ...] [--port \<port\>]
 
->Launches a local Player and API server for testing your new gadget. If multiple
+>Launches a local Player and API server at http://localhost:3000 for testing your new gadget. If multiple
 gadget directories are specified, any gadgets with valid `versal.json` files
 will be added to your local tray.
 
 >If no directory is specified, the current working directory will be used.
 
->Use `--iframe` option to preview gadget in a standalone launcher. (see issue #87)
+>Use `--port` option to specify port, if you already have something running on port 3000.
 
 ### versal upload [\<directory\>] [--apiUrl https://stack.versal.com/api2]
 
