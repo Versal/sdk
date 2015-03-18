@@ -28,11 +28,67 @@ versal-iframe-launcher .asset-loading-overlay {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
   color: #524e47;
   z-index: 101;
 }
 
+.asset-dropzone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: #f8f7f1;
+  z-index 100;
+}
+
+.asset-dropzone:hover {
+  cursor: pointer;
+}
+
+.asset-dropzone .dropzone-dialog {
+  font-family: 'Open Sans' 'Arial';
+  font-size: 16px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  color: #524e47;
+  z-index: 101;
+}
+
+.asset-dropzone .dropzone-prompt, .asset-dropzone .dropzone-cancel-dialog {
+  padding: 5px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  display: block;
+}
+
+.asset-dropzone .dropzone-prompt {
+  color: #c7c3be;
+}
+.asset-dropzone .dropzone-cancel-dialog {
+  color: #3a968a;
+  text-decoration: underline;
+}
+.asset-dropzone .dropzone-cancel-dialog:hover {
+  color: #7c7975;
+}
+
 versal-iframe-launcher .asset-loading-overlay.hidden {
+  display: none;
+}
+
+versal-iframe-launcher .asset-dropzone.hidden {
   display: none;
 }
 
