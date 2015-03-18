@@ -17,7 +17,7 @@ module.exports = (name, options = {}, callback) ->
   unless name
     return callback(new Error('Name of the gadget is required'))
 
-  template = options.template || 'minimal'
+  template = options.template || 'iframe'
   cwd = options.cwd || process.cwd()
   dir = path.join(cwd, name)
   source = path.join(__dirname, '../templates', template)
