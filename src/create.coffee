@@ -37,7 +37,15 @@ module.exports = (name, options = {}, callback) ->
           fs.readJson path.join(dir, 'versal.json'), (err, gadgetManifest) ->
             if err then return callback err
 
-            gadgetManifest.name = name
+            # Don't do this for React gadget
+            # Currently name in manifest must equal to the name of property
+            # that gadget developer sets on window object to make it available for player
+            # E.g., if your gadget is called 'foo' in manifest, you must export window.foo
+            # Convention is to use PascalCase for exports.
+            # TODO: export a module and use requirejs to download external dependencies
+            # (blocked by the fact that player is built by r.js at the moment)
+            if template == 'iframe' then gadgetManifest.name = name
+
             fs.writeJson path.join(dir, 'versal.json'), gadgetManifest, (err) ->
               if err then return callback err
 
