@@ -279,3 +279,12 @@ This one is even more work in progress. For now, please refer to the [Hello Worl
 To work on the CSS, just open [styleguide.html](styleguide.html) locally in a web browser.
 
 The JS APIs are developed using [test-driven development](http://en.wikipedia.org/wiki/Test-driven_development). First run `npm install`, and then run `karma start`. Karma will run the tests whenever a file changes. You can also run the tests just once, using `npm test`.
+
+## Releases
+
+```
+npm run build
+git commit -am'Build for release'
+bower version patch
+git push origin master --tags
+```

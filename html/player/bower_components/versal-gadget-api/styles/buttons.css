@@ -1,6 +1,6 @@
 a.button, button {
   display: inline-block;
-  font-family: "Open Sans";
+  font-family: var(--sans-serif);
   font-size: 14px;
   background-color: var(--gray);
   border-radius: 2px;

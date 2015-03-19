@@ -1,9 +1,8 @@
 {
   "launcher": "iframe",
-  "name": "minimal",
+  "name": "SampleIframe",
   "version": "0.0.1",
-
-  "title": "My gadget",
+  "title": "Sample iframe gadget",
   "description": "Does nothing just yet",
   "author": "anonymous"
 }

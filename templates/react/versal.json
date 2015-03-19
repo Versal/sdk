@@ -1,0 +1,8 @@
+{
+  "launcher": "react",
+  "name": "SampleGadget",
+  "version": "0.0.1",
+  "title": "Sample react gadget",
+  "description": "Click it and number will increase",
+  "author": "anonymous"
+}
