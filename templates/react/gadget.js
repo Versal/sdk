@@ -14,15 +14,16 @@ Current state of affairs:
 window.SampleGadget = React.createClass({
 
   propTypes: {
-    // Player API:
-    //Indicates, whether the gadget is editable or not (author/learner modes)
-    isEditable: React.PropTypes.bool.isRequired,
-    // Use this function to persist attributes.
-    // Attributes will be immediately sent back in props.
-    // Won't do anything, if gadget is not editable.
-    patchAttributes: React.PropTypes.func.isRequired,
-    // Environment. Contains `sessionId` of current user and `apiUrl`
-    environment: React.PropTypes.object,
+    gadget: React.PropTypes.shape({
+      // Gadget API:
+
+      //Indicates, whether the gadget is editable or not (author/learner modes)
+      isEditable: React.PropTypes.bool.isRequired,
+      // It won't do anything, if gadget is not editable.
+      patchProps: React.PropTypes.func.isRequired,
+      // Environment. Contains `sessionId` of current user and `apiUrl`
+      environment: React.PropTypes.object
+    }).isRequired,
 
     // Gadget-specific properties
     counter: React.PropTypes.number
@@ -35,7 +36,7 @@ window.SampleGadget = React.createClass({
   },
 
   render: function(){
-    if(this.props.isEditable) {
+    if(this.props.gadget.isEditable) {
       return React.DOM.button({ onClick: this.increaseCounter }, this.props.counter)
     } else {
       return React.DOM.div(null, 'Clicks so far:' + this.props.counter)
@@ -43,6 +44,6 @@ window.SampleGadget = React.createClass({
   },
 
   increaseCounter: function(){
-    this.props.patchAttributes({ counter: this.props.counter + 1 })
+    this.props.gadget.patchProps({ counter: this.props.counter + 1 })
   }
 })
