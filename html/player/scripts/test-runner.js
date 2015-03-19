@@ -47398,7 +47398,7 @@ define("libs/tags", function(){});
         learnerState: React.PropTypes.object,
         isEditable: React.PropTypes.bool,
         launcherCtor: React.PropTypes.func,
-        patchAttributes: React.PropTypes.func,
+        patchProps: React.PropTypes.func,
         patchLearnerState: React.PropTypes.func,
         legacyRequestAsset: React.PropTypes.func,
         launch: React.PropTypes.func,
@@ -47429,7 +47429,11 @@ define("libs/tags", function(){});
         }
       },
       launcherProps: function() {
-        return _.extend({}, this.props.attributes, _.pick(this.props, 'environment', 'isEditable', 'patchAttributes', 'patchLearnerState', 'legacyRequestAsset'));
+        var gadgetInterface;
+        gadgetInterface = _.pick(this.props, 'environment', 'isEditable', 'patchProps', 'patchLearnerState', 'legacyRequestAsset');
+        return _.extend({}, this.props.attributes, {
+          gadget: gadgetInterface
+        });
       },
       stopPropagation: function(event) {
         return event.nativeEvent.stopImmediatePropagation();
@@ -47458,7 +47462,7 @@ define("libs/tags", function(){});
         attributes: React.PropTypes.object,
         learnerState: React.PropTypes.object,
         isEditable: React.PropTypes.bool,
-        patchAttributes: React.PropTypes.func,
+        patchProps: React.PropTypes.func,
         patchLearnerState: React.PropTypes.func,
         legacyTrack: React.PropTypes.func,
         legacyChangeBlocking: React.PropTypes.func,
@@ -47477,7 +47481,7 @@ define("libs/tags", function(){});
           isEditable: false,
           attributes: {},
           learnerState: {},
-          patchAttributes: (function(_this) {
+          patchProps: (function(_this) {
             return function(patch) {
               return console.warn('Your attributes patch is ignored. No one is listening.', patch);
             };
@@ -47554,7 +47558,7 @@ define("libs/tags", function(){});
           return this._setHeight(message.data.pixels);
         }
         if (message.event === 'setAttributes') {
-          return this.props.patchAttributes(message.data);
+          return this.props.patchProps(message.data);
         }
         if (message.event === 'setLearnerState') {
           return this.props.patchLearnerState(message.data);
@@ -47630,7 +47634,7 @@ define("libs/tags", function(){});
         this._saveUserState = __bind(this._saveUserState, this);
         this._saveConfig = __bind(this._saveConfig, this);
         this._patchLearnerState = __bind(this._patchLearnerState, this);
-        this._patchAttributes = __bind(this._patchAttributes, this);
+        this._patchProps = __bind(this._patchProps, this);
         return GadgetInstanceView.__super__.constructor.apply(this, arguments);
       }
 
@@ -47747,7 +47751,7 @@ define("libs/tags", function(){});
             userId: mediator.userId,
             editingAllowed: mediator.isCourseEditable
           },
-          patchAttributes: this._patchAttributes,
+          patchProps: this._patchProps,
           patchLearnerState: this._patchLearnerState,
           launch: (function(_this) {
             return function() {
@@ -47820,7 +47824,7 @@ define("libs/tags", function(){});
         return React.render(React.createElement(IframeLauncher, props), container);
       };
 
-      GadgetInstanceView.prototype._patchAttributes = function(patch) {
+      GadgetInstanceView.prototype._patchProps = function(patch) {
         if (this.isEditing()) {
           this.model.config.set(patch);
           return this._debouncedSaveConfig();
