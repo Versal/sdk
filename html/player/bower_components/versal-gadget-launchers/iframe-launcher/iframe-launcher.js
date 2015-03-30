@@ -330,8 +330,8 @@ prototype.uploadAssetAndSetAttributes = function(data, file) {
     assetAttributes[data.attribute] = assetJson;
 
     this.sendMessage('attributesChanged', assetAttributes);
-    // After a period of time allotted to communicate the change to 'attributesChanged'
-    // set uploadingAsset to false
+    // After a period of time allotted to communicate the change to 'attributesChanged'		
+    // set uploadingAsset to false		
     setTimeout(function() { this.uploadingAsset = false; }.bind(this), 1000);
   }.bind(this));
 };
@@ -390,9 +390,9 @@ prototype.messageHandlers = {
   error: function(data) { this.fireCustomEvent('error', data, {bubbles: true}); },
   requestAsset: function(data) {
     // TODO support other updload types
-    if (data.type == 'video') {
-      return this.fireCustomEvent('requestAsset', data);
-    }
+    //if (data.type == 'video') {
+    return this.fireCustomEvent('requestAsset', data);
+    //}
 
     this.assetDropzone.className = 'asset-dropzone';
     this.setupDropzoneHandlers(data);

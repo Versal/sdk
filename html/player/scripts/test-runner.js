@@ -1,5 +1,5 @@
 (function () {/**
- * @license almond 0.3.0 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
+ * @license almond 0.3.1 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -44,12 +44,6 @@ var requirejs, require, define;
             //otherwise, assume it is a top-level require that will
             //be relative to baseUrl in the end.
             if (baseName) {
-                //Convert baseName to array, and lop off the last part,
-                //so that . matches that "directory" and not name of the baseName's
-                //module. For instance, baseName of "one/two/three", maps to
-                //"one/two/three.js", but we want the directory, "one/two" for
-                //this normalization.
-                baseParts = baseParts.slice(0, baseParts.length - 1);
                 name = name.split('/');
                 lastIndex = name.length - 1;
 
@@ -58,7 +52,11 @@ var requirejs, require, define;
                     name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
                 }
 
-                name = baseParts.concat(name);
+                //Lop off the last part of baseParts, so that . matches the
+                //"directory" and not name of the baseName's module. For instance,
+                //baseName of "one/two/three", maps to "one/two/three.js", but we
+                //want the directory, "one/two" for this normalization.
+                name = baseParts.slice(0, baseParts.length - 1).concat(name);
 
                 //start trimDots
                 for (i = 0; i < name.length; i += 1) {
@@ -408,6 +406,9 @@ var requirejs, require, define;
     requirejs._defined = defined;
 
     define = function (name, deps, callback) {
+        if (typeof name !== 'string') {
+            throw new Error('See almond README: incorrect module build, no module name');
+        }
 
         //This module may not have dependencies
         if (!deps.splice) {
@@ -15830,7 +15831,57 @@ define('libs/analytics',[], function(){
 }).call(this);
 
 (function() {
-  define('plugins/tracker',['underscore', 'jquery', 'models/settings'], function(_, $, settings) {
+  define('plugins/ops-reporter',['jquery', 'models/settings'], function($, settings) {
+    var interval, queue, throttledSave, _ref, _save;
+    queue = [];
+    interval = ((_ref = settings.get('tracker')) != null ? _ref.interval : void 0) || 3000;
+    _save = function() {
+      var oldQueue, path, _ref1, _ref2;
+      path = (_ref1 = settings.get('tracker')) != null ? _ref1.path : void 0;
+      if (!path || queue.length < 1) {
+        return false;
+      }
+      oldQueue = _.clone(queue);
+      return $.ajax({
+        type: 'POST',
+        url: path,
+        contentType: 'application/json',
+        data: JSON.stringify(queue),
+        success: function() {
+          return queue = _.difference(queue, oldQueue);
+        },
+        headers: {
+          AUTHSID: (_ref2 = settings.get('api')) != null ? _ref2.sessionId : void 0
+        }
+      });
+    };
+    throttledSave = _.throttle(_save, interval, {
+      leading: false
+    });
+    return {
+      addEvent: function(name, data) {
+        var e, messageOfRequestedFormat;
+        try {
+          messageOfRequestedFormat = {
+            source: data['_source'] || 'player',
+            event: name,
+            data: data,
+            ts_dt: Math.round((new Date).getTime() / 1000)
+          };
+          queue.push(messageOfRequestedFormat);
+          return throttledSave();
+        } catch (_error) {
+          e = _error;
+          return console.error(e);
+        }
+      }
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('plugins/tracker',['underscore', 'jquery', 'models/settings', 'plugins/ops-reporter'], function(_, $, settings, OpsReporter) {
     var Timer, Tracker, tracker;
     Timer = (function() {
       function Timer(opts) {
@@ -15859,11 +15910,14 @@ define('libs/analytics',[], function(){
       function Tracker() {}
 
       Tracker.prototype.track = function(name, data) {
-        var _ref;
+        var _ref, _ref1;
         if (data == null) {
           data = {};
         }
-        if ((_ref = settings.get('tracker')) != null ? _ref.debug : void 0) {
+        if ((_ref = settings.get('tracker')) != null ? _ref.path : void 0) {
+          OpsReporter.addEvent(name, data);
+        }
+        if ((_ref1 = settings.get('tracker')) != null ? _ref1.debug : void 0) {
           return console.log('track:', name, data);
         }
       };
@@ -17456,7 +17510,7 @@ define('libs/analytics',[], function(){
 
 (function() {
   define('player_palette',['collections/gadget_projects', 'models/gadget_project'], function(GadgetProjects, GadgetProject) {
-    var createGadgetInstance, fetchCtor, findManifestByShortType, findManifestByUrl, installManifest, palette, registerManifest, _shortTypeByManifest;
+    var createGadgetInstance, findManifestByShortType, findManifestByUrl, installManifest, installReactGadget, palette, registerManifest, _shortTypeByManifest;
     palette = new GadgetProjects;
     registerManifest = function(manifest) {
       if (!manifest.manifestUrl) {
@@ -17486,17 +17540,19 @@ define('libs/analytics',[], function(){
       };
       return request.send();
     };
-    fetchCtor = function(manifest) {
-      return new Promise(function(resolve, reject) {
+    installReactGadget = function(name, url) {
+      var PromiseImpl;
+      PromiseImpl = window.Promise || window.ES6Promise.Promise;
+      return new PromiseImpl(function(resolve, reject) {
         var script;
-        if (window[manifest.name]) {
-          return resolve(window[manifest.name]);
+        if (window[name]) {
+          return resolve(window[name]);
         }
         script = document.createElement('script');
-        script.src = manifest.launchUrl;
+        script.src = url;
         script.onload = function() {
           var ctor;
-          ctor = window[manifest.name];
+          ctor = window[name];
           if (ctor) {
             return resolve(ctor);
           } else {
@@ -17542,7 +17598,7 @@ define('libs/analytics',[], function(){
     };
     return {
       installManifest: installManifest,
-      fetchCtor: fetchCtor,
+      installReactGadget: installReactGadget,
       registerManifest: registerManifest,
       findManifestByUrl: findManifestByUrl,
       findManifestByShortType: findManifestByShortType,
@@ -37666,7 +37722,8 @@ Each instance of Handler will listen to three things:
       };
 
       LocksHandler.prototype.triggerLock = function(lock) {
-        if (lock.get('user').id === this.conn.me.id) {
+        var _ref;
+        if (((_ref = lock.get('user')) != null ? _ref.id : void 0) === this.conn.me.id) {
           return;
         }
         vent.trigger('lock:lock', lock);
@@ -47208,6 +47265,7 @@ define("libs/tags", function(){});
         showEditButton: React.PropTypes.bool,
         showDeleteButton: React.PropTypes.bool,
         gadgetId: React.PropTypes.string,
+        gadgetCid: React.PropTypes.string,
         config: React.PropTypes.object,
         schema: React.PropTypes.object,
         gadgetManifest: React.PropTypes.object,
@@ -47256,7 +47314,8 @@ define("libs/tags", function(){});
           gadgetManifest: this.props.gadgetManifest,
           dragData: {
             action: 'reorder',
-            gadgetId: this.props.gadgetId
+            gadgetId: this.props.gadgetId,
+            gadgetCid: this.props.gadgetCid
           },
           onDragStart: (function(_this) {
             return function() {
@@ -47616,8 +47675,9 @@ define("libs/tags", function(){});
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define('views/gadget/instance',['jquery', 'underscore', 'marionette', 'react', 'mediator', 'collab/collab', 'plugins/tracker', 'views/gadget/drag_image', 'models/property_sheet_schema', 'state/position', 'state/selection', 'templates/gadget_instance', 'tether', 'models/settings', 'player_palette', 'views/react_view', 'views/render_in_body', 'views/gadget_toolbar', 'views/gadget_lock', 'views/gadget_comments', 'views/gadget_dialog', 'launchers/react_launcher', 'launchers/iframe_launcher', 'react-coffeescript-glue'], function($, _, Marionette, React, mediator, collab, tracker, GadgetDragImageComponent, PropertySheetSchema, currentPosition, selection, template, Tether, settings, playerPalette, ReactView, RenderInBodyComponent, GadgetToolbarComponent, GadgetLockComponent, GadgetCommentsComponent, GadgetDialogComponent, ReactLauncher, IframeLauncher) {
-    var GADGET_RENDERING_TIMEOUT_MS, GadgetInstanceView;
+    var DEFAULT_ERROR_MESSAGE, GADGET_RENDERING_TIMEOUT_MS, GadgetInstanceView;
     GADGET_RENDERING_TIMEOUT_MS = 10 * 1000;
+    DEFAULT_ERROR_MESSAGE = "Something went wrong and this gadget didn't load properly.\nWe're on it. Please check back in a bit.";
     return GadgetInstanceView = (function(_super) {
       __extends(GadgetInstanceView, _super);
 
@@ -47629,6 +47689,7 @@ define("libs/tags", function(){});
         this._gadgetDropped = __bind(this._gadgetDropped, this);
         this.prevent = __bind(this.prevent, this);
         this.stopEditing = __bind(this.stopEditing, this);
+        this._onSelectionClear = __bind(this._onSelectionClear, this);
         this._onGadgetUnlocked = __bind(this._onGadgetUnlocked, this);
         this._onGadgetLocked = __bind(this._onGadgetLocked, this);
         this._saveUserState = __bind(this._saveUserState, this);
@@ -47703,11 +47764,7 @@ define("libs/tags", function(){});
         this.listenTo(this.model.userState, 'change:progress', this._onGadgetProgressChanged);
         mediator.on('collab:gadget:locked', this._onGadgetLocked);
         mediator.on('collab:gadget:unlocked', this._onGadgetUnlocked);
-        this.listenTo(selection, 'selection:clear', (function(_this) {
-          return function() {
-            return _this._onSelectedChange(false);
-          };
-        })(this));
+        this.listenTo(selection, 'selection:clear', this._onSelectionClear);
         this._debouncedSaveConfig = _.debounce(this._saveConfig, 500);
         this._debouncedSaveUserState = _.debounce(this._saveUserState, 500);
         return this._propertySheetSchema = new PropertySheetSchema;
@@ -47724,8 +47781,6 @@ define("libs/tags", function(){});
         } else if (this.isIframeGadget()) {
           this._renderIframeGadget();
           this.gadgetRendering.resolve();
-        } else {
-          this._renderLauncher();
         }
         this._renderLeftBar();
         return this.commentsRegion.show(new ReactView({
@@ -47755,7 +47810,7 @@ define("libs/tags", function(){});
           patchLearnerState: this._patchLearnerState,
           launch: (function(_this) {
             return function() {
-              return playerPalette.fetchCtor(_this.manifest).then(function(ctor) {
+              return playerPalette.installReactGadget(_this.manifest.name, _this.manifest.launchUrl).then(function(ctor) {
                 _this._reactCtor = ctor;
                 return _this._renderReactGadget();
               });
@@ -47802,6 +47857,7 @@ define("libs/tags", function(){});
                 err = error;
               } else {
                 err = new Error('Misformatted error');
+                console.error(error);
               }
               _this._handleError(err);
               return _this.showCouldNotLoad();
@@ -47811,10 +47867,16 @@ define("libs/tags", function(){});
       };
 
       GadgetInstanceView.prototype._renderReactGadget = function() {
-        var container, props;
+        var container, err, props;
         container = this.ui.gadgetContent[0];
         props = this._propsForReactAndIframeLaunchers();
-        return React.render(React.createElement(ReactLauncher, props), container);
+        try {
+          return React.render(React.createElement(ReactLauncher, props), container);
+        } catch (_error) {
+          err = _error;
+          this._handleError(err);
+          return this.showCouldNotLoad(err);
+        }
       };
 
       GadgetInstanceView.prototype._renderIframeGadget = function() {
@@ -47890,12 +47952,13 @@ define("libs/tags", function(){});
         return this._renderLeftBar();
       };
 
+      GadgetInstanceView.prototype._onSelectionClear = function() {
+        return this._onSelectedChange(false);
+      };
+
       GadgetInstanceView.prototype.onContentClick = function(e) {
         if (this.manifest.noToggleSwitch) {
-          this.startEditing();
-          if (!this.isReactGadget() && !this.isIframeGadget()) {
-            return e.stopPropagation();
-          }
+          return this.startEditing();
         }
       };
 
@@ -47948,9 +48011,6 @@ define("libs/tags", function(){});
         }
         mediator.trigger('gadget:editing:start', this.model);
         mediator.trigger('collab:gadget:editing:start', this.model);
-        if (!this.isReactGadget() && !this.isIframeGadget()) {
-          this.$el.on('click', this.prevent);
-        }
         $(window).one('click', this.stopEditing);
         return this.trigger('after:startEditing');
       };
@@ -47969,9 +48029,6 @@ define("libs/tags", function(){});
         this._renderLeftBar();
         mediator.trigger('gadget:editing:stop', this.model);
         mediator.trigger('collab:gadget:editing:stop', this.model);
-        if (!this.isReactGadget() && !this.isIframeGadget()) {
-          this.$el.off('click', this.prevent);
-        }
         return $(window).off('click', this.stopEditing);
       };
 
@@ -48008,10 +48065,12 @@ define("libs/tags", function(){});
         return mediator.trigger('gadget:deleted', this.model);
       };
 
-      GadgetInstanceView.prototype.showCouldNotLoad = function() {
+      GadgetInstanceView.prototype.showCouldNotLoad = function(err) {
+        var errorMessage;
+        errorMessage = (err != null ? err.message : void 0) != null ? 'This gadget had an error\n' + err.message : DEFAULT_ERROR_MESSAGE;
         this.dialogRegion.show(new ReactView({
           component: GadgetDialogComponent({
-            message: "Something went wrong and this gadget didn't load properly.\nWe're on it. Please check back in a bit."
+            message: errorMessage
           }, _button([
             'spec-gadget-dialog-error', {
               onClick: (function(_this) {
@@ -48068,7 +48127,7 @@ define("libs/tags", function(){});
       };
 
       GadgetInstanceView.prototype.onClose = function() {
-        return selection.off('selection:clear');
+        return selection.off('selection:clear', this._onSelectionClear);
       };
 
       GadgetInstanceView.prototype._onSelectedChange = function(selected) {
@@ -48079,11 +48138,15 @@ define("libs/tags", function(){});
       };
 
       GadgetInstanceView.prototype._renderLeftBar = function() {
-        var component;
+        var component, _ref;
         if (!this.isEditable) {
           return;
         }
-        this.ui.lockOverlay.toggle(!!this._locked);
+        if ((_ref = this.ui.lockOverlay) != null) {
+          if (typeof _ref.toggle === "function") {
+            _ref.toggle(!!this._locked);
+          }
+        }
         if (this._locked) {
           component = GadgetLockComponent({
             gadgetInstanceId: this.model.id
@@ -48095,13 +48158,14 @@ define("libs/tags", function(){});
             gadgetManifest: this.manifest,
             showSelectButton: settings.get('feature_selection') === true,
             showEditButton: this.manifest.noToggleSwitch !== true,
-            showDeleteButton: settings.get('feature_selection') !== true,
+            showDeleteButton: true,
             editing: this.isEditing(),
             onEditClick: this._toggleEditing.bind(this),
             config: this.model.config,
             propertySheetSchema: this._propertySheetSchema,
             onDeleteClick: this.showDeleteMsg.bind(this),
             gadgetId: this.model.id,
+            gadgetCid: this.model.cid,
             selected: this.selected,
             onSelectedChange: (function(_this) {
               return function(selected) {
@@ -48318,7 +48382,7 @@ define("libs/tags", function(){});
           return function() {
             switch (dragData.action) {
               case 'reorder':
-                return _this.props.lessonView.moveGadgetToIndex(dragData.gadgetId, newIndex);
+                return _this.props.lessonView.moveGadgetToIndex(dragData.gadgetCid, newIndex);
               case 'create':
                 return _this.props.lessonView.createManifestInstanceAt(dragData.manifestUrl, newIndex, true);
               case 'paste':
@@ -48620,7 +48684,8 @@ define("libs/tags", function(){});
         mediator.on('tray:gadgetSelected', this.addGadgetToTheEnd, this);
         mediator.on('gadget:dragstart', this._onDragStart, this);
         mediator.on('gadget:dragend', this._onDragEnd, this);
-        return this.listenTo(selection, 'clipboard:selection:add', this._onClipboardSelectionAdd, this);
+        this.listenTo(selection, 'selection:add', this._onClipboardSelectionCopy, this);
+        return this.listenTo(selection, 'selection:cut', this._onClipboardSelectionCut, this);
       };
 
       Lesson.prototype.onRender = function() {
@@ -48667,7 +48732,8 @@ define("libs/tags", function(){});
 
       Lesson.prototype.onClose = function() {
         mediator.off('tray:gadgetSelected', this.addGadgetToTheEnd, this);
-        selection.off('clipboard:selection:add', this._onClipboardSelectionAdd, this);
+        selection.off('selection:cut', this._onClipboardSelectionCut, this);
+        selection.off('selection:add', this._onClipboardSelectionCopy, this);
         if (this.lessonTitleReactView) {
           return this.lessonTitleReactView.close();
         }
@@ -48861,9 +48927,9 @@ define("libs/tags", function(){});
         return mediator.trigger('collab:lesson:gadget:deleted', this, gadget);
       };
 
-      Lesson.prototype.moveGadgetToIndex = function(gadgetId, newIndex) {
+      Lesson.prototype.moveGadgetToIndex = function(gadgetCid, newIndex) {
         var $element, model, movedView;
-        model = this.collection.get(gadgetId);
+        model = this.collection.get(gadgetCid);
         if (this.collection.indexOf(model) < newIndex) {
           newIndex--;
         }
@@ -48913,14 +48979,30 @@ define("libs/tags", function(){});
         };
       };
 
-      Lesson.prototype._onClipboardSelectionAdd = function() {
+      Lesson.prototype._onClipboardSelectionCopy = function() {
         var currentSelection;
         currentSelection = selection.keys();
-        if (currentSelection.length == null) {
+        if (!currentSelection.length) {
           return;
         }
         selection.trigger('clipboard:item:add', this._serializeSelection(currentSelection));
         return selection.clear();
+      };
+
+      Lesson.prototype._onClipboardSelectionCut = function() {
+        var currentSelection, deletedGadgets;
+        currentSelection = selection.keys();
+        if (!currentSelection.length) {
+          return;
+        }
+        this._onClipboardSelectionCopy();
+        selection.trigger('selection:cut');
+        deletedGadgets = this.collection.filter(function(g) {
+          return currentSelection.indexOf(g.id) >= 0;
+        });
+        return deletedGadgets != null ? deletedGadgets.forEach(function(gadgetModel) {
+          return gadgetModel.destroy();
+        }) : void 0;
       };
 
       Lesson.prototype.onCollectionRender = function() {
@@ -50056,7 +50138,7 @@ define("libs/tags", function(){});
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('views/course',['jquery', 'marionette', 'templates/course', 'views/lesson', 'views/loading', 'mediator', 'plugins/tracker', 'views/nav_buttons', 'state/selection'], function($, Marionette, template, LessonView, LoadingView, mediator, tracker, NavButtonsView, selection) {
+  define('views/course',['jquery', 'marionette', 'templates/course', 'views/lesson', 'views/loading', 'mediator', 'plugins/tracker', 'views/nav_buttons'], function($, Marionette, template, LessonView, LoadingView, mediator, tracker, NavButtonsView) {
     var Course;
     return Course = (function(_super) {
       __extends(Course, _super);
@@ -50074,7 +50156,6 @@ define("libs/tags", function(){});
         mediator.on('tray:gadgetUpdated', this.rerenderLesson, this);
         mediator.on('blocking:changed', this._onBlockingChanged, this);
         mediator.on('collab:populate:updateBar', this._onPopulateUpdateBar, this);
-        this.listenTo(selection, 'selection:delete', this._onDeleteSelection, this);
         this._isEditable = this.model.get('isEditable');
         return this.singleLesson = options.singleLesson;
       };
@@ -50084,8 +50165,7 @@ define("libs/tags", function(){});
         mediator.off('blocking:changed', this._onBlockingChanged, this);
         mediator.off('collab:populate:updateBar', this._onPopulateUpdateBar, this);
         mediator.off('course:save:error', this.showSaveErrorMsg, this);
-        mediator.off('course:save:success', this.hideSaveErrorMsg, this);
-        return this.stopListeningTo('selection:delete', this._onDeleteSelection, this);
+        return mediator.off('course:save:success', this.hideSaveErrorMsg, this);
       };
 
       Course.prototype.ui = {
@@ -50255,21 +50335,6 @@ define("libs/tags", function(){});
 
       Course.prototype._onBlockingChanged = function() {
         return setTimeout(this._refetchSections, 100);
-      };
-
-      Course.prototype._onDeleteSelection = function() {
-        var deletedGadgets, ids;
-        ids = selection.keys();
-        if (ids.length && confirm('Are you sure you wish to delete selected gadgets?')) {
-          selection.clear();
-          selection.trigger('selection:delete');
-          deletedGadgets = this._activeLesson.gadgets.filter(function(g) {
-            return ids.indexOf(g.id) >= 0;
-          });
-          return deletedGadgets != null ? deletedGadgets.forEach(function(gadgetModel) {
-            return gadgetModel.destroy();
-          }) : void 0;
-        }
       };
 
       Course.prototype._refetchSections = function() {
@@ -51398,25 +51463,26 @@ define("libs/tags", function(){});
     var TrayClipboardControls;
     return TrayClipboardControls = React.createClass({
       propTypes: {
-        onDeleteSelectedItems: React.PropTypes.func,
+        onClipboardSelectionCut: React.PropTypes.func,
+        onClipboardSelectionCopy: React.PropTypes.func,
         onClearClipboard: React.PropTypes.func,
-        onCopyIntoClipboard: React.PropTypes.func,
-        clipboardSelected: React.PropTypes.bool
+        isClipboardSelected: React.PropTypes.bool,
+        isSelectionAvailable: React.PropTypes.bool
       },
       render: function() {
-        return _div(['clipboard-controls', this.props.clipboardSelected ? 'visible' : void 0], _div([
-          'clipboard-control', 'clipboard-control-button', 'clipboard-control-delete', {
-            onClick: this.props.onDeleteSelectedItems
+        return _div(['clipboard-controls', this.props.isClipboardSelected ? 'visible' : void 0], _div([
+          'clipboard-control', 'clipboard-control-button', !this.props.isSelectionAvailable ? 'clipboard-control-disabled' : void 0, this.props.isSelectionAvailable ? 'clipboard-control-cut' : void 0, {
+            onClick: this.props.onClipboardSelectionCut
           }
-        ], 'delete selected'), _div([
-          'clipboard-control', 'clipboard-control-button', 'clipboard-control-copy-into-clipboard', {
-            onClick: this.props.onCopyIntoClipboard
+        ], 'cut selection'), _div([
+          'clipboard-control', 'clipboard-control-button', !this.props.isSelectionAvailable ? 'clipboard-control-disabled' : void 0, this.props.isSelectionAvailable ? 'clipboard-control-copy' : void 0, {
+            onClick: this.props.onClipboardSelectionCopy
           }
-        ], 'copy into clipboard'), _div([
-          'clipboard-control', 'clipboard-control-button', {
+        ], 'copy selection'), _div([
+          'clipboard-control', 'clipboard-control-button', 'clipboard-control-clear', {
             onClick: this.props.onClearClipboard
           }
-        ], 'empty clipboard'));
+        ], 'clear clipboard'));
       }
     });
   });
@@ -51457,7 +51523,7 @@ define("libs/tags", function(){});
             onClick: this.props.onToggleTrayExpanded
           }
         ], _i([this.props.expanded ? 'tray-toggle-collapse icon-double-angle-down' : void 0, !this.props.expanded ? 'tray-toggle-expand icon-double-angle-up' : void 0])), settings.get('feature_selection') ? _a([
-          'tray-filter', 'tray-filter-right', this.props.selectedTab === 'gadgetClipboard' ? 'active' : void 0, {
+          'tray-filter', 'tray-filter-right', this.props.selectedTab === 'gadgetClipboard' && this.props.expanded ? 'active' : void 0, {
             onClick: _.partial(this.props.onSelectTab, 'gadgetClipboard')
           }
         ], 'clipboard') : void 0));
@@ -51565,7 +51631,7 @@ define("libs/tags", function(){});
 (function() {
   define('views/tray/tray_component',['underscore', 'react', 'models/settings', 'state/selection', 'views/render_in_body', 'views/tray/tray_slider', 'views/tray/item', 'views/tray/clipboard_item', 'views/tray/clipboard_controls', 'views/tray/tray_filters', 'views/tray/version_modal', 'views/gadget_info_overview', 'views/tether', 'react-coffeescript-glue'], function(_, React, settings, selection, RenderInBodyComponent, TraySliderComponent, TrayItem, ClipboardItem, TrayClipboardControls, TrayFiltersComponent, VersionModalComponent, GadgetInfoOverview, TetherComponent) {
     var EMPTY_CLIPBOARD_COPY, TrayComponent;
-    EMPTY_CLIPBOARD_COPY = 'Select one or more gadgets to copy or delete. The clipboard will hold the gadgets you copy so that you can add them to other courses.';
+    EMPTY_CLIPBOARD_COPY = 'Select one or more gadgets to copy or cut. The clipboard will hold these gadgets so that you can add them in other places.';
     return TrayComponent = React.createClass({
       propTypes: {
         mediator: React.PropTypes.object.isRequired,
@@ -51596,7 +51662,8 @@ define("libs/tags", function(){});
           previouslySelectedTab: initialCatalog,
           expanded: expanded,
           activeModalComponent: null,
-          clipboardItems: clipboardItems
+          clipboardItems: clipboardItems,
+          isSelectionAvailable: false
         };
       },
       componentDidMount: function() {
@@ -51606,16 +51673,27 @@ define("libs/tags", function(){});
         this.props.mediator.on('gadget:editing:stop', this._onStopEditingGadget);
         selection.on('clipboard:item:selected', this._onClipboardItemSelected);
         selection.on('selection:empty', this._onClipboardSelectionEmpty);
-        selection.on('selection:delete', this._onClipboardSelectionEmpty);
+        selection.on('selection:clear', this._onClipboardSelectionClear);
         return selection.on('clipboard:item:add', this._onClipboardItemAdd);
       },
       _onClipboardItemSelected: function() {
         this._selectTab('gadgetClipboard');
-        return this._setTrayExpanded(true);
+        this._setTrayExpanded(true);
+        return this.setState({
+          isSelectionAvailable: true
+        });
+      },
+      _onClipboardSelectionClear: function() {
+        return this.setState({
+          isSelectionAvailable: false
+        });
       },
       _onClipboardSelectionEmpty: function() {
         this._selectTab(this.state.previouslySelectedTab);
-        return this._setTrayExpanded(localStorage.versalTrayExpanded === "true");
+        this._setTrayExpanded(localStorage.versalTrayExpanded === "true");
+        return this.setState({
+          isSelectionAvailable: false
+        });
       },
       _onGadgetDragStart: function() {
         return this._setTrayExpanded(false);
@@ -51698,14 +51776,17 @@ define("libs/tags", function(){});
           children = this._renderTrayGadgetItems();
         }
         return _div([], _div(['expandable-tray', this.state.expanded ? 'expandable-tray-expanded' : void 0], TrayClipboardControls({
-          clipboardSelected: this.state.selectedTab === 'gadgetClipboard',
+          isClipboardSelected: this.state.selectedTab === 'gadgetClipboard',
+          isSelectionAvailable: this.state.isSelectionAvailable,
           onClearClipboard: this._onClearClipboard,
-          onCopyIntoClipboard: function() {
-            return selection.trigger('clipboard:selection:add');
-          },
-          onDeleteSelectedItems: (function(_this) {
+          onClipboardSelectionCopy: (function(_this) {
             return function() {
-              return selection.trigger('selection:delete');
+              return selection.trigger('selection:add');
+            };
+          })(this),
+          onClipboardSelectionCut: (function(_this) {
+            return function() {
+              return selection.trigger('selection:cut');
             };
           })(this)
         }), TraySliderComponent({
@@ -52150,6 +52231,30 @@ define("libs/tags", function(){});
       return PlayerLayout;
 
     })(Marionette.Layout);
+  });
+
+}).call(this);
+
+(function() {
+  define('views/error_overlay',['react'], function(React) {
+    var ErrorOverlay;
+    return ErrorOverlay = React.createClass({
+      propTypes: {
+        title: React.PropTypes.string,
+        description: React.PropTypes.string
+      },
+      render: function() {
+        return React.DOM.div({
+          className: 'error-overlay-backdrop'
+        }, React.DOM.div({
+          className: 'error-content'
+        }, React.DOM.h2({
+          className: 'error-overlay-header'
+        }, this.props.title), React.DOM.p({
+          className: 'error-overlay-text'
+        }, this.props.description)));
+      }
+    });
   });
 
 }).call(this);
@@ -52788,7 +52893,7 @@ define("libs/tags", function(){});
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  define('player',['react', 'underscore', 'jquery', 'marionette', 'models/patch_backbone_sync', 'collab/collab', 'views/react_view', 'views/course', 'views/sidebar/author', 'views/sidebar/learner', 'views/tray/tray_component', 'views/header', 'views/player_layout', 'combined_catalogue', 'mediator', 'player_palette', 'models/current_user', 'plugins/tracker', 'models/settings', 'libs/analytics', 'collections/gadget_projects', 'models/course', 'messages/decorate', 'react_test_utils_for_selenium', 'legacy_cdn_defines_noconflict'], function(React, _, $, Marionette, patchBackboneSync, collab, ReactView, CourseView, AuthorSidebarView, LearnerSidebarView, TrayComponent, HeaderView, PlayerLayoutView, CombinedCatalogue, mediator, playerPalette, currentUser, tracker, settings, analytics, GadgetProjects, Course) {
+  define('player',['underscore', 'jquery', 'marionette', 'react', 'models/patch_backbone_sync', 'collab/collab', 'views/react_view', 'views/course', 'views/sidebar/author', 'views/sidebar/learner', 'views/tray/tray_component', 'views/header', 'views/player_layout', 'views/error_overlay', 'combined_catalogue', 'mediator', 'player_palette', 'models/current_user', 'plugins/tracker', 'models/settings', 'libs/analytics', 'collections/gadget_projects', 'models/course', 'messages/decorate', 'react_test_utils_for_selenium', 'legacy_cdn_defines_noconflict'], function(_, $, Marionette, React, patchBackboneSync, collab, ReactView, CourseView, AuthorSidebarView, LearnerSidebarView, TrayComponent, HeaderView, PlayerLayoutView, ErrorOverlay, CombinedCatalogue, mediator, playerPalette, currentUser, tracker, settings, analytics, GadgetProjects, Course) {
     var PlayerApplication;
     window.React = React;
     window._ = _;
@@ -52798,7 +52903,7 @@ define("libs/tags", function(){});
         this._onNavigateLesson = __bind(this._onNavigateLesson, this);
         this.onCourseLoad = __bind(this.onCourseLoad, this);
         this._onLearnerStateChanged = __bind(this._onLearnerStateChanged, this);
-        var $el, containerSelector, courseId;
+        var $el, containerSelector, courseId, _ref, _ref1;
         if (options) {
           settings.set(options);
         }
@@ -52817,7 +52922,13 @@ define("libs/tags", function(){});
         })(this));
         courseId = settings.get('courseId');
         if (courseId == null) {
-          throw new Error('cannot start the player without a course');
+          return this.renderErrorOverlay('cannot start the player without a courseId');
+        }
+        if (!(((_ref = settings.get('api')) != null ? _ref.url : void 0) || settings.get('apiUrl'))) {
+          return this.renderErrorOverlay('cannot start the player without an apiUrl');
+        }
+        if (!(((_ref1 = settings.get('api')) != null ? _ref1.sessionId : void 0) || settings.get('sessionId'))) {
+          return this.renderErrorOverlay('cannot start the player without a sessionId');
         }
         this.installNavigation(courseId);
         window.onbeforeunload = function() {
@@ -52841,6 +52952,15 @@ define("libs/tags", function(){});
         })(this));
         this.loadCourse(courseId);
       }
+
+      PlayerApplication.prototype.renderErrorOverlay = function(message) {
+        var errorComponent;
+        errorComponent = ErrorOverlay({
+          title: 'Sorry, we\'ve encountered an error',
+          description: message
+        });
+        return React.renderComponent(errorComponent, document.body);
+      };
 
       PlayerApplication.prototype._installDependency = function(type, path) {
         var tag;
@@ -53157,7 +53277,10 @@ define("libs/tags", function(){});
         playerContainer = $('<div class="js-spec-player-container"></div>')[0];
         document.body.appendChild(playerContainer);
         options = {
-          api: {},
+          api: {
+            url: 'https://fake.com',
+            sessionId: 'abcdef'
+          },
           courseId: '42',
           container: '.js-spec-player-container',
           feature_selection: true
@@ -54330,7 +54453,8 @@ define("spec/views/asset_picker/asset_picker.spec", function(){});
           mediator: mediator,
           trackCatalogClick: function() {},
           trackToggleTray: function() {},
-          catalogs: catalogs
+          catalogs: catalogs,
+          palette: {}
         });
         return TestUtils.renderIntoDocument(TrayComponent(trayComponentProps));
       };
