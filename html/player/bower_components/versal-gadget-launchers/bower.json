@@ -1,6 +1,6 @@
 {
   "name": "versal-gadget-launchers",
-  "version": "0.5.18",
+  "version": "0.5.20",
   "author": "Versal team <support@versal.com>",
   "description": "Various launchers for gadgets on versal.com",
   "main": "index.html",
