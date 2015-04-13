@@ -15714,70 +15714,6 @@ define("marionette", ["backbone"], (function (global) {
 
 }).call(this);
 
-define('libs/analytics',[], function(){
-  // The below code can be already executed on the site using player,
-  // so let's skip it if window.analytics already exists.
-  // TODO: Reconsider this implementation with updating player to use iframe 
-  // on versal.com, driverpermit.com and testpreplabs.com
-  if (window.analytics) return window.analytics;
-
-  // The code below is copied-and-pasted from
-  // https://segment.io/docs/tutorials/quickstart-analytics.js/
-  // and wrapped in AMD
-
-  // Create a queue, but don't obliterate an existing one!
-  window.analytics = [];
-
-  // A list of the methods in Analytics.js to stub.
-  window.analytics.methods = ['identify', 'group', 'track',
-    'page', 'pageview', 'alias', 'ready', 'on', 'once', 'off',
-    'trackLink', 'trackForm', 'trackClick', 'trackSubmit'];
-
-  // Define a factory to create stubs. These are placeholders
-  // for methods in Analytics.js so that you never have to wait
-  // for it to load to actually record data. The `method` is
-  // stored as the first argument, so we can replay the data.
-  window.analytics.factory = function(method){
-    return function(){
-      var args = Array.prototype.slice.call(arguments);
-      args.unshift(method);
-      window.analytics.push(args);
-      return window.analytics;
-    };
-  };
-
-  // For each of our methods, generate a queueing stub.
-  for (var i = 0; i < window.analytics.methods.length; i++) {
-    var key = window.analytics.methods[i];
-    window.analytics[key] = window.analytics.factory(key);
-  }
-
-  // Define a method to load Analytics.js from our CDN,
-  // and that will be sure to only ever load it once.
-  window.analytics.load = function(key){
-    if (document.getElementById('analytics-js')) return;
-
-    // Create an async script element based on your key.
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.id = 'analytics-js';
-    script.async = true;
-    script.src = ('https:' === document.location.protocol
-      ? 'https://' : 'http://')
-      + 'cdn.segment.io/analytics.js/v1/'
-      + key + '/analytics.min.js';
-
-    // Insert our script next to the first script element.
-    var first = document.getElementsByTagName('script')[0];
-    first.parentNode.insertBefore(script, first);
-  };
-
-  // Add a version to keep track of what's in the wild.
-  window.analytics.SNIPPET_VERSION = '2.0.9';
-
-  return window.analytics;
-});
-
 (function() {
   define('plugins/clonedeep',[], function() {
     var cloneDeep;
@@ -15865,8 +15801,7 @@ define('libs/analytics',[], function(){
           messageOfRequestedFormat = {
             source: data['_source'] || 'player',
             event: name,
-            data: data,
-            ts_dt: Math.round((new Date).getTime() / 1000)
+            data: data
           };
           queue.push(messageOfRequestedFormat);
           return throttledSave();
@@ -15880,9 +15815,78 @@ define('libs/analytics',[], function(){
 
 }).call(this);
 
+define('libs/analytics',[], function(){
+  // The below code can be already executed on the site using player,
+  // so let's skip it if window.analytics already exists.
+  // TODO: Reconsider this implementation with updating player to use iframe 
+  // on versal.com, driverpermit.com and testpreplabs.com
+  if (window.analytics) return window.analytics;
+
+  // The code below is copied-and-pasted from
+  // https://segment.io/docs/tutorials/quickstart-analytics.js/
+  // and wrapped in AMD
+
+  // Create a queue, but don't obliterate an existing one!
+  window.analytics = [];
+
+  // A list of the methods in Analytics.js to stub.
+  window.analytics.methods = ['identify', 'group', 'track',
+    'page', 'pageview', 'alias', 'ready', 'on', 'once', 'off',
+    'trackLink', 'trackForm', 'trackClick', 'trackSubmit'];
+
+  // Define a factory to create stubs. These are placeholders
+  // for methods in Analytics.js so that you never have to wait
+  // for it to load to actually record data. The `method` is
+  // stored as the first argument, so we can replay the data.
+  window.analytics.factory = function(method){
+    return function(){
+      var args = Array.prototype.slice.call(arguments);
+      args.unshift(method);
+      window.analytics.push(args);
+      return window.analytics;
+    };
+  };
+
+  // For each of our methods, generate a queueing stub.
+  for (var i = 0; i < window.analytics.methods.length; i++) {
+    var key = window.analytics.methods[i];
+    window.analytics[key] = window.analytics.factory(key);
+  }
+
+  // Define a method to load Analytics.js from our CDN,
+  // and that will be sure to only ever load it once.
+  window.analytics.load = function(key){
+    if (document.getElementById('analytics-js')) return;
+
+    // Create an async script element based on your key.
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.id = 'analytics-js';
+    script.async = true;
+    script.src = ('https:' === document.location.protocol
+      ? 'https://' : 'http://')
+      + 'cdn.segment.io/analytics.js/v1/'
+      + key + '/analytics.min.js';
+
+    // Insert our script next to the first script element.
+    var first = document.getElementsByTagName('script')[0];
+    first.parentNode.insertBefore(script, first);
+  };
+
+  // Add a version to keep track of what's in the wild.
+  window.analytics.SNIPPET_VERSION = '2.0.9';
+
+  return window.analytics;
+});
+
 (function() {
-  define('plugins/tracker',['underscore', 'jquery', 'models/settings', 'plugins/ops-reporter'], function(_, $, settings, OpsReporter) {
-    var Timer, Tracker, tracker;
+  define('plugins/tracker',['underscore', 'jquery', 'models/settings', 'plugins/ops-reporter', 'libs/analytics'], function(_, $, settings, OpsReporter, analytics) {
+    var Timer, Tracker, legacyIsSegmentEnabled, tracker, _ref;
+    legacyIsSegmentEnabled = !!((_ref = settings.get('segmentio')) != null ? _ref.write_key : void 0);
+    if (legacyIsSegmentEnabled) {
+      analytics.load(settings.get('segmentio').write_key);
+      analytics.page();
+    }
     Timer = (function() {
       function Timer(opts) {
         this._name = opts.name || '';
@@ -15910,15 +15914,18 @@ define('libs/analytics',[], function(){
       function Tracker() {}
 
       Tracker.prototype.track = function(name, data) {
-        var _ref, _ref1;
+        var _ref1, _ref2;
         if (data == null) {
           data = {};
         }
-        if ((_ref = settings.get('tracker')) != null ? _ref.path : void 0) {
+        if ((_ref1 = settings.get('tracker')) != null ? _ref1.path : void 0) {
           OpsReporter.addEvent(name, data);
         }
-        if ((_ref1 = settings.get('tracker')) != null ? _ref1.debug : void 0) {
-          return console.log('track:', name, data);
+        if ((_ref2 = settings.get('tracker')) != null ? _ref2.debug : void 0) {
+          console.log('track:', name, data);
+        }
+        if (legacyIsSegmentEnabled) {
+          return analytics.track(name, data);
         }
       };
 
@@ -15966,7 +15973,7 @@ define('libs/analytics',[], function(){
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('views/nav_buttons',['marionette', 'templates/nav_buttons', 'mediator', 'models/current_user', 'libs/analytics', 'plugins/tracker'], function(Marionette, template, mediator, currentUser, analytics, tracker) {
+  define('views/nav_buttons',['marionette', 'templates/nav_buttons', 'mediator', 'models/current_user', 'plugins/tracker'], function(Marionette, template, mediator, currentUser, tracker) {
     var NavButtonsView;
     return NavButtonsView = (function(_super) {
       __extends(NavButtonsView, _super);
@@ -16054,9 +16061,6 @@ define('libs/analytics',[], function(){
         if (this.ui.finishButton.hasClass('disabled')) {
           return;
         }
-        analytics.track('Finished course', {
-          courseId: this.model.id
-        });
         tracker.track('Finished course', {
           courseId: this.model.id
         });
@@ -17545,18 +17549,18 @@ define('libs/analytics',[], function(){
       PromiseImpl = window.Promise || window.ES6Promise.Promise;
       return new PromiseImpl(function(resolve, reject) {
         var script;
-        if (window[name]) {
-          return resolve(window[name]);
+        if (VersalGadgets[name]) {
+          return resolve(VersalGadgets[name]);
         }
         script = document.createElement('script');
         script.src = url;
         script.onload = function() {
           var ctor;
-          ctor = window[name];
+          ctor = VersalGadgets[name];
           if (ctor) {
             return resolve(ctor);
           } else {
-            return reject(new Error("" + manifest.name + " not found at " + manifest.launchUrl));
+            return reject(new Error("" + name + " not found at " + url));
           }
         };
         return document.head.appendChild(script);
@@ -47471,14 +47475,18 @@ define("libs/tags", function(){});
       render: function() {
         if (this.props.launcherCtor) {
           return React.DOM.div({
-            onClick: this.stopPropagation
+            onClick: (function(_this) {
+              return function(event) {
+                return event.nativeEvent.stopImmediatePropagation();
+              };
+            })(this)
           }, React.createElement(this.props.launcherCtor, this.launcherProps()));
-        } else if (!this.props.autoLaunch) {
+        } else if (this.props.autoLaunch) {
+          return React.DOM.div(null, 'Loading...');
+        } else {
           return React.DOM.div(null, React.DOM.a({
             onClick: this.props.launch
           }, 'launch'));
-        } else {
-          return React.DOM.div(null, 'Loading...');
         }
       },
       componentDidMount: function() {
@@ -47488,14 +47496,12 @@ define("libs/tags", function(){});
         }
       },
       launcherProps: function() {
-        var gadgetInterface;
-        gadgetInterface = _.pick(this.props, 'environment', 'isEditable', 'patchProps', 'patchLearnerState', 'legacyRequestAsset');
         return _.extend({}, this.props.attributes, {
-          gadget: gadgetInterface
+          gadget: this.gadgetInterface()
         });
       },
-      stopPropagation: function(event) {
-        return event.nativeEvent.stopImmediatePropagation();
+      gadgetInterface: function() {
+        return _.extend({}, _.pick(this.props, 'isEditable', 'patchProps', 'patchLearnerState'), this.props.environment);
       }
     });
   });
@@ -48719,10 +48725,6 @@ define("libs/tags", function(){});
           this.lessonTitleReactView.onShow();
         }
         if (!this.isEditable) {
-          analytics.track('Viewed lesson', {
-            courseId: settings.get('courseId'),
-            lessonId: this.model.id
-          });
           return tracker.track('Viewed lesson', {
             courseId: settings.get('courseId'),
             lessonId: this.model.id
@@ -48744,12 +48746,6 @@ define("libs/tags", function(){});
       };
 
       Lesson.prototype._onGadgetConfigChanged = function(view, detail) {
-        analytics.track('Edited gadget', {
-          courseId: settings.get('courseId'),
-          lessonId: this.model.id,
-          gadgetId: detail.id,
-          gadgetType: detail.type
-        });
         return tracker.track('Edited gadget', {
           courseId: settings.get('courseId'),
           lessonId: this.model.id,
@@ -48762,12 +48758,6 @@ define("libs/tags", function(){});
         if (this.isEditable) {
           return;
         }
-        analytics.track('Changed learner state', {
-          courseId: settings.get('courseId'),
-          lessonId: this.model.id,
-          gadgetId: detail.id,
-          gadgetType: detail.type
-        });
         return tracker.track('Changed learner state', {
           courseId: settings.get('courseId'),
           lessonId: this.model.id,
@@ -48780,12 +48770,6 @@ define("libs/tags", function(){});
         if (this.isEditable) {
           return;
         }
-        analytics.track('Viewed gadget', {
-          courseId: settings.get('courseId'),
-          lessonId: this.model.id,
-          gadgetId: detail.id,
-          gadgetType: detail.type
-        });
         return tracker.track('Viewed Gadget', {
           courseId: settings.get('courseId'),
           lessonId: this.model.id,
@@ -48896,12 +48880,6 @@ define("libs/tags", function(){});
       };
 
       Lesson.prototype._onGadgetInserted = function(gadget) {
-        analytics.track('Added gadget', {
-          courseId: settings.get('courseId'),
-          lessonId: this.model.id,
-          gadgetId: gadget.id,
-          gadgetType: gadget.get('type')
-        });
         tracker.track('Added gadget', {
           courseId: settings.get('courseId'),
           lessonId: this.model.id,
@@ -48912,12 +48890,6 @@ define("libs/tags", function(){});
       };
 
       Lesson.prototype.onGadgetDeleted = function(gadget) {
-        analytics.track('Deleted gadget', {
-          courseId: settings.get('courseId'),
-          lessonId: this.model.id,
-          gadgetId: gadget.id,
-          gadgetType: gadget.get('type')
-        });
         tracker.track('Deleted gadget', {
           courseId: settings.get('courseId'),
           lessonId: this.model.id,
@@ -51070,10 +51042,6 @@ define("libs/tags", function(){});
               lesson = _this.props.course.lessons.at(lessonIndex);
               lesson.destroy();
               _this.props.mediator.trigger('lesson:deleted', lesson);
-              analytics.track('Removed lesson', {
-                lessonId: lesson.id,
-                courseId: _this.props.course.id
-              });
               tracker.track('Removed lesson', {
                 lessonId: lesson.id,
                 courseId: _this.props.course.id
@@ -51097,10 +51065,6 @@ define("libs/tags", function(){});
                   var lessonIndex;
                   lesson.set('isAccessible', true);
                   lessonIndex = _this.props.course.lessons.indexOf(lesson);
-                  analytics.track('Added lesson', {
-                    lessonId: lesson.id,
-                    courseId: _this.props.course.id
-                  });
                   tracker.track('Added lesson', {
                     lessonId: lesson.id,
                     courseId: _this.props.course.id
@@ -51294,23 +51258,43 @@ define("libs/tags", function(){});
 }).call(this);
 
 (function() {
-  define('views/gadget_info_overview',['react'], function(React) {
+  define('views/gadget_info_overview',['react', 'models/settings'], function(React, settings) {
     var GadgetInfoOverview;
     return GadgetInfoOverview = React.createClass({
       propTypes: {
         title: React.PropTypes.string,
         description: React.PropTypes.string,
         version: React.PropTypes.string,
+        exampleUrl: React.PropTypes.string,
+        documentationUrl: React.PropTypes.string,
         onMouseEnter: React.PropTypes.func,
-        onMouseLeave: React.PropTypes.func
+        onMouseLeave: React.PropTypes.func,
+        onSetExpanded: React.PropTypes.func
+      },
+      getInitialState: function() {
+        return {
+          expanded: false
+        };
       },
       render: function() {
+        var tooltipClass, tooltipOffsetLeft;
+        tooltipClass = 'gadget-info-overview-tooltip';
+        if (this.props.expanded) {
+          tooltipClass += ' expanded';
+        }
+        tooltipOffsetLeft = '';
+        if (this.props.tooltipOffsetLeft) {
+          tooltipOffsetLeft = this.props.tooltipOffsetLeft + 'px';
+        }
         return React.DOM.div({
-          className: 'gadget-info-overview-tooltip',
+          className: tooltipClass,
           onMouseEnter: this.props.onMouseEnter,
           onMouseLeave: this.props.onMouseLeave
         }, React.DOM.div({
-          className: 'tooltip-arrow-bottom'
+          className: 'tooltip-arrow-bottom',
+          style: {
+            left: tooltipOffsetLeft
+          }
         }), React.DOM.div({
           className: 'gadget-info-overview'
         }, React.DOM.div({
@@ -51321,7 +51305,25 @@ define("libs/tags", function(){});
           className: 'gadget-info-overview-version'
         }, this.props.version)), React.DOM.div({
           className: 'gadget-info-overview-description'
-        }, this.props.description)));
+        }, this.props.description), React.DOM.div({
+          className: 'gadget-info-overview-bottom-row'
+        }, this.props.documentationUrl ? React.DOM.a({
+          className: 'gadget-info-more-info-link',
+          href: this.props.documentationUrl
+        }, 'More info...') : void 0, this.props.exampleUrl ? !this.props.expanded ? React.DOM.a({
+          className: 'gadget-info-show-more-link',
+          onClick: (function(_this) {
+            return function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              return _this.props.onSetExpanded();
+            };
+          })(this)
+        }, 'Show more') : void 0 : void 0), this.props.expanded ? React.DOM.iframe({
+          className: 'gadget-info-example-iframe',
+          src: this.props.exampleUrl,
+          scrolling: 'no'
+        }) : void 0));
       }
     });
   });
@@ -51630,8 +51632,10 @@ define("libs/tags", function(){});
 
 (function() {
   define('views/tray/tray_component',['underscore', 'react', 'models/settings', 'state/selection', 'views/render_in_body', 'views/tray/tray_slider', 'views/tray/item', 'views/tray/clipboard_item', 'views/tray/clipboard_controls', 'views/tray/tray_filters', 'views/tray/version_modal', 'views/gadget_info_overview', 'views/tether', 'react-coffeescript-glue'], function(_, React, settings, selection, RenderInBodyComponent, TraySliderComponent, TrayItem, ClipboardItem, TrayClipboardControls, TrayFiltersComponent, VersionModalComponent, GadgetInfoOverview, TetherComponent) {
-    var EMPTY_CLIPBOARD_COPY, TrayComponent;
+    var EMPTY_CLIPBOARD_COPY, TRAY_ARROW_WIDTH, TRAY_GADGET_PX_WIDTH, TrayComponent;
     EMPTY_CLIPBOARD_COPY = 'Select one or more gadgets to copy or cut. The clipboard will hold these gadgets so that you can add them in other places.';
+    TRAY_GADGET_PX_WIDTH = 72;
+    TRAY_ARROW_WIDTH = 20;
     return TrayComponent = React.createClass({
       propTypes: {
         mediator: React.PropTypes.object.isRequired,
@@ -51663,7 +51667,8 @@ define("libs/tags", function(){});
           expanded: expanded,
           activeModalComponent: null,
           clipboardItems: clipboardItems,
-          isSelectionAvailable: false
+          isSelectionAvailable: false,
+          gadgetInfoTooltipExpanded: false
         };
       },
       componentDidMount: function() {
@@ -51768,6 +51773,9 @@ define("libs/tags", function(){});
           activeModalComponent: VersionModalComponent(modalComponentProps)
         });
       },
+      _gadgetInfoTooltipOffsetLeft: function() {
+        return (this.state.gadgetInfoTargetIndex * TRAY_GADGET_PX_WIDTH) + (TRAY_GADGET_PX_WIDTH / 2) + TRAY_ARROW_WIDTH;
+      },
       render: function() {
         var children;
         if (this.state.selectedTab === 'gadgetClipboard') {
@@ -51789,28 +51797,13 @@ define("libs/tags", function(){});
               return selection.trigger('selection:cut');
             };
           })(this)
-        }), TraySliderComponent({
+        }), _div([
+          {
+            ref: 'tetherTrayTarget'
+          }, 'tether-tray-target'
+        ]), TraySliderComponent({
           itemsPerRow: 10
-        }, children), this.state.gadgetInfoTooltip && settings.get('feature_gadget_info') ? TetherComponent({
-          attachment: 'bottom center',
-          targetAttachment: 'top center',
-          zIndex: 26,
-          offset: '10px 0',
-          target: this.state.gadgetInfoTooltipTarget
-        }, _div([
-          'gadget-info-tooltip-wrapper', {
-            onMouseEnter: (function(_this) {
-              return function() {
-                return clearTimeout(_this._hideGadgetInfoTooltipTimeout);
-              };
-            })(this),
-            onMouseLeave: (function(_this) {
-              return function() {
-                return _this.hideGadgetInfoTooltip();
-              };
-            })(this)
-          }
-        ], this.state.gadgetInfoTooltip)) : void 0), TrayFiltersComponent({
+        }, children), this.state.gadgetInfoTooltipProps && settings.get('feature_gadget_info') ? this._renderGadgetInfo() : void 0), TrayFiltersComponent({
           catalogs: Object.keys(this.props.catalogs),
           selectedTab: this.state.selectedTab,
           expanded: this.state.expanded,
@@ -51843,7 +51836,7 @@ define("libs/tags", function(){});
         var selectedTabItems, _ref;
         selectedTabItems = ((_ref = this.props.catalogs[this.state.selectedTab]) != null ? _ref.models : void 0) || [];
         return selectedTabItems.map((function(_this) {
-          return function(catalogItem) {
+          return function(catalogItem, index) {
             var gadgetProject, gadgetType, oldversion, paletteModel;
             gadgetType = catalogItem.type().split('@')[0];
             paletteModel = _this.props.palette.findByType(gadgetType);
@@ -51856,7 +51849,7 @@ define("libs/tags", function(){});
               isRevertable: oldversion && oldversion !== (paletteModel != null ? paletteModel.get('latestVersion') : void 0),
               onShowModal: _this._showVersionModal,
               onMouseEnter: function(e) {
-                return _this.showGadgetInfoTooltip(_.pick(gadgetProject, 'title', 'description', 'version'), e.target);
+                return _this.showGadgetInfoTooltip(_.pick(gadgetProject, 'title', 'description', 'version', 'exampleUrl', 'documentationUrl'), e.target, index % 10);
               },
               onMouseLeave: _this.hideGadgetInfoTooltip,
               onDragStart: function() {
@@ -51875,13 +51868,59 @@ define("libs/tags", function(){});
           };
         })(this));
       },
-      showGadgetInfoTooltip: function(manifestInfo, tetherTarget) {
-        var gadgetInfoTooltip;
+      _renderGadgetInfo: function() {
+        var tetherOffset;
+        if (this.state.gadgetInfoTooltipExpanded) {
+          tetherOffset = '0px 0px';
+        } else {
+          tetherOffset = '10px 0px';
+        }
+        return TetherComponent({
+          attachment: 'bottom center',
+          targetAttachment: 'top center',
+          zIndex: 26,
+          offset: tetherOffset,
+          target: this.state.gadgetInfoTooltipTarget
+        }, _div([
+          'gadget-info-tooltip-wrapper', {
+            onMouseEnter: (function(_this) {
+              return function() {
+                return clearTimeout(_this._hideGadgetInfoTooltipTimeout);
+              };
+            })(this),
+            onMouseLeave: (function(_this) {
+              return function() {
+                return _this.hideGadgetInfoTooltip();
+              };
+            })(this)
+          }
+        ], GadgetInfoOverview(_.extend(this.state.gadgetInfoTooltipProps, {
+          expanded: this.state.gadgetInfoTooltipExpanded,
+          tooltipOffsetLeft: this.state.gadgetInfoTooltipExpanded ? this._gadgetInfoTooltipOffsetLeft() : null,
+          onSetExpanded: (function(_this) {
+            return function() {
+              var nextState;
+              nextState = {
+                gadgetInfoTooltipExpanded: true
+              };
+              nextState.gadgetInfoTooltipTarget = _this.refs.tetherTrayTarget.getDOMNode();
+              return _this.setState(nextState);
+            };
+          })(this)
+        }))));
+      },
+      showGadgetInfoTooltip: function(manifestInfo, tetherTarget, targetIndex) {
+        var gadgetInfoTooltipProps, target;
         clearTimeout(this._hideGadgetInfoTooltipTimeout);
-        gadgetInfoTooltip = GadgetInfoOverview(manifestInfo);
+        gadgetInfoTooltipProps = manifestInfo;
+        target = tetherTarget;
+        if (this.state.gadgetInfoTooltipExpanded) {
+          target = this.refs.tetherTrayTarget.getDOMNode();
+        }
         return this.setState({
-          gadgetInfoTooltip: gadgetInfoTooltip,
-          gadgetInfoTooltipTarget: tetherTarget
+          gadgetInfoTooltipProps: gadgetInfoTooltipProps,
+          gadgetInfoTooltipTarget: target,
+          gadgetInfoTargetIndex: targetIndex
         });
       },
       hideGadgetInfoTooltip: function() {
@@ -51889,8 +51928,9 @@ define("libs/tags", function(){});
       },
       _hideGadgetInfoTooltip: function() {
         return this.setState({
-          gadgetInfoTooltip: null,
-          gadgetInfoTooltipTarget: null
+          gadgetInfoTooltipProps: null,
+          gadgetInfoTooltipTarget: null,
+          gadgetInfoTooltipExpanded: false
         });
       }
     });
@@ -52894,16 +52934,18 @@ define("libs/tags", function(){});
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   define('player',['underscore', 'jquery', 'marionette', 'react', 'models/patch_backbone_sync', 'collab/collab', 'views/react_view', 'views/course', 'views/sidebar/author', 'views/sidebar/learner', 'views/tray/tray_component', 'views/header', 'views/player_layout', 'views/error_overlay', 'combined_catalogue', 'mediator', 'player_palette', 'models/current_user', 'plugins/tracker', 'models/settings', 'libs/analytics', 'collections/gadget_projects', 'models/course', 'messages/decorate', 'react_test_utils_for_selenium', 'legacy_cdn_defines_noconflict'], function(_, $, Marionette, React, patchBackboneSync, collab, ReactView, CourseView, AuthorSidebarView, LearnerSidebarView, TrayComponent, HeaderView, PlayerLayoutView, ErrorOverlay, CombinedCatalogue, mediator, playerPalette, currentUser, tracker, settings, analytics, GadgetProjects, Course) {
-    var PlayerApplication;
+    var PlayerApplication, legacyIsSegmentEnabled, _ref;
+    legacyIsSegmentEnabled = !!((_ref = settings.get('segmentio')) != null ? _ref.write_key : void 0);
     window.React = React;
     window._ = _;
+    window.VersalGadgets = {};
     PlayerApplication = (function() {
       function PlayerApplication(options) {
         this._onNavigateGadget = __bind(this._onNavigateGadget, this);
         this._onNavigateLesson = __bind(this._onNavigateLesson, this);
         this.onCourseLoad = __bind(this.onCourseLoad, this);
         this._onLearnerStateChanged = __bind(this._onLearnerStateChanged, this);
-        var $el, containerSelector, courseId, _ref, _ref1;
+        var $el, containerSelector, courseId, _ref1, _ref2;
         if (options) {
           settings.set(options);
         }
@@ -52924,10 +52966,10 @@ define("libs/tags", function(){});
         if (courseId == null) {
           return this.renderErrorOverlay('cannot start the player without a courseId');
         }
-        if (!(((_ref = settings.get('api')) != null ? _ref.url : void 0) || settings.get('apiUrl'))) {
+        if (!(((_ref1 = settings.get('api')) != null ? _ref1.url : void 0) || settings.get('apiUrl'))) {
           return this.renderErrorOverlay('cannot start the player without an apiUrl');
         }
-        if (!(((_ref1 = settings.get('api')) != null ? _ref1.sessionId : void 0) || settings.get('sessionId'))) {
+        if (!(((_ref2 = settings.get('api')) != null ? _ref2.sessionId : void 0) || settings.get('sessionId'))) {
           return this.renderErrorOverlay('cannot start the player without a sessionId');
         }
         this.installNavigation(courseId);
@@ -53061,19 +53103,13 @@ define("libs/tags", function(){});
       };
 
       PlayerApplication.prototype.renderTray = function(courseModel) {
-        var catalogs, trackCatalogClick, trackToggleTray, trayComponent, trayView;
+        var catalogs, trackCatalogClick, trackToggleTray, trayComponent, trayView, _ref1;
         trackToggleTray = function(expanded) {
-          analytics.track('Clicked gadget tray tab', {
-            name: expanded ? 'open' : 'close'
-          });
           return tracker.track('Clicked gadget tray tab', {
             name: expanded ? 'open' : 'close'
           });
         };
         trackCatalogClick = function(name) {
-          analytics.track('Clicked gadget tray tab', {
-            name: name
-          });
           return tracker.track('Clicked gadget tray tab', {
             name: name
           });
@@ -53082,10 +53118,12 @@ define("libs/tags", function(){});
           core: this.combinedCatalogue.core,
           viewers: this.combinedCatalogue.viewers,
           labs: this.combinedCatalogue.labs,
-          course: courseModel.palette,
-          sandbox: this.combinedCatalogue.sandbox,
-          hidden: this.combinedCatalogue.getHiddenGadgets(courseModel)
+          course: courseModel.palette
         };
+        if (!((_ref1 = settings.get('api')) != null ? _ref1.url.match(/\/stack\.versal\.com/) : void 0)) {
+          catalogs.sandbox = this.combinedCatalogue.sandbox;
+          catalogs.hidden = this.combinedCatalogue.getHiddenGadgets(courseModel);
+        }
         trayComponent = TrayComponent({
           initialCatalog: 'core',
           mediator: mediator,
@@ -53117,9 +53155,6 @@ define("libs/tags", function(){});
         mediator.isCourseEditable = courseModel.get('isEditable');
         if (!this.course.get('isEditable')) {
           courseAction = this.course.get('currentPosition') ? 'Continued course' : 'Started course';
-          analytics.track(courseAction, {
-            courseId: courseModel.id
-          });
           tracker.track(courseAction, {
             courseId: courseModel.id
           });
@@ -53181,9 +53216,9 @@ define("libs/tags", function(){});
       };
 
       PlayerApplication.prototype._onAllGadgetsRendered = function(lesson) {
-        var _ref;
-        if ((_ref = this._renderTimer) != null) {
-          _ref.stop();
+        var _ref1;
+        if ((_ref1 = this._renderTimer) != null) {
+          _ref1.stop();
         }
         return this._renderTimer = null;
       };
@@ -53209,19 +53244,14 @@ define("libs/tags", function(){});
       };
 
       PlayerApplication.prototype._configureTracking = function(user) {
-        var courseId, segmentioKey, _ref;
+        var courseId;
         courseId = settings.get('courseId');
-        if (segmentioKey = (_ref = settings.get('segmentio')) != null ? _ref.write_key : void 0) {
-          analytics.load(segmentioKey);
-          analytics.page();
+        if (legacyIsSegmentEnabled) {
           analytics.identify(user.id, {
             email: user.email
           });
         }
         if (settings.get('embedded')) {
-          analytics.track('Loaded course embed', {
-            courseId: courseId
-          });
           return tracker.track('Loaded course embed', {
             courseId: courseId,
             email: user.email
