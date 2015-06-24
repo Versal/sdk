@@ -3,10 +3,8 @@ fs = require 'fs-extra'
 path = require 'path'
 requirejs = require 'requirejs'
 async = require 'async'
-css = require 'css'
 fstream = require 'fstream'
 manifestLoader = require('./manifest')
-chalk = require 'chalk'
 
 compiler =
   # TODO: make compile command return compiled gadget manifest
@@ -148,28 +146,7 @@ compiler =
     return _.uniq deps
 
   writeCss: (options) ->
-    styles = fs.readFileSync "#{options.src}/gadget.css", 'utf-8'
-    styles = @processCss(styles, @cssClassName(options.manifest))
-    fs.writeFileSync "#{options.dest}/gadget.css", styles
-
-  cssClassName: (manifest) ->
-    return 'gadget-' + [manifest.username, manifest.name, manifest.version]
-      .join('-').replace(/[\.\s]+/g, '_')
-
-  processCss: (styles, className) ->
-    ast = css.parse styles
-    @_namespaceRules ast.stylesheet.rules, className
-    return css.stringify ast, compress: true
-
-  _namespaceRules: (rules, className) ->
-    for rule in rules
-      if rule.rules then @_namespaceRules rule.rules, className
-      if rule.selectors
-        rule.selectors = _.map rule.selectors, _.partial(@_prefixSelector, className)
-
-  _prefixSelector: (prefix, selector) ->
-    return selector if selector[0] == '@'
-    ".#{prefix} #{selector}"
+    fs.copySync "#{options.src}/gadget.css", "#{options.dest}/gadget.css"
 
   copyFiles: (src, dest, callback) ->
     # copy assets
