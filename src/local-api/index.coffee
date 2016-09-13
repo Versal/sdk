@@ -39,3 +39,5 @@ module.exports = (data) ->
 
   #TODO: Legacy endpoint
   api.get '/gadgets', (req, res) => res.json data.manifests
+
+  api.get '/users/:userid/trays*', (req, res) => res.json {}
